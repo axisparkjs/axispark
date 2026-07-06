@@ -1,11 +1,11 @@
-import { Constructable, Metadata } from '@axispark/common';
+import { Constructable, Metadata } from '@axisparkjs/common';
 import { Container } from './container';
 import { Resolver } from './resolver';
 import { InjectionToken } from './token';
 import { ProviderNotFoundError, DecoratorNotIncludedError } from './errors';
 
-jest.mock('@axispark/common', () => {
-    const originalModule = jest.requireActual('@axispark/common');
+jest.mock('@axisparkjs/common', () => {
+    const originalModule = jest.requireActual('@axisparkjs/common');
     return {
         ...originalModule,
         Metadata: {

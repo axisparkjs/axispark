@@ -1,5 +1,5 @@
-import { Plugin, PluginOptions } from '@axispark/common';
-import { DecoratorNotIncludedError } from '@axispark/di';
+import { Plugin, PluginOptions } from '@axisparkjs/common';
+import { DecoratorNotIncludedError } from '@axisparkjs/di';
 import { PluginRegistry } from './plugin-registry';
 import { AxisparkContext } from '../axispark';
 import { PluginAlreadyRegisteredError } from './plugin-already-registered-error';

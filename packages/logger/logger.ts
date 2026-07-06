@@ -1,4 +1,4 @@
-import { Injectable } from '@axispark/common';
+import { Injectable } from '@axisparkjs/common';
 import { LogData } from './log-data';
 import { LogEntry } from './log-entry';
 import { LogLevel } from './log-level';

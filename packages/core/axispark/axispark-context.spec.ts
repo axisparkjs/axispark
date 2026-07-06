@@ -1,5 +1,5 @@
-import { Logger } from '@axispark/logger';
-import { Container } from '@axispark/di';
+import { Logger } from '@axisparkjs/logger';
+import { Container } from '@axisparkjs/di';
 import { AxisparkContext } from './axispark-context';
 import { PluginRegistry } from '../plugins';
 

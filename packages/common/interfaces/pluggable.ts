@@ -1,4 +1,4 @@
-import { AxisparkContext } from '@axispark/core/axispark';
+import { AxisparkContext } from '@axisparkjs/core';
 
 export interface Pluggable {
     onRegister?(context: AxisparkContext, options?: PluginOptions): Promise<void> | void;

@@ -1,4 +1,4 @@
-import { Injectable, Metadata, MetadataKeys } from '@axispark/common';
+import { Injectable, Metadata, MetadataKeys } from '@axisparkjs/common';
 import { Resolver } from './resolver';
 import { ProviderNotFoundError, DecoratorNotIncludedError } from './errors';
 import { ClassProvider, Provider } from './provider';

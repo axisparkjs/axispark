@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { Metadata } from './metadata';
 import { MetadataKey } from './metadata-key';
 

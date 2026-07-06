@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { MetadataKey } from './metadata-key';
 
 export class MetadataStatic {

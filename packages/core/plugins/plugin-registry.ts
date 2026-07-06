@@ -1,5 +1,5 @@
-import { Metadata, MetadataKeys, Plugin, Pluggable, PluggableClass, PluginOptions, Lifecycle } from '@axispark/common';
-import { DecoratorNotIncludedError } from '@axispark/di';
+import { Metadata, MetadataKeys, Plugin, Pluggable, PluggableClass, PluginOptions, Lifecycle } from '@axisparkjs/common';
+import { DecoratorNotIncludedError } from '@axisparkjs/di';
 import { AxisparkContext } from '../axispark';
 import { PluginAlreadyRegisteredError } from './plugin-already-registered-error';
 import { PluginConfigMismatchError } from './plugin-config-mismatch-error';

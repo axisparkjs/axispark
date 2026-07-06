@@ -1,11 +1,11 @@
-import { Metadata, MetadataKeys, Injectable, Inject } from '@axispark/common';
+import { Metadata, MetadataKeys, Injectable, Inject } from '@axisparkjs/common';
 import { Resolver } from './resolver';
 import { Container } from './container';
 import { InjectionToken } from './token';
 import { CircularDependencyError } from './errors/circular-dependency-error';
 
-jest.mock('@axispark/common', () => {
-    const originalModule = jest.requireActual('@axispark/common');
+jest.mock('@axisparkjs/common', () => {
+    const originalModule = jest.requireActual('@axisparkjs/common');
     return {
         ...originalModule,
         Metadata: {

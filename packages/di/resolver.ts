@@ -1,4 +1,4 @@
-import { Metadata, MetadataKeys } from '@axispark/common';
+import { Metadata, MetadataKeys } from '@axisparkjs/common';
 import { Constructor } from './constructor';
 import { Container } from './container';
 import { CircularDependencyError } from './errors/circular-dependency-error';

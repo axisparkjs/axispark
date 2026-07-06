@@ -1,0 +1,19 @@
+{
+    "name": "@axisparkjs/di",
+    "version": "0.0.2",
+    "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/di",
+    "author": "Pablo Gálvez Ortuño",
+    "license": "Apache-2.0",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json"
+    },
+    "engines": {
+        "node": ">= 20"
+    },
+    "peerDependencies": {
+        "@axisparkjs/common": "0.0.2",
+        "reflect-metadata": "^0.2.0"
+    }
+}

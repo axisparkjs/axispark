@@ -1,4 +1,4 @@
-import { PluginOptions } from '@axispark/common';
+import { PluginOptions } from '@axisparkjs/common';
 import { AxisparkCore } from './axispark-core';
 import { AxisparkContext } from './axispark-context';
 

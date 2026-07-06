@@ -1,5 +1,5 @@
-import { Lifecycle } from '@axispark/common';
-import { PluggableClass, PluginOptions } from '@axispark/common';
+import { Lifecycle } from '@axisparkjs/common';
+import { PluggableClass, PluginOptions } from '@axisparkjs/common';
 import { AxisparkContext } from './axispark-context';
 
 export class AxisparkCore implements Lifecycle {

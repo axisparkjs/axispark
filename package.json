@@ -1,18 +1,30 @@
 {
     "name": "@axisparkjs/axispark",
     "version": "0.0.1",
-    "description": "The Ultimate Node.js Framework",
+    "description": "AxiSpark.js - The Ultimate Node.js Framework",
+    "author": "Pablo Gálvez Ortuño",
+    "license": "ISC",
     "scripts": {
         "build": "tsc",
         "prettier:fix": "prettier --config .prettierrc.json '**/*.{ts,js,mjs,json,md,html,css,scss}' --write",
         "prettier": "prettier --config .prettierrc.json '**/*.{ts,js,mjs,json,md,html,css,scss}' --check",
         "lint:fix": "eslint --fix . --ext .ts,.js,.mjs",
         "lint": "eslint . --ext .ts,.js,.mjs",
-        "test:unit": "export NODE_ENV=test && jest --config jest.config.ts"
+        "test:unit": "export NODE_ENV=test && jest --config jest.config.ts",
+
+        "ci:changeset": "changeset",
+        "ci:version": "changeset version",
+        "ci:publish": "changeset publish"
     },
-    "author": "Pablo Gálvez Ortuño",
-    "license": "ISC",
+    "engines": {
+        "node": ">= 20"
+    },
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
     "devDependencies": {
+        "@changesets/cli": "^2.31.0",
         "@eslint/js": "^9.37.0",
         "@types/express": "^5.0.6",
         "@types/jest": "^30.0.0",
@@ -29,9 +41,7 @@
         "typescript-eslint": "^8.46.0"
     },
     "dependencies": {
+        "express": "^5.2.1",
         "reflect-metadata": "^0.2.2"
-    },
-    "peerDependencies": {
-        "express": "^5.2.1"
     }
 }

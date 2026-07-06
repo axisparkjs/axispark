@@ -1,4 +1,4 @@
-import { Factory } from '@axispark/common';
+import { Factory } from '@axisparkjs/common';
 import { AxisparkContext } from './axispark-context';
 import { AxisparkCore } from './axispark-core';
 

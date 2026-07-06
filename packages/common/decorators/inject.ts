@@ -1,4 +1,4 @@
-import { Token } from '@axispark/di';
+import { Token } from '@axisparkjs/di';
 import { Metadata, MetadataKeys } from '../metadata';
 
 export function Inject(token: Token): ParameterDecorator {
