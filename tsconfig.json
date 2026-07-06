@@ -1,0 +1,41 @@
+{
+    "compilerOptions": {
+        "target": "es2016",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "removeComments": true,
+        "module": "commonjs",
+        "declaration": true,
+        "noLib": false,
+        "rootDir": "packages",
+        "outDir": "lib",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "sourceMap": true,
+        "allowJs": false,
+        "strict": true,
+        "noImplicitAny": true,
+        "strictPropertyInitialization": false,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "skipLibCheck": true,
+        "paths": {
+            "@axispark/common": ["./packages/common"],
+            "@axispark/common/*": ["./packages/common/*"],
+            "@axispark/core": ["./packages/core"],
+            "@axispark/core/*": ["./packages/core/*"],
+            "@axispark/di": ["./packages/di"],
+            "@axispark/di/*": ["./packages/di/*"],
+            "@axispark/logger": ["./packages/logger"],
+            "@axispark/logger/*": ["./packages/logger/*"],
+            "@axispark/http": ["./packages/http"],
+            "@axispark/http/*": ["./packages/http/*"],
+            "@axispark/http-express": ["./packages/http-express"],
+            "@axispark/http-express/*": ["./packages/http-express/*"]
+        },
+        "types": ["node", "jest"]
+    },
+    "include": ["packages/**/*"],
+    "exclude": ["node_modules", "lib"]
+}

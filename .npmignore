@@ -1,0 +1,9 @@
+node_modules
+coverage
+.github
+.gitignore
+.prettierignore
+.npmrc
+README.md
+dist
+lib

@@ -1,0 +1,9 @@
+import { AxisparkCore } from './axispark-core';
+import { AxisparkFactory } from './axispark-factory';
+
+describe('AxisparkFactory', () => {
+    it('should create an instance of AxisparkCore', () => {
+        const axisparkCore = AxisparkFactory.create();
+        expect(axisparkCore).toBeInstanceOf(AxisparkCore);
+    });
+});
