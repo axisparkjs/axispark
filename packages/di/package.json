@@ -7,7 +7,10 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build": "tsc -p tsconfig.build.json"
+        "build": "tsc -b tsconfig.build.json",
+        "prettier": "prettier --config ../../.prettierrc.json --ignore-path ../../.prettierignore '**/*.{ts,js,mjs,json,md,html,css,scss}' --check",
+        "lint": "eslint --config ../../eslint.config.mjs .",
+        "test:unit": "export NODE_ENV=test && jest --config jest.config.ts"
     },
     "engines": {
         "node": ">= 20"

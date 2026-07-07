@@ -1,4 +1,10 @@
 {
-    "extends": "../tsconfig.build.json",
-    "include": ["**/*.ts"],
+    "extends": "../../tsconfig.build.json",
+    "compilerOptions": {
+        "rootDir": "src",
+        "outDir": "lib"
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules", "lib", "jest.config.ts", "**/*.spec.ts"],
+    "references": [{ "path": "../common/tsconfig.build.json" }, { "path": "../di/tsconfig.build.json" }]
 }

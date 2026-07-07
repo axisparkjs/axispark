@@ -20,8 +20,18 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "skipLibCheck": true,
+        "paths": {
+            "@axisparkjs/common": ["./packages/common/src"],
+            "@axisparkjs/common/*": ["./packages/common/src/*"],
+            "@axisparkjs/core": ["./packages/core/src"],
+            "@axisparkjs/core/*": ["./packages/core/src/*"],
+            "@axisparkjs/di": ["./packages/di/src"],
+            "@axisparkjs/di/*": ["./packages/di/src/*"],
+            "@axisparkjs/logger": ["./packages/logger/src"],
+            "@axisparkjs/logger/*": ["./packages/logger/src/*"]
+        },
         "types": ["node", "jest"]
     },
     "include": ["packages/**/*"],
-    "exclude": ["node_modules", "lib"]
+    "exclude": ["node_modules", "lib", "**/jest.config.ts", "**/*.spec.ts"]
 }
