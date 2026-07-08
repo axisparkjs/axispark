@@ -1,4 +1,4 @@
-export const config = {
+const config = {
     preset: 'ts-jest',
     testEnvironment: 'node',
     moduleDirectories: ['node_modules'],
@@ -16,7 +16,7 @@ export const config = {
     },
     cache: false,
     detectOpenHandles: true,
-    coveragePathIgnorePatterns: ['/node_modules/', '/lib/', '/test/'],
+    coveragePathIgnorePatterns: ['/node_modules/', '/lib/', '/test/', '/index.ts'],
     testPathIgnorePatterns: ['/node_modules/', '/lib/'],
     moduleNameMapper: {
         '^@axisparkjs/common$': '<rootDir>/packages/common/src',
@@ -30,4 +30,5 @@ export const config = {
     },
     setupFiles: ['<rootDir>/jest.setup.ts']
 };
-export default config;
+
+module.exports = config;

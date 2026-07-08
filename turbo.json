@@ -1,0 +1,16 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "prettier": {},
+        "lint": {},
+        "build": {
+            "dependsOn": [ "^build" ]
+        },
+        "test:unit": {
+            "dependsOn": [ "^test:unit" ]
+        },
+        "sonar": {
+            "cache": false
+        }
+    }
+}

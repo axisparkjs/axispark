@@ -10,6 +10,6 @@ export default [
     ...tseslint.configs.recommended,
     ...tseslint.configs.strict,
     ...tseslint.configs.stylistic,
-    { files: ['**/*.spec.ts'], rules: { '@typescript-eslint/no-extraneous-class': 'off' } },
+    { files: ['**/*.spec.ts'], rules: { '@typescript-eslint/no-extraneous-class': 'off', '@typescript-eslint/no-empty-function': 'off' } },
     { files: ['**/*.ts'], rules: { '@typescript-eslint/no-explicit-any': 'off', '@typescript-eslint/no-unused-vars': 'off' } }
 ];

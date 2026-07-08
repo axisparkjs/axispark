@@ -1,4 +1,4 @@
-import { config as baseConfig } from '../../jest.config.ts';
+import baseConfig from '../../jest.config.js';
 
 export const config = {
     ...baseConfig,
