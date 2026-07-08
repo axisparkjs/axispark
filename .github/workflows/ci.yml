@@ -40,5 +40,6 @@ jobs:
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} 
             -Dsonar.organization=axisparkjs 
             -Dsonar.sources=src 
-            -Dsonar.tests=test 
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts 
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
