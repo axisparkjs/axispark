@@ -35,7 +35,7 @@ jobs:
 
       - name: Run SonarQube analysis
         run: npm run ci:sonar -- -- \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.organization=axisparkjs \
             -Dsonar.sources=src \
