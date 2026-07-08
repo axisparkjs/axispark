@@ -18,6 +18,9 @@ describe('axisparkCore', () => {
             },
             container: {
                 resolve: jest.fn()
+            },
+            config: {
+                banner: true
             }
         } as unknown as jest.Mocked<AxisparkContext>;
 
@@ -26,6 +29,16 @@ describe('axisparkCore', () => {
 
     describe('init', () => {
         it('should init the application and log the initialization', async () => {
+            await core.init();
+
+            expect(context.plugins.init).toHaveBeenCalledTimes(1);
+            expect(context.plugins.init).toHaveBeenCalledWith(context);
+            expect(context.logger.info).toHaveBeenCalledTimes(2);
+            expect(context.logger.info).toHaveBeenCalledWith('App initialized');
+        });
+
+        it('should init the application and not log the banner', async () => {
+            context.config.banner = false;
             await core.init();
 
             expect(context.plugins.init).toHaveBeenCalledTimes(1);
@@ -44,7 +57,7 @@ describe('axisparkCore', () => {
             expect(context.plugins.run).toHaveBeenCalledTimes(1);
             expect(context.plugins.run).toHaveBeenCalledWith(context);
             expect(context.logger.info).toHaveBeenCalledTimes(1);
-            expect(context.logger.info).toHaveBeenCalledWith('App running');
+            expect(context.logger.info).toHaveBeenCalledWith('App running, waiting for termination signal...');
         });
     });
 

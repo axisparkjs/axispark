@@ -7,7 +7,7 @@ describe('AxisparkContext', () => {
     let context: AxisparkContext;
 
     beforeEach(() => {
-        context = new AxisparkContext('my-app');
+        context = new AxisparkContext();
     });
 
     describe('constructor', () => {

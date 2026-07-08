@@ -9,3 +9,4 @@ dist
 lib
 **/*.tsbuildinfo
 .turbo
+.scannerwork

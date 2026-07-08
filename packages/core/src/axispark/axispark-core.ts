@@ -6,6 +6,19 @@ export class AxisparkCore implements Lifecycle {
     public constructor(private readonly axisparkContext: AxisparkContext) {}
 
     public async init() {
+        // Banner logic here
+        if (this.axisparkContext.config.banner) {
+            await this.axisparkContext.logger.info(`
+    ╔═════════════════════════════════════════════╗
+    ║                                             ║
+    ║                 AxiSpark.js                 ║
+    ║                                             ║
+    ║      Fast • Modular • TypeScript First      ║
+    ║                                             ║
+    ╚═════════════════════════════════════════════╝
+            `);
+        }
+
         // Initialization logic here
         await this.axisparkContext.plugins.init(this.axisparkContext);
         await this.axisparkContext.logger.info('App initialized');
@@ -13,7 +26,7 @@ export class AxisparkCore implements Lifecycle {
 
     public async run(): Promise<void> {
         await this.axisparkContext.plugins.run(this.axisparkContext);
-        await this.axisparkContext.logger.info('App running');
+        await this.axisparkContext.logger.info('App running, waiting for termination signal...');
 
         return new Promise((resolve) => {
             process.once('SIGINT', resolve);

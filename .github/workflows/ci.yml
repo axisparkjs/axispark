@@ -34,6 +34,7 @@ jobs:
         run: npm run ci:build
 
       - name: Run SonarQube analysis
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: >
             npm run ci:sonar -- -- 
             -Dsonar.host.url=https://sonarcloud.io 
