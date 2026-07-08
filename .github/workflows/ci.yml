@@ -34,10 +34,11 @@ jobs:
         run: npm run ci:build
 
       - name: Run SonarQube analysis
-        run: npm run ci:sonar -- -- \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=axisparkjs \
-            -Dsonar.sources=src \
-            -Dsonar.tests=test \
+        run: >
+            npm run ci:sonar -- -- 
+            -Dsonar.host.url=https://sonarcloud.io 
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} 
+            -Dsonar.organization=axisparkjs 
+            -Dsonar.sources=src 
+            -Dsonar.tests=test 
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
