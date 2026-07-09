@@ -1,6 +1,7 @@
 import { Lifecycle } from '@axisparkjs/common/src';
 import { PluggableClass, PluginOptions } from '../plugin';
 import { AxisparkContext } from './axispark-context';
+import { Token } from '@axisparkjs/di';
 
 export class AxisparkCore implements Lifecycle {
     public constructor(private readonly axisparkContext: AxisparkContext) {}
@@ -43,5 +44,13 @@ export class AxisparkCore implements Lifecycle {
     public use(plugin: PluggableClass, options?: PluginOptions): this {
         this.axisparkContext.plugins.register(this.axisparkContext, plugin, options);
         return this;
+    }
+
+    public used(): readonly { type: PluggableClass; options?: PluginOptions }[] {
+        return this.axisparkContext.plugins.getAll();
+    }
+
+    public get<T>(token: Token<T>): T {
+        return this.axisparkContext.container.resolve(token);
     }
 }

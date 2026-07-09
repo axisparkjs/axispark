@@ -25,8 +25,8 @@ export class PluginRegistry implements Lifecycle {
         this.plugins.push({ type: plugin, options });
     }
 
-    getAll(): readonly PluggableClass[] {
-        return this.plugins.map((p) => p.type);
+    getAll(): readonly { type: PluggableClass; options?: PluginOptions }[] {
+        return this.plugins.map((p) => ({ type: p.type, options: p.options }));
     }
 
     private instantiate(context: AxisparkContext): void {

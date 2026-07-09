@@ -16,7 +16,7 @@
     "engines": {
         "node": ">= 20"
     },
-    "peerDependencies": {
+    "dependencies": {
         "@axisparkjs/common": "0.0.2",
         "@axisparkjs/di": "0.0.2",
         "@axisparkjs/logger": "0.0.2",

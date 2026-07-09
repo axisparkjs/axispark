@@ -5,21 +5,21 @@
     "author": "Pablo Gálvez Ortuño",
     "license": "ISC",
     "scripts": {
-        "build": "tsc -p tsconfig.build.json",
         "prettier:fix": "prettier --config .prettierrc.json '**/*.{ts,js,mjs,json,md,html,css,scss}' --write",
-        "prettier": "prettier --config .prettierrc.json '**/*.{ts,js,mjs,json,md,html,css,scss}' --check",
-        "lint:fix": "eslint --fix ",
-        "lint": "eslint --config ./eslint.config.mjs .",
-        "test:unit": "export NODE_ENV=test && jest --config jest.config.ts",
-        "sonar": "sonar-scanner -Dsonar.projectKey=axisparkjs-common",
+        "prettier": "turbo run prettier",
+        "lint": "turbo run lint",
+        "build": "turbo run build",
+        "test:unit": "turbo run test:unit",
+        "test:e2e": "export NODE_ENV=test && jest --config jest.e2e.config.ts",
         "ci:prettier": "turbo run prettier --affected",
         "ci:lint": "turbo run lint --affected",
         "ci:build": "turbo run build --affected",
         "ci:test:unit": "turbo run test:unit --affected",
+        "ci:test:e2e": "export NODE_ENV=test && jest --config jest.e2e.config.ts",
         "ci:sonar": "turbo run sonar --affected",
-        "ci:changeset": "changeset",
-        "ci:version": "changeset version",
-        "ci:publish": "changeset publish"
+        "cd:changeset": "changeset",
+        "cd:version": "changeset version",
+        "cd:publish": "changeset publish"
     },
     "engines": {
         "node": ">= 20"

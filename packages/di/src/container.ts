@@ -19,6 +19,10 @@ export class Container {
         this.providers.set(provider.token, provider);
     }
 
+    unbind<T>(token: Token<T>): void {
+        this.providers.delete(token);
+    }
+
     resolve<T>(token: Token<T>): T {
         const provider = this.providers.get(token);
 

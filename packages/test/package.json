@@ -1,7 +1,7 @@
 {
-    "name": "@axisparkjs/logger",
-    "version": "0.0.2",
-    "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/logger",
+    "name": "@axisparkjs/test",
+    "version": "0.0.1",
+    "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/test",
     "author": "Pablo Gálvez Ortuño",
     "license": "Apache-2.0",
     "main": "lib/index.js",
@@ -11,7 +11,7 @@
         "prettier": "prettier --config ../../.prettierrc.json --ignore-path ../../.prettierignore '**/*.{ts,js,mjs,json,md,html,css,scss}' --check",
         "lint": "eslint --config ../../eslint.config.mjs .",
         "test:unit": "export NODE_ENV=test && jest --config jest.config.ts",
-        "sonar": "sonar-scanner -Dsonar.projectKey=axisparkjs-logger"
+        "sonar": "sonar-scanner -Dsonar.projectKey=axisparkjs-test"
     },
     "engines": {
         "node": ">= 20"
@@ -19,6 +19,8 @@
     "dependencies": {
         "@axisparkjs/common": "0.0.2",
         "@axisparkjs/di": "0.0.2",
+        "@axisparkjs/core": "0.0.2",
+        "@axisparkjs/logger": "0.0.2",
         "reflect-metadata": "^0.2.0"
     }
 }

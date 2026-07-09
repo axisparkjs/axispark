@@ -59,14 +59,17 @@ describe('PluginRegistry', () => {
         it('should register a decorated plugin', () => {
             registry.register(context, TestPlugin, testOptions);
 
-            expect(registry.getAll()).toEqual([TestPlugin]);
+            expect(registry.getAll()).toEqual([{ type: TestPlugin, options: testOptions }]);
         });
 
         it('should register multiple decorated plugins', () => {
             registry.register(context, TestPlugin, testOptions);
             registry.register(context, MockPlugin, mockOptions);
 
-            expect(registry.getAll()).toEqual([TestPlugin, MockPlugin]);
+            expect(registry.getAll()).toEqual([
+                { type: TestPlugin, options: testOptions },
+                { type: MockPlugin, options: mockOptions }
+            ]);
         });
 
         it('should throw if the class is not decorated with @Plugin', () => {
@@ -94,7 +97,10 @@ describe('PluginRegistry', () => {
             registry.register(context, TestPlugin, testOptions);
             registry.register(context, MockPlugin, mockOptions);
 
-            expect(registry.getAll()).toEqual([TestPlugin, MockPlugin]);
+            expect(registry.getAll()).toEqual([
+                { type: TestPlugin, options: testOptions },
+                { type: MockPlugin, options: mockOptions }
+            ]);
         });
     });
 

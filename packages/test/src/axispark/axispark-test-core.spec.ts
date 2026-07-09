@@ -1,10 +1,9 @@
-import { AxisparkCore } from './axispark-core';
-import { AxisparkContext } from './axispark-context';
-import { InjectionToken } from '@axisparkjs/di';
+import { AxisparkContext } from '@axisparkjs/core';
+import { AxisparkTestCore } from './axispark-test-core';
 
-describe('AxisparkCore', () => {
+describe('AxisparkTestCore', () => {
     let context: jest.Mocked<AxisparkContext>;
-    let core: AxisparkCore;
+    let core: AxisparkTestCore;
 
     beforeEach(() => {
         context = {
@@ -26,51 +25,33 @@ describe('AxisparkCore', () => {
             }
         } as unknown as jest.Mocked<AxisparkContext>;
 
-        core = new AxisparkCore(context);
+        core = new AxisparkTestCore(context);
     });
 
     describe('init', () => {
-        it('should init the application and log the initialization', async () => {
+        it('should init the application', async () => {
             await core.init();
 
             expect(context.plugins.init).toHaveBeenCalledTimes(1);
             expect(context.plugins.init).toHaveBeenCalledWith(context);
-            expect(context.logger.info).toHaveBeenCalledTimes(2);
-            expect(context.logger.info).toHaveBeenCalledWith('App initialized');
-        });
-
-        it('should init the application and not log the banner', async () => {
-            context.config.banner = false;
-            await core.init();
-
-            expect(context.plugins.init).toHaveBeenCalledTimes(1);
-            expect(context.plugins.init).toHaveBeenCalledWith(context);
-            expect(context.logger.info).toHaveBeenCalledTimes(1);
-            expect(context.logger.info).toHaveBeenCalledWith('App initialized');
         });
     });
 
     describe('run', () => {
-        it('should run the application and log that it is running', async () => {
-            core.run();
-
-            await new Promise(process.nextTick);
+        it('should run the application', async () => {
+            await core.run();
 
             expect(context.plugins.run).toHaveBeenCalledTimes(1);
             expect(context.plugins.run).toHaveBeenCalledWith(context);
-            expect(context.logger.info).toHaveBeenCalledTimes(1);
-            expect(context.logger.info).toHaveBeenCalledWith('App running, waiting for termination signal...');
         });
     });
 
     describe('destroy', () => {
-        it('should log that the application has been destroyed', async () => {
+        it('should destroy the application', async () => {
             await core.destroy();
 
             expect(context.plugins.destroy).toHaveBeenCalledTimes(1);
             expect(context.plugins.destroy).toHaveBeenCalledWith(context);
-            expect(context.logger.info).toHaveBeenCalledTimes(1);
-            expect(context.logger.info).toHaveBeenCalledWith('App destroyed');
         });
     });
 
@@ -106,20 +87,6 @@ describe('AxisparkCore', () => {
                 { type: plugin1, options: config1 },
                 { type: plugin2, options: undefined }
             ]);
-        });
-    });
-
-    describe('get', () => {
-        it('should resolve a dependency from the container', () => {
-            const token = new InjectionToken('TestToken');
-            const instance = { foo: 'bar' };
-            context.container.resolve = jest.fn().mockReturnValue(instance);
-
-            const result = core.get(token);
-
-            expect(context.container.resolve).toHaveBeenCalledTimes(1);
-            expect(context.container.resolve).toHaveBeenCalledWith(token);
-            expect(result).toBe(instance);
         });
     });
 });

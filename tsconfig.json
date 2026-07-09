@@ -28,10 +28,14 @@
             "@axisparkjs/di": ["./packages/di/src"],
             "@axisparkjs/di/*": ["./packages/di/src/*"],
             "@axisparkjs/logger": ["./packages/logger/src"],
-            "@axisparkjs/logger/*": ["./packages/logger/src/*"]
+            "@axisparkjs/logger/*": ["./packages/logger/src/*"],
+            "@axisparkjs/test": ["./packages/test/src"],
+            "@axisparkjs/test/*": ["./packages/test/src/*"],
+            "@axisparkjs/samples": ["./samples"],
+            "@axisparkjs/samples/*": ["./samples/*"]
         },
         "types": ["node", "jest"]
     },
-    "include": ["packages/**/*"],
-    "exclude": ["node_modules", "lib", "**/jest.config.ts", "**/*.spec.ts"]
+    "include": ["packages/**/*", "samples/**/*"],
+    "exclude": ["node_modules", "lib", "**/jest.config.ts"]
 }

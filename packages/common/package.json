@@ -16,7 +16,7 @@
     "engines": {
         "node": ">= 20"
     },
-    "peerDependencies": {
+    "dependencies": {
         "reflect-metadata": "^0.2.0"
     }
 }

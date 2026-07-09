@@ -16,7 +16,7 @@
     "engines": {
         "node": ">= 20"
     },
-    "peerDependencies": {
+    "dependencies": {
         "@axisparkjs/common": "0.0.2",
         "reflect-metadata": "^0.2.0"
     }

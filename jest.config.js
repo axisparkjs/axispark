@@ -16,7 +16,7 @@ const config = {
     },
     cache: false,
     detectOpenHandles: true,
-    coveragePathIgnorePatterns: ['/node_modules/', '/lib/', '/test/', '/index.ts'],
+    coveragePathIgnorePatterns: ['/node_modules/', '/lib/', '/index.ts'],
     testPathIgnorePatterns: ['/node_modules/', '/lib/'],
     moduleNameMapper: {
         '^@axisparkjs/common$': '<rootDir>/packages/common/src',
@@ -26,7 +26,9 @@ const config = {
         '^@axisparkjs/di$': '<rootDir>/packages/di/src',
         '^@axisparkjs/di/(.*)$': '<rootDir>/packages/di/src/$1',
         '^@axisparkjs/logger$': '<rootDir>/packages/logger/src',
-        '^@axisparkjs/logger/(.*)$': '<rootDir>/packages/logger/src/$1'
+        '^@axisparkjs/logger/(.*)$': '<rootDir>/packages/logger/src/$1',
+        '^@axisparkjs/test$': '<rootDir>/packages/test/src',
+        '^@axisparkjs/test/(.*)$': '<rootDir>/packages/test/src/$1'
     },
     setupFiles: ['<rootDir>/jest.setup.ts']
 };

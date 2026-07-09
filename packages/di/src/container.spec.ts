@@ -57,6 +57,19 @@ describe('Container', () => {
         expect(() => container.bind({ token, useClass: Service })).toThrow(DecoratorNotIncludedError);
     });
 
+    it('should unbind a provider', () => {
+        const token = new InjectionToken('token');
+
+        container.bind({ token, useValue: 'value' });
+        expect(() => container.unbind(token)).not.toThrow();
+    });
+
+    it('should throw when resolving an unbided class', () => {
+        const token = new InjectionToken('token');
+
+        expect(() => container.resolve(token)).toThrow(ProviderNotFoundError);
+    });
+
     it('should resolve a value provider', () => {
         const token = new InjectionToken('value');
 

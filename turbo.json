@@ -8,7 +8,7 @@
             "cache": false
         },
         "test:unit": {
-            "dependsOn": ["^test:unit"]
+            "cache": false
         },
         "sonar": {
             "cache": false
