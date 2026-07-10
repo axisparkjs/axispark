@@ -1,9 +1,4 @@
-import {
-    ConsoleTransport,
-    Logger,
-    LogLevel,
-    SimpleFormatter
-} from '@axisparkjs/logger';
+import { ConsoleTransport, Logger, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
 import { Container, Injector } from '@axisparkjs/di';
 import { AxisparkContext } from './axispark-context';
 import { PluginRegistry } from '../plugin';
