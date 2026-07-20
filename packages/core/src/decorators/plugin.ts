@@ -1,5 +1,6 @@
-import { MetadataKeys, Compose } from '@axisparkjs/common';
+import { Constructable } from '@axisparkjs/di';
+import { MetadataKeys } from '@axisparkjs/common';
 
 export function Plugin(): ClassDecorator {
-    return Compose(MetadataKeys.CONSTRUCTABLE, MetadataKeys.INJECTABLE, MetadataKeys.PLUGIN);
+    return Constructable(MetadataKeys.INJECTABLE, MetadataKeys.PLUGIN);
 }

@@ -2,7 +2,7 @@ import { DecoratorNotIncludedError } from '@axisparkjs/di';
 import { Plugin } from '../decorators';
 import { PluginOptions } from './pluggable';
 import { PluginRegistry } from './plugin-registry';
-import { AxisparkContext } from '../axispark';
+import { AxiSparkContext } from '../axispark';
 import { PluginAlreadyRegisteredError } from './plugin-already-registered-error';
 import { PluginConfigMismatchError } from './plugin-config-mismatch-error';
 
@@ -32,7 +32,7 @@ class BrokenPlugin {
 
 describe('PluginRegistry', () => {
     let registry: PluginRegistry;
-    let context: jest.Mocked<AxisparkContext>;
+    let context: jest.Mocked<AxiSparkContext>;
     const mockOptions: PluginOptions = { plugin: MockPlugin };
     const testOptions: PluginOptions = { plugin: TestPlugin };
 
@@ -51,7 +51,7 @@ describe('PluginRegistry', () => {
                 resolve: jest.fn(),
                 bind: jest.fn()
             }
-        } as unknown as jest.Mocked<AxisparkContext>;
+        } as unknown as jest.Mocked<AxiSparkContext>;
         registry = new PluginRegistry();
     });
 

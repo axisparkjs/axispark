@@ -1,14 +1,14 @@
 import { ConsoleTransport, Logger, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
 import { Container, Injector } from '@axisparkjs/di';
-import { AxisparkContext } from './axispark-context';
+import { AxiSparkContext } from './axispark-context';
 import { PluginRegistry } from '../plugin';
 
-describe('AxisparkContext', () => {
+describe('AxiSparkContext', () => {
     describe('constructor', () => {
-        let context: AxisparkContext;
+        let context: AxiSparkContext;
 
         beforeEach(() => {
-            context = new AxisparkContext();
+            context = new AxiSparkContext();
         });
 
         it('should create a logger', () => {
@@ -52,7 +52,7 @@ describe('AxisparkContext', () => {
                 minLevel: LogLevel.ERROR
             });
 
-            const context = new AxisparkContext({
+            const context = new AxiSparkContext({
                 name: 'MyApp',
                 environment: 'production',
                 banner: false,

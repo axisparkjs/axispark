@@ -1,8 +1,8 @@
-import { AxisparkFactory } from '@axisparkjs/core';
+import { AxiSparkFactory } from '@axisparkjs/core';
 import { ConsoleTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
 import { HelloWorldPlugin } from './plugin';
 
-export const app = AxisparkFactory.create({
+export const app = AxiSparkFactory.create({
     name: 'Hello World App',
     logTransports: [
         new ConsoleTransport({

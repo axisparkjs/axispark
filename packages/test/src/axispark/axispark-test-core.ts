@@ -1,8 +1,8 @@
 import { Lifecycle } from '@axisparkjs/common/src';
-import { AxisparkContext, PluggableClass, PluginOptions } from '@axisparkjs/core';
+import { AxiSparkContext, PluggableClass, PluginOptions } from '@axisparkjs/core';
 
-export class AxisparkTestCore implements Lifecycle {
-    public constructor(private readonly axisparkContext: AxisparkContext) {}
+export class AxiSparkTestCore implements Lifecycle {
+    public constructor(private readonly axisparkContext: AxiSparkContext) {}
 
     public async init() {
         await this.axisparkContext.plugins.init(this.axisparkContext);

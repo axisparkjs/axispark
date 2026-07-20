@@ -4,10 +4,18 @@ import { ProviderNotFoundError, DecoratorNotIncludedError } from './errors';
 import { ClassProvider, Provider, Constructor } from './types';
 import { Token, TokenUtils } from './token';
 import { Injectable } from './decorators';
+import { registry } from './registry';
 
 export class Container {
     private readonly providers = new Map<Token, Provider>();
     private readonly resolver = new Resolver();
+
+    public constructor() {
+        registry.forEach((entry) => {
+            if (Metadata.has(MetadataKeys.INJECTABLE, entry))
+                this.bind(entry);
+        });
+    }
 
     bind<T>(provider: Provider<T> | Constructor<T>): void {
         if (!('token' in provider)) {

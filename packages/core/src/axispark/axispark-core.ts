@@ -1,10 +1,10 @@
 import { Lifecycle } from '@axisparkjs/common/src';
 import { PluggableClass, PluginOptions } from '../plugin';
-import { AxisparkContext } from './axispark-context';
+import { AxiSparkContext } from './axispark-context';
 import { Token } from '@axisparkjs/di';
 
-export class AxisparkCore implements Lifecycle {
-    public constructor(private readonly axisparkContext: AxisparkContext) {}
+export class AxiSparkCore implements Lifecycle {
+    public constructor(private readonly axisparkContext: AxiSparkContext) {}
 
     public async init() {
         // Banner logic here

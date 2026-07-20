@@ -1,14 +1,14 @@
 import { Factory } from '@axisparkjs/common';
-import { AxisparkContext } from './axispark-context';
-import { AxisparkCore } from './axispark-core';
-import { AxisparkConfig } from '@axisparkjs/core/src/axispark/axispark-config';
+import { AxiSparkContext } from './axispark-context';
+import { AxiSparkCore } from './axispark-core';
+import { AxiSparkConfig } from '@axisparkjs/core/src/axispark/axispark-config';
 
-export class AxisparkFactoryStatic implements Factory<AxisparkCore> {
-    public create(config?: AxisparkConfig): AxisparkCore {
+export class AxiSparkFactoryStatic implements Factory<AxiSparkCore> {
+    public create(config?: AxiSparkConfig): AxiSparkCore {
         // Perform any necessary setup or configuration here
-        const context = new AxisparkContext(config);
-        return new AxisparkCore(context);
+        const context = new AxiSparkContext(config);
+        return new AxiSparkCore(context);
     }
 }
 
-export const AxisparkFactory = new AxisparkFactoryStatic();
+export const AxiSparkFactory = new AxiSparkFactoryStatic();

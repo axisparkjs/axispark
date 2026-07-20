@@ -38,7 +38,7 @@ const token2 = new InjectionToken('token2');
 class ClassWithTokenDependencies {
     constructor(
         @Inject(token) public readonly dependency: Dependency,
-        @Inject(token2) public readonly dependency2: Dependency
+        @Inject(Dependency) public readonly dependency2: Dependency
     ) {}
 }
 

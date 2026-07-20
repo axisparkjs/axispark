@@ -1,25 +1,27 @@
-import { Constructable, Metadata } from '@axisparkjs/common';
+import { Metadata } from '@axisparkjs/common';
 import { Container } from './container';
 import { Resolver } from './resolver';
 import { InjectionToken } from './token';
 import { ProviderNotFoundError, DecoratorNotIncludedError } from './errors';
+import { Constructable } from './decorators/constructable';
 
 jest.mock('@axisparkjs/common', () => {
     const originalModule = jest.requireActual('@axisparkjs/common');
     return {
         ...originalModule,
         Metadata: {
-            has: jest.fn()
+            has: jest.fn(),
+            define: jest.fn()
         }
     };
 });
 
 describe('Container', () => {
     let container: Container;
-    let metadataMock: { has: jest.Mock };
+    let metadataMock: { has: jest.Mock; define: jest.Mock };
 
     beforeAll(() => {
-        metadataMock = Metadata as unknown as { has: jest.Mock };
+        metadataMock = Metadata as unknown as { has: jest.Mock; define: jest.Mock };
     });
 
     beforeEach(() => {
@@ -158,6 +160,8 @@ describe('Container', () => {
     });
 
     it('should throw ProviderNotFoundError when provider does not exist', () => {
+        metadataMock.has.mockReturnValue(false);
+        container = new Container();
         expect(() => container.resolve(Service)).toThrow(ProviderNotFoundError);
     });
 

@@ -1,8 +1,9 @@
 import { Metadata } from './metadata';
 import { MetadataKey } from './metadata-key';
+import { MetadataKeys } from './metadata-keys';
 
 describe('Metadata', () => {
-    const testKey: MetadataKey = new MetadataKey('test-key');
+    const testKey: MetadataKey = MetadataKeys.CONSTRUCTABLE;
 
     beforeEach(() => {
         jest.restoreAllMocks();

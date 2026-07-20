@@ -1,9 +1,9 @@
-import { AxisparkContext } from '@axisparkjs/core';
-import { AxisparkTestCore } from './axispark-test-core';
+import { AxiSparkContext } from '@axisparkjs/core';
+import { AxiSparkTestCore } from './axispark-test-core';
 
-describe('AxisparkTestCore', () => {
-    let context: jest.Mocked<AxisparkContext>;
-    let core: AxisparkTestCore;
+describe('AxiSparkTestCore', () => {
+    let context: jest.Mocked<AxiSparkContext>;
+    let core: AxiSparkTestCore;
 
     beforeEach(() => {
         context = {
@@ -23,9 +23,9 @@ describe('AxisparkTestCore', () => {
             config: {
                 banner: true
             }
-        } as unknown as jest.Mocked<AxisparkContext>;
+        } as unknown as jest.Mocked<AxiSparkContext>;
 
-        core = new AxisparkTestCore(context);
+        core = new AxiSparkTestCore(context);
     });
 
     describe('init', () => {

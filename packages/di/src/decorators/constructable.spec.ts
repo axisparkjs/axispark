@@ -1,4 +1,4 @@
-import { MetadataKeys, Metadata } from '../metadata';
+import { MetadataKeys, Metadata } from '@axisparkjs/common';
 import { Constructable } from './constructable';
 
 describe('Constructable', () => {

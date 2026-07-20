@@ -18,6 +18,7 @@ const config = {
     detectOpenHandles: true,
     coveragePathIgnorePatterns: ['/node_modules/', '/lib/', '/index.ts'],
     testPathIgnorePatterns: ['/node_modules/', '/lib/'],
+    passWithNoTests: true,
     moduleNameMapper: {
         '^@axisparkjs/common$': '<rootDir>/packages/common/src',
         '^@axisparkjs/common/(.*)$': '<rootDir>/packages/common/src/$1',

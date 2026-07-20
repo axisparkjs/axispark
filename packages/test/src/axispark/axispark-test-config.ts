@@ -1,7 +1,7 @@
-import { AxisparkCore } from '@axisparkjs/core';
+import { AxiSparkCore } from '@axisparkjs/core';
 import { Constructor, Provider } from '@axisparkjs/di';
 
-export interface AxisparkTestConfig {
+export interface AxiSparkTestConfig {
     providers?: (Provider | Constructor)[];
-    app?: AxisparkCore;
+    app?: AxiSparkCore;
 }
