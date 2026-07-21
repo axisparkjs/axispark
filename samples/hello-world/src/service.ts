@@ -1,4 +1,4 @@
-import { Injectable } from "@axisparkjs/di";
+import { Injectable } from '@axisparkjs/di';
 
 @Injectable()
 export class HelloWorldService {

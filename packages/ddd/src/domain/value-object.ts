@@ -11,10 +11,8 @@ export abstract class ValueObject<T> {
     }
 
     public equals(vo: ValueObject<T>): boolean {
-        if (vo === null || vo === undefined)
-            return false;
-        if (this === vo)
-            return true;
+        if (vo === null || vo === undefined) return false;
+        if (this === vo) return true;
         return JSON.stringify(this._value) === JSON.stringify(vo.value);
     }
 

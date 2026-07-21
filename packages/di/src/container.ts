@@ -12,8 +12,7 @@ export class Container {
 
     public constructor() {
         registry.forEach((entry) => {
-            if (Metadata.has(MetadataKeys.INJECTABLE, entry))
-                this.bind(entry);
+            if (Metadata.has(MetadataKeys.INJECTABLE, entry)) this.bind(entry);
         });
     }
 

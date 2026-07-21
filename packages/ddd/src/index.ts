@@ -1,1 +1,1 @@
-export * from './axispark';
+export * from './domain';

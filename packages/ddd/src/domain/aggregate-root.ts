@@ -1,6 +1,6 @@
-import { DomainEvent } from "./domain-event";
-import { Entity } from "./entity";
-import { Identifier } from "./identity";
+import { DomainEvent } from './domain-event';
+import { Entity } from './entity';
+import { Identifier } from './identifier';
 
 export abstract class AggregateRoot<T extends Identifier> extends Entity<T> {
     private readonly _domainEvents: DomainEvent[] = [];

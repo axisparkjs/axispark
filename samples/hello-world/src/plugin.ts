@@ -8,7 +8,10 @@ export const stopText = 'HelloWorldPlugin stopped';
 
 @Plugin()
 export class HelloWorldPlugin implements Pluggable {
-    constructor(private readonly logger: Logger, private readonly service: HelloWorldService) {}
+    constructor(
+        private readonly logger: Logger,
+        private readonly service: HelloWorldService
+    ) {}
 
     async onRegister() {
         await this.logger.info(registerText);
