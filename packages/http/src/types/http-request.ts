@@ -6,6 +6,7 @@ export interface HttpRequest {
     query: Readonly<Record<string, string | string[]>>;
     params: Readonly<Record<string, string | string[]>>;
     body: unknown;
+    ip: string | undefined;
 
     getHeader(name: string): string | string[] | undefined;
 }

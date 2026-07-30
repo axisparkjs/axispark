@@ -4,7 +4,7 @@ import { AxiSparkContext } from '@axisparkjs/core';
 import { ConsoleTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
 import { AxiSparkTestCore } from './axispark-test-core';
 
-export class AxiSparkTestFactoryStatic implements Factory<AxiSparkTestCore> {
+class AxiSparkTestFactoryStatic implements Factory<AxiSparkTestCore> {
     public create(config?: AxiSparkTestConfig): AxiSparkTestCore {
         // Perform any necessary setup or configuration here
         const context = new AxiSparkContext({

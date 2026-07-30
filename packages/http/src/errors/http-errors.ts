@@ -1,4 +1,4 @@
-import { HttpStatus } from './http-error-code';
+import { HttpStatusCode } from '../types/http-status-code';
 
 export class HttpError extends Error {
     public constructor(
@@ -9,175 +9,174 @@ export class HttpError extends Error {
         super(response);
     }
 }
-export type ErrorClass<T extends Error = Error> = new (...args: any[]) => T;
 
 export class BadRequestError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.BAD_REQUEST, options);
+        super(response, HttpStatusCode.BadRequest, options);
     }
 }
 export class UnauthorizedError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.UNAUTHORIZED, options);
+        super(response, HttpStatusCode.Unauthorized, options);
     }
 }
 export class PaymentRequiredError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.PAYMENT_REQUIRED, options);
+        super(response, HttpStatusCode.PaymentRequired, options);
     }
 }
 export class ForbiddenError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.FORBIDDEN, options);
+        super(response, HttpStatusCode.Forbidden, options);
     }
 }
 export class NotFoundError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.NOT_FOUND, options);
+        super(response, HttpStatusCode.NotFound, options);
     }
 }
 export class MethodNotAllowedError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.METHOD_NOT_ALLOWED, options);
+        super(response, HttpStatusCode.MethodNotAllowed, options);
     }
 }
 export class NotAcceptableError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.NOT_ACCEPTABLE, options);
+        super(response, HttpStatusCode.NotAcceptable, options);
     }
 }
 export class ProxyAuthenticationRequiredError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.PROXY_AUTHENTICATION_REQUIRED, options);
+        super(response, HttpStatusCode.ProxyAuthenticationRequired, options);
     }
 }
 export class RequestTimeoutError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.REQUEST_TIMEOUT, options);
+        super(response, HttpStatusCode.RequestTimeout, options);
     }
 }
 export class ConflictError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.CONFLICT, options);
+        super(response, HttpStatusCode.Conflict, options);
     }
 }
 export class GoneError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.GONE, options);
+        super(response, HttpStatusCode.Gone, options);
     }
 }
 export class LengthRequiredError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.LENGTH_REQUIRED, options);
+        super(response, HttpStatusCode.LengthRequired, options);
     }
 }
 export class PreconditionFailedError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.PRECONDITION_FAILED, options);
+        super(response, HttpStatusCode.PreconditionFailed, options);
     }
 }
 export class PayloadTooLargeError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.PAYLOAD_TOO_LARGE, options);
+        super(response, HttpStatusCode.PayloadTooLarge, options);
     }
 }
 export class UriTooLongError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.URI_TOO_LONG, options);
+        super(response, HttpStatusCode.UriTooLong, options);
     }
 }
 export class UnsupportedMediaTypeError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.UNSUPPORTED_MEDIA_TYPE, options);
+        super(response, HttpStatusCode.UnsupportedMediaType, options);
     }
 }
 export class RequestedRangeNotSatisfiableError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE, options);
+        super(response, HttpStatusCode.RequestedRangeNotSatisfiable, options);
     }
 }
 export class ExpectationFailedError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.EXPECTATION_FAILED, options);
+        super(response, HttpStatusCode.ExpectationFailed, options);
     }
 }
 export class IAmATeapotError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.I_AM_A_TEAPOT, options);
+        super(response, HttpStatusCode.IAmATeapot, options);
     }
 }
 export class MisdirectedError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.MISDIRECTED, options);
+        super(response, HttpStatusCode.Misdirected, options);
     }
 }
 export class UnprocessableEntityError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.UNPROCESSABLE_ENTITY, options);
+        super(response, HttpStatusCode.UnprocessableEntity, options);
     }
 }
 export class LockedError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.LOCKED, options);
+        super(response, HttpStatusCode.Locked, options);
     }
 }
 export class FailedDependencyError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.FAILED_DEPENDENCY, options);
+        super(response, HttpStatusCode.FailedDependency, options);
     }
 }
 export class PreconditionRequiredError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.PRECONDITION_REQUIRED, options);
+        super(response, HttpStatusCode.PreconditionRequired, options);
     }
 }
 export class TooManyRequestsError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.TOO_MANY_REQUESTS, options);
+        super(response, HttpStatusCode.TooManyRequests, options);
     }
 }
 export class UnrecoverableError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.UNRECOVERABLE_ERROR, options);
+        super(response, HttpStatusCode.UnrecoverableError, options);
     }
 }
 export class InternalServerError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.INTERNAL_SERVER_ERROR, options);
+        super(response, HttpStatusCode.InternalServerError, options);
     }
 }
 export class NotImplementedError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.NOT_IMPLEMENTED, options);
+        super(response, HttpStatusCode.NotImplemented, options);
     }
 }
 export class BadGatewayError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.BAD_GATEWAY, options);
+        super(response, HttpStatusCode.BadGateway, options);
     }
 }
 export class ServiceUnavailableError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.SERVICE_UNAVAILABLE, options);
+        super(response, HttpStatusCode.ServiceUnavailable, options);
     }
 }
 export class GatewayTimeoutError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.GATEWAY_TIMEOUT, options);
+        super(response, HttpStatusCode.GatewayTimeout, options);
     }
 }
 export class HttpVersionNotSupportedError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.HTTP_VERSION_NOT_SUPPORTED, options);
+        super(response, HttpStatusCode.HttpVersionNotSupported, options);
     }
 }
 export class InsufficientStorageError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.INSUFFICIENT_STORAGE, options);
+        super(response, HttpStatusCode.InsufficientStorage, options);
     }
 }
 export class LoopDetectedError extends HttpError {
     constructor(response: string, options?: { cause?: unknown; description?: string }) {
-        super(response, HttpStatus.LOOP_DETECTED, options);
+        super(response, HttpStatusCode.LoopDetected, options);
     }
 }

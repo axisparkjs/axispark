@@ -1,3 +1,3 @@
 export interface Initializable {
-    init(...args: unknown[]): Promise<void>;
+    init(...args: unknown[]): void | Promise<void>;
 }

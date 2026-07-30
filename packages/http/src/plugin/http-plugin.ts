@@ -2,61 +2,85 @@ import { AxiSparkContext, PluginNotConfiguredError } from '@axisparkjs/core';
 import { HttpPluginOptions } from './http-plugin-options';
 import { HTTP_ADAPTER, HTTP_LOGGER, HTTP_OPTIONS } from '../di/tokens';
 import { HttpAdapter } from '../adapter/http-adapter';
-import { RouteRegistry } from '../routing/route-registry';
-import { RouteEntryFactory } from '../routing/route-entry-factory';
+import { RouteGenerator } from '../routes/route-generator';
 import { Logger } from '@axisparkjs/logger';
 import { Plugin, Pluggable } from '@axisparkjs/core';
-import { CatchEntryFactory, CatchRegistry } from '../errors';
+import { ClassRegistry } from '@axisparkjs/di';
+import { LogHttpRequestInterceptor, LogHttpResponseInterceptor } from '../interceptors';
+import { LogHttpErrorFilter, LogErrorFilter } from '../filters';
+import { Constructor } from '@axisparkjs/di';
+import { Route } from '../routes/route';
 
 @Plugin()
 export class HttpPlugin implements Pluggable {
-    private readonly routeRegistry = new RouteRegistry();
-    private readonly catchRegistry = new CatchRegistry();
-    private logger: Logger;
+    private logger!: Logger;
+    private options!: HttpPluginOptions;
+    private adapter!: HttpAdapter;
 
     async onRegister(context: AxiSparkContext, options?: HttpPluginOptions): Promise<void> {
         if (!options) throw new PluginNotConfiguredError(HttpPlugin.name);
         this.logger = context.container.resolve(Logger).child('HttpPlugin');
+        this.options = options;
 
-        context.container.bind({ token: HTTP_OPTIONS, useValue: options });
-        context.container.bind({ token: HTTP_ADAPTER, useClass: options.adapter });
-        context.container.bind({ token: HTTP_LOGGER, useValue: this.logger });
+        this.registerContainerBindings(context);
+        const routes = await this.generateRoutes(context);
+        this.configureLogging(context);
 
-        for (const controller of options.controllers) {
-            context.container.bind(controller);
-            const routes = RouteEntryFactory.create(controller, context.container);
-            this.routeRegistry.registerRoutes(routes);
-            for (const route of routes) {
-                await this.logger.debug(`Registered route ${route.method.toLocaleUpperCase()} ${route.path} for controller ${controller.name}`);
-            }
-            await this.logger.info(`Registered routes for controller ${controller.name}`);
-        }
-
-        for (const errorHandler of options.errorHandlers) {
-            context.container.bind(errorHandler);
-            const catchs = CatchEntryFactory.create(errorHandler, context.container);
-            this.catchRegistry.registerCatchs(catchs);
-            for (const catchEntry of catchs) {
-                await this.logger.debug(`Registered error handler for ${catchEntry.error.name} in handler ${errorHandler.name}`);
-            }
-            await this.logger.info(`Registered error handlers for handler ${errorHandler.name}`);
-        }
-
-        const adapter = context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
-        await adapter.registerRoutes(this.routeRegistry.getRoutes());
-        await adapter.registerCatchs(this.catchRegistry.getCatchs());
+        this.adapter = context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
+        await this.adapter.registerRoutes(routes);
         await this.logger.info(`Plugin registered`);
     }
 
-    async onStart(context: AxiSparkContext): Promise<void> {
-        const adapter = context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
-        await adapter.start();
-        await this.logger.info(`Plugin started`);
+    private registerContainerBindings(context: AxiSparkContext): void {
+        context.container.bind({ token: HTTP_OPTIONS, useValue: this.options });
+        context.container.bind({ token: HTTP_ADAPTER, useClass: this.options.adapter });
+        context.container.bind({ token: HTTP_LOGGER, useValue: this.logger });
     }
 
-    async onStop(context: AxiSparkContext): Promise<void> {
-        const adapter = context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
-        await adapter.stop();
+    private async generateRoutes(context: AxiSparkContext): Promise<Route[]> {
+        const routeSets = RouteGenerator.generate(context);
+        const totalRoutes: Route[] = [];
+        for (const { controller, routes } of routeSets) {
+            totalRoutes.push(...routes);
+            for (const route of routes) {
+                await this.logger.debug(`Registered route ${route.method.toLocaleUpperCase()} ${route.path} for controller ${controller.name}`);
+            }
+            await this.logger.info(`Registered controller ${controller.name}`);
+        }
+        return totalRoutes;
+    }
+
+    private configureLogging(context: AxiSparkContext): void {
+        const items: [boolean, Constructor][] = [
+            [this.options.logHttpRequests ?? false, LogHttpRequestInterceptor],
+            [this.options.logHttpResponses ?? false, LogHttpResponseInterceptor],
+            [this.options.logHttpErrors ?? false, LogHttpErrorFilter],
+            [this.options.logErrors ?? false, LogErrorFilter],
+        ];
+
+        for (const [enabled, target] of items) {
+            this.disableComponentIf(context, enabled, target);
+        }
+    }
+
+    private disableComponentIf(
+        context: AxiSparkContext,
+        enabled: boolean,
+        target: Constructor,
+    ): void {
+        if (enabled) return;
+    
+        ClassRegistry.remove(target);
+        context.container.unbind(target);
+    }
+
+    async onStart(): Promise<void> {
+        await this.adapter.start();
+        await this.logger.info(`Plugin started. Listening on port ${this.options.port}`);
+    }
+
+    async onStop(): Promise<void> {
+        await this.adapter.stop();
         await this.logger.info(`Plugin stopped`);
     }
 }

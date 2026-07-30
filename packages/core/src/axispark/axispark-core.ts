@@ -1,4 +1,4 @@
-import { Lifecycle } from '@axisparkjs/common/src';
+import { Lifecycle } from '@axisparkjs/common';
 import { PluggableClass, PluginOptions } from '../plugin';
 import { AxiSparkContext } from './axispark-context';
 import { Token } from '@axisparkjs/di';
@@ -22,6 +22,7 @@ export class AxiSparkCore implements Lifecycle {
 
         // Initialization logic here
         await this.axisparkContext.plugins.init(this.axisparkContext);
+        await this.axisparkContext.engine.init();
         await this.axisparkContext.logger.info('App initialized');
     }
 

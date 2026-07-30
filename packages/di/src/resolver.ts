@@ -14,7 +14,7 @@ export class Resolver {
 
         this.resolving.push(type);
         try {
-            const paramTypes: Token[] = Metadata.get(MetadataKeys.DESIGN_PARAM_TYPES, type) || [];
+            const paramTypes: Token[] = Metadata.get(MetadataKeys.DESIGN_PARAM_TYPES, type) ?? [];
             const metadata = Metadata.get<Map<number, Token>>(MetadataKeys.INJECT, type);
             const dependencies = paramTypes.map((paramType, index) => {
                 const token = metadata?.get(index);

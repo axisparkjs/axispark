@@ -2,7 +2,6 @@ import { AxiSparkTestFactory, AxiSparkTestCore } from '@axisparkjs/test';
 import { Logger } from '@axisparkjs/logger';
 import { app } from '@axisparkjs/samples/hello-world/src/app';
 import { HelloWorldPlugin, registerText, startText, stopText } from '@axisparkjs/samples/hello-world/src/plugin';
-import { HelloWorldServie } from '@axisparkjs/samples/hello-world/src/service';
 
 describe('Hello World App', () => {
     let axiSparkCore: AxiSparkTestCore;

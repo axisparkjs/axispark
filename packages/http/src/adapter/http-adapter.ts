@@ -1,9 +1,7 @@
-import { CatchEntry } from '../errors';
-import { RouteEntry } from '../routing/route-entry';
+import { Route } from '../routes/route';
 
 export interface HttpAdapter {
-    registerRoutes(routes: readonly RouteEntry[]): void | Promise<void>;
-    registerCatchs(catchs: readonly CatchEntry[]): void | Promise<void>;
+    registerRoutes(routes: readonly Route[]): void | Promise<void>;
     start(): void | Promise<void>;
     stop(): void | Promise<void>;
 }
