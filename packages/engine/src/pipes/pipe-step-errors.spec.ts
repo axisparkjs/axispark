@@ -1,12 +1,8 @@
-import {
-    PipeStepError,
-    PipeStepParsingError,
-    PipeStepValidationError,
-} from './pipe-step-errors';
+import { PipeStepError, PipeStepParsingError, PipeStepValidationError } from './pipe-step-errors';
 
 describe('Pipe Step Errors', () => {
     const data: any = {
-        parameter: 'id',
+        parameter: 'id'
     };
 
     describe('PipeStepError', () => {
@@ -23,11 +19,7 @@ describe('Pipe Step Errors', () => {
 
     describe('PipeStepParsingError', () => {
         it('should create a parsing error', () => {
-            const error = new PipeStepParsingError(
-                data,
-                'Invalid number',
-                'number',
-            );
+            const error = new PipeStepParsingError(data, 'Invalid number', 'number');
 
             expect(error).toBeInstanceOf(Error);
             expect(error).toBeInstanceOf(PipeStepError);
@@ -35,32 +27,25 @@ describe('Pipe Step Errors', () => {
 
             expect(error.name).toBe('PipeStepParsingError');
             expect(error.data).toBe(data);
-            expect(error.message).toBe(
-                "Parsing failed for 'id' as number: Invalid number",
-            );
+            expect(error.message).toBe("Parsing failed for 'id' as number: Invalid number");
         });
 
         it('should stringify non-string parameters', () => {
             const error = new PipeStepParsingError(
                 {
-                    parameter: Symbol('value'),
+                    parameter: Symbol('value')
                 } as any,
                 'Invalid value',
-                'uuid',
+                'uuid'
             );
 
-            expect(error.message).toBe(
-                "Parsing failed for 'Symbol(value)' as uuid: Invalid value",
-            );
+            expect(error.message).toBe("Parsing failed for 'Symbol(value)' as uuid: Invalid value");
         });
     });
 
     describe('PipeStepValidationError', () => {
         it('should create a validation error', () => {
-            const error = new PipeStepValidationError(
-                data,
-                'Must not be empty',
-            );
+            const error = new PipeStepValidationError(data, 'Must not be empty');
 
             expect(error).toBeInstanceOf(Error);
             expect(error).toBeInstanceOf(PipeStepError);
@@ -68,22 +53,18 @@ describe('Pipe Step Errors', () => {
 
             expect(error.name).toBe('PipeStepValidationError');
             expect(error.data).toBe(data);
-            expect(error.message).toBe(
-                "Validation failed for 'id': Must not be empty",
-            );
+            expect(error.message).toBe("Validation failed for 'id': Must not be empty");
         });
 
         it('should stringify non-string parameters', () => {
             const error = new PipeStepValidationError(
                 {
-                    parameter: 123,
+                    parameter: 123
                 } as any,
-                'Invalid value',
+                'Invalid value'
             );
 
-            expect(error.message).toBe(
-                "Validation failed for '123': Invalid value",
-            );
+            expect(error.message).toBe("Validation failed for '123': Invalid value");
         });
     });
 });

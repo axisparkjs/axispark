@@ -4,11 +4,11 @@ import { Use } from './execution-step-use';
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
         define: jest.fn(),
-        defineMethod: jest.fn(),
+        defineMethod: jest.fn()
     },
     MetadataKeys: {
-        EXECUTION_STEP_USE: 'EXECUTION_STEP_USE',
-    },
+        EXECUTION_STEP_USE: 'EXECUTION_STEP_USE'
+    }
 }));
 
 describe('@Use', () => {
@@ -28,9 +28,9 @@ describe('@Use', () => {
             expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.EXECUTION_STEP_USE,
                 {
-                    targets: [Step1, Step2],
+                    targets: [Step1, Step2]
                 },
-                Controller,
+                Controller
             );
 
             expect(Metadata.defineMethod).not.toHaveBeenCalled();
@@ -51,10 +51,10 @@ describe('@Use', () => {
             expect(Metadata.defineMethod).toHaveBeenCalledWith(
                 MetadataKeys.EXECUTION_STEP_USE,
                 {
-                    targets: [Step1, Step2],
+                    targets: [Step1, Step2]
                 },
                 Controller.prototype,
-                'execute',
+                'execute'
             );
 
             expect(Metadata.define).not.toHaveBeenCalled();
@@ -71,9 +71,9 @@ describe('@Use', () => {
             expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.EXECUTION_STEP_USE,
                 {
-                    targets: [Step],
+                    targets: [Step]
                 },
-                Controller,
+                Controller
             );
         });
 
@@ -84,9 +84,9 @@ describe('@Use', () => {
             expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.EXECUTION_STEP_USE,
                 {
-                    targets: [],
+                    targets: []
                 },
-                Controller,
+                Controller
             );
         });
     });

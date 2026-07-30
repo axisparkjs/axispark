@@ -8,7 +8,7 @@ describe('LogHttpErrorFilter', () => {
 
     beforeEach(() => {
         logger = {
-            info: jest.fn(),
+            info: jest.fn()
         } as unknown as jest.Mocked<Logger>;
 
         filter = new LogHttpErrorFilter(logger);
@@ -20,8 +20,6 @@ describe('LogHttpErrorFilter', () => {
         await filter.httpError(error);
 
         expect(logger.info).toHaveBeenCalledTimes(1);
-        expect(logger.info).toHaveBeenCalledWith(
-            'HTTP Error: 500 Error occurred'
-        );
+        expect(logger.info).toHaveBeenCalledWith('HTTP Error: 500 Error occurred');
     });
 });

@@ -1,4 +1,4 @@
- import { Metadata } from '@axisparkjs/common';
+import { Metadata } from '@axisparkjs/common';
 import { HttpResultProcessor } from './http-result-processor';
 import { HttpResult, BodyHttpResult } from './http-result';
 import { defaultStatusCode, HttpStatusCode, HttpMethod } from '../types';
@@ -62,9 +62,7 @@ describe('HttpResultProcessor', () => {
     it('should use the HTTP_CODE metadata when present', async () => {
         const process = jest.fn();
 
-        (Metadata.get as jest.Mock).mockReturnValue([
-            { method: HttpMethod.GET, propertyKey: 'index' }
-        ]);
+        (Metadata.get as jest.Mock).mockReturnValue([{ method: HttpMethod.GET, propertyKey: 'index' }]);
 
         (Metadata.getMethod as jest.Mock).mockReturnValue(HttpStatusCode.Created);
 
@@ -74,10 +72,7 @@ describe('HttpResultProcessor', () => {
 
         await HttpResultProcessor.process(context, handler, { ok: true });
 
-        expect(BodyHttpResult).toHaveBeenCalledWith(
-            { ok: true },
-            HttpStatusCode.Created
-        );
+        expect(BodyHttpResult).toHaveBeenCalledWith({ ok: true }, HttpStatusCode.Created);
 
         expect(process).toHaveBeenCalledWith(context);
         expect(defaultStatusCode).not.toHaveBeenCalled();
@@ -86,9 +81,7 @@ describe('HttpResultProcessor', () => {
     it('should use the default status code when HTTP_CODE is not defined', async () => {
         const process = jest.fn();
 
-        (Metadata.get as jest.Mock).mockReturnValue([
-            { method: HttpMethod.POST, propertyKey: 'index' }
-        ]);
+        (Metadata.get as jest.Mock).mockReturnValue([{ method: HttpMethod.POST, propertyKey: 'index' }]);
 
         (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
 
@@ -102,10 +95,7 @@ describe('HttpResultProcessor', () => {
 
         expect(defaultStatusCode).toHaveBeenCalledWith(HttpMethod.POST);
 
-        expect(BodyHttpResult).toHaveBeenCalledWith(
-            { ok: true },
-            HttpStatusCode.Created
-        );
+        expect(BodyHttpResult).toHaveBeenCalledWith({ ok: true }, HttpStatusCode.Created);
 
         expect(process).toHaveBeenCalledWith(context);
     });

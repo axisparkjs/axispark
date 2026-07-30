@@ -7,7 +7,7 @@ describe('LogHttpResponseInterceptor', () => {
 
     beforeEach(() => {
         logger = {
-            info: jest.fn(),
+            info: jest.fn()
         } as any;
 
         interceptor = new LogHttpResponseInterceptor(logger);
@@ -16,18 +16,16 @@ describe('LogHttpResponseInterceptor', () => {
     it('should log the HTTP response', async () => {
         const context: any = {
             request: {
-                path: '/users',
+                path: '/users'
             },
             response: {
-                status: 200,
-            },
+                status: 200
+            }
         };
 
         await interceptor.log(context);
 
         expect(logger.info).toHaveBeenCalledTimes(1);
-        expect(logger.info).toHaveBeenCalledWith(
-            'HTTP Response: 200 /users'
-        );
+        expect(logger.info).toHaveBeenCalledWith('HTTP Response: 200 /users');
     });
 });

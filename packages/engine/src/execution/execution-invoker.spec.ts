@@ -4,14 +4,14 @@ import { ExecutionInvoker } from './execution-invoker';
 
 jest.mock('../parameters', () => ({
     ParametersResolver: {
-        resolve: jest.fn(),
-    },
+        resolve: jest.fn()
+    }
 }));
 
 jest.mock('../pipes', () => ({
     PipeExecutor: {
-        execute: jest.fn(),
-    },
+        execute: jest.fn()
+    }
 }));
 
 describe('ExecutionInvoker', () => {
@@ -23,11 +23,11 @@ describe('ExecutionInvoker', () => {
         jest.clearAllMocks();
 
         container = {
-            resolve: jest.fn(),
+            resolve: jest.fn()
         };
 
         core = {
-            container,
+            container
         };
 
         context = {};
@@ -36,7 +36,7 @@ describe('ExecutionInvoker', () => {
     function createHandler(method = 'execute') {
         return {
             target: class Test {},
-            method,
+            method
         };
     }
 
@@ -44,7 +44,7 @@ describe('ExecutionInvoker', () => {
         const execute = jest.fn().mockReturnValue('result');
 
         container.resolve.mockReturnValue({
-            execute,
+            execute
         });
 
         (ParametersResolver.resolve as jest.Mock).mockReturnValue(['value']);
@@ -54,7 +54,7 @@ describe('ExecutionInvoker', () => {
             before: [],
             after: [],
             filters: [],
-            handler: createHandler(),
+            handler: createHandler()
         };
 
         const result = await ExecutionInvoker.invoke(context, core, plan);
@@ -74,12 +74,12 @@ describe('ExecutionInvoker', () => {
 
         container.resolve
             .mockReturnValueOnce({
-                before: () => order.push('before'),
+                before: () => order.push('before')
             })
             .mockReturnValueOnce({
                 execute: () => {
                     order.push('main');
-                },
+                }
             });
 
         (ParametersResolver.resolve as jest.Mock).mockReturnValue([]);
@@ -91,8 +91,8 @@ describe('ExecutionInvoker', () => {
             filters: [],
             handler: {
                 target: Main,
-                method: 'execute',
-            },
+                method: 'execute'
+            }
         });
 
         expect(order).toEqual(['before', 'main']);
@@ -106,10 +106,10 @@ describe('ExecutionInvoker', () => {
 
         container.resolve
             .mockReturnValueOnce({
-                execute: () => order.push('main'),
+                execute: () => order.push('main')
             })
             .mockReturnValueOnce({
-                after: () => order.push('after'),
+                after: () => order.push('after')
             });
 
         (ParametersResolver.resolve as jest.Mock).mockReturnValue([]);
@@ -121,8 +121,8 @@ describe('ExecutionInvoker', () => {
             filters: [],
             handler: {
                 target: Main,
-                method: 'execute',
-            },
+                method: 'execute'
+            }
         });
 
         expect(order).toEqual(['main', 'after']);
@@ -138,10 +138,10 @@ describe('ExecutionInvoker', () => {
             .mockReturnValueOnce({
                 execute: () => {
                     throw new Error('boom');
-                },
+                }
             })
             .mockReturnValueOnce({
-                after,
+                after
             });
 
         (ParametersResolver.resolve as jest.Mock).mockReturnValue([]);
@@ -153,8 +153,8 @@ describe('ExecutionInvoker', () => {
             filters: [],
             handler: {
                 target: Main,
-                method: 'execute',
-            },
+                method: 'execute'
+            }
         });
 
         expect(after).toHaveBeenCalled();
@@ -168,10 +168,10 @@ describe('ExecutionInvoker', () => {
             .mockReturnValueOnce({
                 execute() {
                     throw new TypeError('boom');
-                },
+                }
             })
             .mockReturnValueOnce({
-                catchError: () => 'handled',
+                catchError: () => 'handled'
             });
 
         (ParametersResolver.resolve as jest.Mock).mockReturnValue([]);
@@ -182,17 +182,17 @@ describe('ExecutionInvoker', () => {
             after: [],
             handler: {
                 target: Main,
-                method: 'execute',
+                method: 'execute'
             },
             filters: [
                 {
                     executionHandler: {
                         target: Filter,
-                        method: 'catchError',
+                        method: 'catchError'
                     },
-                    acceptedErrors: [TypeError],
-                },
-            ],
+                    acceptedErrors: [TypeError]
+                }
+            ]
         });
 
         expect(result).toBe('handled');
@@ -205,7 +205,7 @@ describe('ExecutionInvoker', () => {
         container.resolve.mockReturnValue({
             execute() {
                 throw new TypeError();
-            },
+            }
         });
 
         (ParametersResolver.resolve as jest.Mock).mockReturnValue([]);
@@ -216,14 +216,14 @@ describe('ExecutionInvoker', () => {
             after: [],
             handler: {
                 target: Main,
-                method: 'execute',
+                method: 'execute'
             },
             filters: [
                 {
                     executionHandler: createHandler('filter'),
-                    acceptedErrors: [ReferenceError],
-                },
-            ],
+                    acceptedErrors: [ReferenceError]
+                }
+            ]
         });
 
         expect(result).toBeUndefined();
@@ -238,13 +238,13 @@ describe('ExecutionInvoker', () => {
             .mockReturnValueOnce({
                 execute() {
                     throw new TypeError();
-                },
+                }
             })
             .mockReturnValueOnce({
-                filter: () => undefined,
+                filter: () => undefined
             })
             .mockReturnValueOnce({
-                filter: () => 'handled',
+                filter: () => 'handled'
             });
 
         (ParametersResolver.resolve as jest.Mock).mockReturnValue([]);
@@ -255,24 +255,24 @@ describe('ExecutionInvoker', () => {
             after: [],
             handler: {
                 target: Main,
-                method: 'execute',
+                method: 'execute'
             },
             filters: [
                 {
                     executionHandler: {
                         target: Filter1,
-                        method: 'filter',
+                        method: 'filter'
                     },
-                    acceptedErrors: [TypeError],
+                    acceptedErrors: [TypeError]
                 },
                 {
                     executionHandler: {
                         target: Filter2,
-                        method: 'filter',
+                        method: 'filter'
                     },
-                    acceptedErrors: [TypeError],
-                },
-            ],
+                    acceptedErrors: [TypeError]
+                }
+            ]
         });
 
         expect(result).toBe('handled');
@@ -282,7 +282,7 @@ describe('ExecutionInvoker', () => {
         const execute = jest.fn();
 
         container.resolve.mockReturnValue({
-            execute,
+            execute
         });
 
         (ParametersResolver.resolve as jest.Mock).mockReturnValue(['a', 'b']);
@@ -292,7 +292,7 @@ describe('ExecutionInvoker', () => {
             before: [],
             after: [],
             filters: [],
-            handler: createHandler(),
+            handler: createHandler()
         });
 
         expect(execute).toHaveBeenCalledWith('x', 'y');

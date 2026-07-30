@@ -24,37 +24,17 @@ class ExecutionStepsGeneratorStatic implements Generator<ExecutionStep[]>, Initi
     }
 
     private getTargets(handler: ExecutionHandler): Constructor[] {
-        const classMetadata =
-            Metadata.get<ExecutionStepUseMetadata>(
-                MetadataKeys.EXECUTION_STEP_USE,
-                handler.target
-            );
+        const classMetadata = Metadata.get<ExecutionStepUseMetadata>(MetadataKeys.EXECUTION_STEP_USE, handler.target);
 
-        const methodMetadata =
-            Metadata.getMethod<ExecutionStepUseMetadata>(
-                MetadataKeys.EXECUTION_STEP_USE,
-                handler.target,
-                handler.method
-            );
+        const methodMetadata = Metadata.getMethod<ExecutionStepUseMetadata>(MetadataKeys.EXECUTION_STEP_USE, handler.target, handler.method);
 
-        return [
-            ...(classMetadata?.targets ?? []),
-            ...(methodMetadata?.targets ?? []),
-        ];
+        return [...(classMetadata?.targets ?? []), ...(methodMetadata?.targets ?? [])];
     }
 
     private buildSteps(target: Constructor, global: boolean): ExecutionStep[] {
-        const targetMetadata =
-            Metadata.get<ExecutionStepTargetMetadata[]>(
-                MetadataKeys.EXECUTION_STEP_TARGET,
-                target
-            ) ?? [];
+        const targetMetadata = Metadata.get<ExecutionStepTargetMetadata[]>(MetadataKeys.EXECUTION_STEP_TARGET, target) ?? [];
 
-        const methodMetadata =
-            Metadata.get<ExecutionStepMethodMetadata[]>(
-                MetadataKeys.EXECUTION_STEP_METHOD,
-                target
-            ) ?? [];
+        const methodMetadata = Metadata.get<ExecutionStepMethodMetadata[]>(MetadataKeys.EXECUTION_STEP_METHOD, target) ?? [];
 
         const steps: ExecutionStep[] = [];
 
@@ -72,7 +52,7 @@ class ExecutionStepsGeneratorStatic implements Generator<ExecutionStep[]>, Initi
                     ...method,
                     global,
                     transport: metadata.transport,
-                    priority: global ? metadata.priority : 0,
+                    priority: global ? metadata.priority : 0
                 });
             }
         }

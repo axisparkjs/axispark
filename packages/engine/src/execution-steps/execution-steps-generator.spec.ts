@@ -9,13 +9,13 @@ jest.mock('@axisparkjs/common', () => ({
         get: jest.fn(),
         getMethod: jest.fn(),
         define: jest.fn(),
-        defineMethod: jest.fn(),
+        defineMethod: jest.fn()
     },
     MetadataKeys: {
         EXECUTION_STEP_TARGET: 'EXECUTION_STEP_TARGET',
         EXECUTION_STEP_METHOD: 'EXECUTION_STEP_METHOD',
-        EXECUTION_STEP_USE: 'EXECUTION_STEP_USE',
-    },
+        EXECUTION_STEP_USE: 'EXECUTION_STEP_USE'
+    }
 }));
 
 jest.mock('@axisparkjs/di', () => {
@@ -23,8 +23,8 @@ jest.mock('@axisparkjs/di', () => {
     return {
         ...originalModule,
         ClassRegistry: {
-            getWithMetadata: jest.fn(),
-        },
+            getWithMetadata: jest.fn()
+        }
     };
 });
 
@@ -37,9 +37,7 @@ describe('ExecutionStepsGenerator', () => {
         it('should register global execution steps', () => {
             class GlobalStep {}
 
-            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([
-                GlobalStep,
-            ]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([GlobalStep]);
 
             (Metadata.get as jest.Mock)
                 // EXECUTION_STEP_TARGET
@@ -48,23 +46,23 @@ describe('ExecutionStepsGenerator', () => {
                         type: ExecutionStepType.Middleware,
                         global: true,
                         priority: 100,
-                        transport: ExecutionTransport.All,
-                    },
+                        transport: ExecutionTransport.All
+                    }
                 ])
                 // EXECUTION_STEP_METHOD
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Middleware,
                         target: GlobalStep,
-                        propertyKey: 'execute',
-                    },
+                        propertyKey: 'execute'
+                    }
                 ]);
 
             ExecutionStepsGenerator.init();
 
             const steps = ExecutionStepsGenerator.generate({
                 target: class Controller {},
-                method: 'find',
+                method: 'find'
             });
 
             expect(steps).toEqual([
@@ -74,8 +72,8 @@ describe('ExecutionStepsGenerator', () => {
                     transport: ExecutionTransport.All,
                     type: ExecutionStepType.Middleware,
                     target: GlobalStep,
-                    propertyKey: 'execute',
-                },
+                    propertyKey: 'execute'
+                }
             ]);
         });
 
@@ -90,22 +88,22 @@ describe('ExecutionStepsGenerator', () => {
                         type: ExecutionStepType.Guard,
                         global: false,
                         priority: 10,
-                        transport: ExecutionTransport.All,
-                    },
+                        transport: ExecutionTransport.All
+                    }
                 ])
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Guard,
                         target: Step,
-                        propertyKey: 'check',
-                    },
+                        propertyKey: 'check'
+                    }
                 ]);
 
             ExecutionStepsGenerator.init();
 
             const steps = ExecutionStepsGenerator.generate({
                 target: class {},
-                method: 'find',
+                method: 'find'
             });
 
             expect(steps).toEqual([]);
@@ -125,30 +123,30 @@ describe('ExecutionStepsGenerator', () => {
             (Metadata.get as jest.Mock)
                 // class @Use
                 .mockReturnValueOnce({
-                    targets: [LocalStep],
+                    targets: [LocalStep]
                 })
                 // EXECUTION_STEP_TARGET
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Guard,
                         global: false,
-                        transport: ExecutionTransport.Http,
-                    },
+                        transport: ExecutionTransport.Http
+                    }
                 ])
                 // EXECUTION_STEP_METHOD
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Guard,
                         target: LocalStep,
-                        propertyKey: 'check',
-                    },
+                        propertyKey: 'check'
+                    }
                 ]);
 
             (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
 
             const result = ExecutionStepsGenerator.generate({
                 target: Controller,
-                method: 'find',
+                method: 'find'
             });
 
             expect(result).toEqual([
@@ -158,8 +156,8 @@ describe('ExecutionStepsGenerator', () => {
                     transport: ExecutionTransport.Http,
                     type: ExecutionStepType.Guard,
                     target: LocalStep,
-                    propertyKey: 'check',
-                },
+                    propertyKey: 'check'
+                }
             ]);
         });
 
@@ -170,27 +168,22 @@ describe('ExecutionStepsGenerator', () => {
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
-                    targets: [Step1],
+                    targets: [Step1]
                 })
                 .mockReturnValueOnce(undefined)
                 .mockReturnValueOnce(undefined)
                 .mockReturnValueOnce(undefined);
 
-            (Metadata.getMethod as jest.Mock)
-                .mockReturnValueOnce({
-                    targets: [Step2],
-                });
+            (Metadata.getMethod as jest.Mock).mockReturnValueOnce({
+                targets: [Step2]
+            });
 
             const result = ExecutionStepsGenerator.generate({
                 target: Controller,
-                method: 'find',
+                method: 'find'
             });
 
-            expect(Metadata.getMethod).toHaveBeenCalledWith(
-                MetadataKeys.EXECUTION_STEP_USE,
-                Controller,
-                'find',
-            );
+            expect(Metadata.getMethod).toHaveBeenCalledWith(MetadataKeys.EXECUTION_STEP_USE, Controller, 'find');
 
             expect(result).toEqual([]);
         });
@@ -201,28 +194,28 @@ describe('ExecutionStepsGenerator', () => {
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
-                    targets: [Step],
+                    targets: [Step]
                 })
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Guard,
                         global: false,
-                        transport: ExecutionTransport.All,
-                    },
+                        transport: ExecutionTransport.All
+                    }
                 ])
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Middleware,
                         target: Step,
-                        propertyKey: 'execute',
-                    },
+                        propertyKey: 'execute'
+                    }
                 ]);
 
             (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
 
             const result = ExecutionStepsGenerator.generate({
                 target: Controller,
-                method: 'find',
+                method: 'find'
             });
 
             expect(result).toEqual([]);
@@ -233,9 +226,7 @@ describe('ExecutionStepsGenerator', () => {
             class LocalStep {}
             class Controller {}
 
-            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([
-                GlobalStep,
-            ]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([GlobalStep]);
 
             (Metadata.get as jest.Mock)
                 // init - target metadata
@@ -244,36 +235,36 @@ describe('ExecutionStepsGenerator', () => {
                         type: ExecutionStepType.Middleware,
                         global: true,
                         priority: 10,
-                        transport: ExecutionTransport.All,
-                    },
+                        transport: ExecutionTransport.All
+                    }
                 ])
                 // init - method metadata
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Middleware,
                         target: GlobalStep,
-                        propertyKey: 'before',
-                    },
+                        propertyKey: 'before'
+                    }
                 ])
                 // generate - @Use
                 .mockReturnValueOnce({
-                    targets: [LocalStep],
+                    targets: [LocalStep]
                 })
                 // generate - target metadata
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Guard,
                         global: false,
-                        transport: ExecutionTransport.Http,
-                    },
+                        transport: ExecutionTransport.Http
+                    }
                 ])
                 // generate - method metadata
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Guard,
                         target: LocalStep,
-                        propertyKey: 'check',
-                    },
+                        propertyKey: 'check'
+                    }
                 ]);
 
             (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
@@ -282,7 +273,7 @@ describe('ExecutionStepsGenerator', () => {
 
             const result = ExecutionStepsGenerator.generate({
                 target: Controller,
-                method: 'find',
+                method: 'find'
             });
 
             expect(result).toHaveLength(2);

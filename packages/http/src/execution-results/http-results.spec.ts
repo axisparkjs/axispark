@@ -30,8 +30,7 @@ describe('HttpResults', () => {
         });
 
         it('should create an Accepted result', () => {
-            expect(HttpResults.Accepted({}))
-                .toBeInstanceOf(BodyHttpResult);
+            expect(HttpResults.Accepted({})).toBeInstanceOf(BodyHttpResult);
         });
 
         it('should create a NoContent result', () => {
@@ -45,20 +44,17 @@ describe('HttpResults', () => {
 
     describe('redirect results', () => {
         it('should create a temporary redirect', () => {
-            expect(HttpResults.Redirect('/login'))
-                .toBeInstanceOf(RedirectHttpResult);
+            expect(HttpResults.Redirect('/login')).toBeInstanceOf(RedirectHttpResult);
         });
 
         it('should create a permanent redirect', () => {
-            expect(HttpResults.PermanentRedirect('/login'))
-                .toBeInstanceOf(RedirectHttpResult);
+            expect(HttpResults.PermanentRedirect('/login')).toBeInstanceOf(RedirectHttpResult);
         });
     });
 
     describe('file results', () => {
         it('should create a file result', () => {
-            expect(HttpResults.File('/tmp/file.txt'))
-                .toBeInstanceOf(FileHttpResult);
+            expect(HttpResults.File('/tmp/file.txt')).toBeInstanceOf(FileHttpResult);
         });
 
         it('should create a file result with content type', () => {
@@ -69,15 +65,13 @@ describe('HttpResults', () => {
         });
 
         it('should create a download result', () => {
-            expect(HttpResults.Download('/tmp/file.txt', 'file.txt'))
-                .toBeInstanceOf(FileHttpResult);
+            expect(HttpResults.Download('/tmp/file.txt', 'file.txt')).toBeInstanceOf(FileHttpResult);
         });
 
         it('should create a stream result', () => {
             const stream = {} as NodeJS.ReadableStream;
 
-            expect(HttpResults.Stream(stream))
-                .toBeInstanceOf(StreamHttpResult);
+            expect(HttpResults.Stream(stream)).toBeInstanceOf(StreamHttpResult);
         });
     });
 
@@ -87,7 +81,7 @@ describe('HttpResults', () => {
             ['Unauthorized', HttpStatusCode.Unauthorized],
             ['Forbidden', HttpStatusCode.Forbidden],
             ['NotFound', HttpStatusCode.NotFound],
-            ['InternalServerError', HttpStatusCode.InternalServerError],
+            ['InternalServerError', HttpStatusCode.InternalServerError]
         ])('should create %s', (method, status) => {
             const result = (HttpResults as any)[method]('error');
 

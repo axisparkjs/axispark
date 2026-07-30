@@ -25,7 +25,7 @@ describe('ExecutionResult', () => {
     it('should preserve generic value type', () => {
         const value = {
             id: 1,
-            name: 'John',
+            name: 'John'
         };
 
         const result = new TestExecutionResult(value, 200);

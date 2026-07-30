@@ -7,7 +7,7 @@ describe('LogErrorFilter', () => {
 
     beforeEach(() => {
         logger = {
-            info: jest.fn(),
+            info: jest.fn()
         } as any;
 
         filter = new LogErrorFilter(logger);
@@ -19,8 +19,6 @@ describe('LogErrorFilter', () => {
         await filter.error(error);
 
         expect(logger.info).toHaveBeenCalledTimes(1);
-        expect(logger.info).toHaveBeenCalledWith(
-            'Error during execution: TypeError -> Invalid value'
-        );
+        expect(logger.info).toHaveBeenCalledWith('Error during execution: TypeError -> Invalid value');
     });
 });

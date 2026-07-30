@@ -97,9 +97,7 @@ describe('PipeExecutor', () => {
             }
         ]);
 
-        container.resolve
-            .mockReturnValueOnce(new TrimStep())
-            .mockReturnValueOnce(new UpperStep());
+        container.resolve.mockReturnValueOnce(new TrimStep()).mockReturnValueOnce(new UpperStep());
 
         context.args = ['  john  '];
 
@@ -109,7 +107,7 @@ describe('PipeExecutor', () => {
     });
 
     it('should pass parameters to the pipe step', () => {
-        const execute = jest.fn(v => v);
+        const execute = jest.fn((v) => v);
 
         class Step implements PipeStep {
             execute = execute;
@@ -139,15 +137,11 @@ describe('PipeExecutor', () => {
 
         PipeExecutor.execute(context, handler, core);
 
-        expect(execute).toHaveBeenCalledWith(
-            5,
-            expect.any(Object),
-            parameters
-        );
+        expect(execute).toHaveBeenCalledWith(5, expect.any(Object), parameters);
     });
 
     it('should pass execution context to the pipe step', () => {
-        const execute = jest.fn(v => v);
+        const execute = jest.fn((v) => v);
 
         class Step implements PipeStep {
             execute = execute;
@@ -203,8 +197,6 @@ describe('PipeExecutor', () => {
 
         context.args = ['5'];
 
-        expect(() =>
-            PipeExecutor.execute(context, handler, core)
-        ).toThrow('boom');
+        expect(() => PipeExecutor.execute(context, handler, core)).toThrow('boom');
     });
 });

@@ -8,11 +8,11 @@ jest.mock('@axisparkjs/common', () => ({
         get: jest.fn(),
         getMethod: jest.fn(),
         define: jest.fn(),
-        defineMethod: jest.fn(),
+        defineMethod: jest.fn()
     },
     MetadataKeys: {
-        PIPE: 'PIPE',
-    },
+        PIPE: 'PIPE'
+    }
 }));
 
 class TestPipe implements PipeStep {
@@ -43,20 +43,17 @@ describe('@Pipe', () => {
             @Pipe(TestPipe)
             class Controller {}
 
-            expect(Metadata.get).toHaveBeenCalledWith(
-                MetadataKeys.PIPE,
-                Controller,
-            );
+            expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.PIPE, Controller);
 
             expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.PIPE,
                 [
                     {
                         scope: PipeScope.Class,
-                        steps: [TestPipe],
-                    },
+                        steps: [TestPipe]
+                    }
                 ],
-                Controller,
+                Controller
             );
         });
 
@@ -64,8 +61,8 @@ describe('@Pipe', () => {
             (Metadata.get as jest.Mock).mockReturnValue([
                 {
                     scope: PipeScope.Class,
-                    steps: [ExistingPipe],
-                },
+                    steps: [ExistingPipe]
+                }
             ]);
 
             @Pipe(NewPipe)
@@ -76,14 +73,14 @@ describe('@Pipe', () => {
                 [
                     {
                         scope: PipeScope.Class,
-                        steps: [ExistingPipe],
+                        steps: [ExistingPipe]
                     },
                     {
                         scope: PipeScope.Class,
-                        steps: [NewPipe],
-                    },
+                        steps: [NewPipe]
+                    }
                 ],
-                Controller,
+                Controller
             );
         });
     });
@@ -97,11 +94,7 @@ describe('@Pipe', () => {
                 method() {}
             }
 
-            expect(Metadata.getMethod).toHaveBeenCalledWith(
-                MetadataKeys.PIPE,
-                Controller.prototype,
-                'method',
-            );
+            expect(Metadata.getMethod).toHaveBeenCalledWith(MetadataKeys.PIPE, Controller.prototype, 'method');
 
             expect(Metadata.defineMethod).toHaveBeenCalledWith(
                 MetadataKeys.PIPE,
@@ -109,11 +102,11 @@ describe('@Pipe', () => {
                     {
                         scope: PipeScope.Method,
                         propertyKey: 'method',
-                        steps: [TestPipe],
-                    },
+                        steps: [TestPipe]
+                    }
                 ],
                 Controller.prototype,
-                'method',
+                'method'
             );
         });
 
@@ -122,8 +115,8 @@ describe('@Pipe', () => {
                 {
                     scope: PipeScope.Method,
                     propertyKey: 'method',
-                    steps: [ExistingPipe],
-                },
+                    steps: [ExistingPipe]
+                }
             ]);
 
             class Controller {
@@ -137,16 +130,16 @@ describe('@Pipe', () => {
                     {
                         scope: PipeScope.Method,
                         propertyKey: 'method',
-                        steps: [ExistingPipe],
+                        steps: [ExistingPipe]
                     },
                     {
                         scope: PipeScope.Method,
                         propertyKey: 'method',
-                        steps: [NewPipe],
-                    },
+                        steps: [NewPipe]
+                    }
                 ],
                 Controller.prototype,
-                'method',
+                'method'
             );
         });
     });
@@ -166,11 +159,11 @@ describe('@Pipe', () => {
                         scope: PipeScope.Parameter,
                         propertyKey: 'method',
                         index: 0,
-                        steps: [TestPipe],
-                    },
+                        steps: [TestPipe]
+                    }
                 ],
                 Controller.prototype,
-                'method',
+                'method'
             );
         });
 
@@ -180,8 +173,8 @@ describe('@Pipe', () => {
                     scope: PipeScope.Parameter,
                     propertyKey: 'method',
                     index: 0,
-                    steps: [ExistingPipe],
-                },
+                    steps: [ExistingPipe]
+                }
             ]);
 
             class Controller {
@@ -195,17 +188,17 @@ describe('@Pipe', () => {
                         scope: PipeScope.Parameter,
                         propertyKey: 'method',
                         index: 0,
-                        steps: [ExistingPipe],
+                        steps: [ExistingPipe]
                     },
                     {
                         scope: PipeScope.Parameter,
                         propertyKey: 'method',
                         index: 0,
-                        steps: [NewPipe],
-                    },
+                        steps: [NewPipe]
+                    }
                 ],
                 Controller.prototype,
-                'method',
+                'method'
             );
         });
     });
@@ -217,8 +210,8 @@ describe('@Pipe', () => {
             @Pipe({
                 pipeStep: TestPipe,
                 pipeStepParameters: {
-                    value: 'test',
-                } as any,
+                    value: 'test'
+                } as any
             })
             class Controller {}
 
@@ -231,13 +224,13 @@ describe('@Pipe', () => {
                             {
                                 pipeStep: TestPipe,
                                 pipeStepParameters: {
-                                    value: 'test',
-                                },
-                            },
-                        ],
-                    },
+                                    value: 'test'
+                                }
+                            }
+                        ]
+                    }
                 ],
-                Controller,
+                Controller
             );
         });
     });

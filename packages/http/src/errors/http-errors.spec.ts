@@ -90,7 +90,7 @@ describe('HTTP errors', () => {
         [GatewayTimeoutError, HttpStatusCode.GatewayTimeout],
         [HttpVersionNotSupportedError, HttpStatusCode.HttpVersionNotSupported],
         [InsufficientStorageError, HttpStatusCode.InsufficientStorage],
-        [LoopDetectedError, HttpStatusCode.LoopDetected],
+        [LoopDetectedError, HttpStatusCode.LoopDetected]
     ])('should create %p', (ErrorClass, status) => {
         const options = {
             cause: new Error(),

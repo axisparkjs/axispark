@@ -1,22 +1,16 @@
 import { Metadata, MetadataKeys } from '@axisparkjs/common';
-import {
-    Handle,
-    Check,
-    Before,
-    After,
-    Catch,
-} from './execution-step-method';
+import { Handle, Check, Before, After, Catch } from './execution-step-method';
 import { ExecutionStepType } from '../execution-step-type';
 import { ExecutionStepScope } from '../execution-step-scope';
 
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
         get: jest.fn(),
-        define: jest.fn(),
+        define: jest.fn()
     },
     MetadataKeys: {
-        EXECUTION_STEP_METHOD: 'EXECUTION_STEP_METHOD',
-    },
+        EXECUTION_STEP_METHOD: 'EXECUTION_STEP_METHOD'
+    }
 }));
 
 describe('Execution step decorators', () => {
@@ -30,45 +24,42 @@ describe('Execution step decorators', () => {
             'Handle',
             Handle,
             {
-                type: ExecutionStepType.Middleware,
-            },
+                type: ExecutionStepType.Middleware
+            }
         ],
         [
             'Check',
             Check,
             {
-                type: ExecutionStepType.Guard,
-            },
+                type: ExecutionStepType.Guard
+            }
         ],
         [
             'Before',
             Before,
             {
                 type: ExecutionStepType.Interceptor,
-                scope: ExecutionStepScope.Before,
-            },
+                scope: ExecutionStepScope.Before
+            }
         ],
         [
             'After',
             After,
             {
                 type: ExecutionStepType.Interceptor,
-                scope: ExecutionStepScope.After,
-            },
-        ],
+                scope: ExecutionStepScope.After
+            }
+        ]
     ])('%s', (_, decoratorFactory, expected) => {
         it('should register execution step metadata', () => {
             (Metadata.get as jest.Mock).mockReturnValue(undefined);
-            
+
             class TestClass {
                 @decoratorFactory()
                 execute() {}
             }
 
-            expect(Metadata.get).toHaveBeenCalledWith(
-                MetadataKeys.EXECUTION_STEP_METHOD,
-                TestClass.prototype,
-            );
+            expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.EXECUTION_STEP_METHOD, TestClass.prototype);
 
             expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.EXECUTION_STEP_METHOD,
@@ -76,18 +67,18 @@ describe('Execution step decorators', () => {
                     expect.objectContaining({
                         ...expected,
                         target: TestClass,
-                        propertyKey: 'execute',
-                    }),
+                        propertyKey: 'execute'
+                    })
                 ],
-                TestClass.prototype,
+                TestClass.prototype
             );
         });
 
         it('should append existing metadata', () => {
             (Metadata.get as jest.Mock).mockReturnValue([
                 {
-                    propertyKey: 'existing',
-                },
+                    propertyKey: 'existing'
+                }
             ]);
 
             class TestClass {
@@ -99,15 +90,15 @@ describe('Execution step decorators', () => {
                 MetadataKeys.EXECUTION_STEP_METHOD,
                 [
                     {
-                        propertyKey: 'existing',
+                        propertyKey: 'existing'
                     },
                     expect.objectContaining({
                         ...expected,
                         target: TestClass,
-                        propertyKey: 'execute',
-                    }),
+                        propertyKey: 'execute'
+                    })
                 ],
-                TestClass.prototype,
+                TestClass.prototype
             );
         });
     });
@@ -126,10 +117,10 @@ describe('Execution step decorators', () => {
                         type: ExecutionStepType.Filter,
                         acceptedErrors: [TypeError, RangeError],
                         target: TestClass,
-                        propertyKey: 'execute',
-                    }),
+                        propertyKey: 'execute'
+                    })
                 ],
-                TestClass.prototype,
+                TestClass.prototype
             );
         });
 
@@ -144,10 +135,10 @@ describe('Execution step decorators', () => {
                 [
                     expect.objectContaining({
                         type: ExecutionStepType.Filter,
-                        acceptedErrors: [],
-                    }),
+                        acceptedErrors: []
+                    })
                 ],
-                TestClass.prototype,
+                TestClass.prototype
             );
         });
     });

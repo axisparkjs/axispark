@@ -55,7 +55,7 @@ export class HttpPlugin implements Pluggable {
             [this.options.logHttpRequests ?? false, LogHttpRequestInterceptor],
             [this.options.logHttpResponses ?? false, LogHttpResponseInterceptor],
             [this.options.logHttpErrors ?? false, LogHttpErrorFilter],
-            [this.options.logErrors ?? false, LogErrorFilter],
+            [this.options.logErrors ?? false, LogErrorFilter]
         ];
 
         for (const [enabled, target] of items) {
@@ -63,13 +63,9 @@ export class HttpPlugin implements Pluggable {
         }
     }
 
-    private disableComponentIf(
-        context: AxiSparkContext,
-        enabled: boolean,
-        target: Constructor,
-    ): void {
+    private disableComponentIf(context: AxiSparkContext, enabled: boolean, target: Constructor): void {
         if (enabled) return;
-    
+
         ClassRegistry.remove(target);
         context.container.unbind(target);
     }

@@ -9,7 +9,7 @@ jest.mock('@axisparkjs/common', () => {
         Metadata: {
             define: jest.fn()
         }
-    }
+    };
 });
 
 jest.mock('@axisparkjs/di', () => ({
@@ -41,11 +41,7 @@ describe('Controller decorator', () => {
         @Controller()
         class TestController {}
 
-        expect(Metadata.define).toHaveBeenCalledWith(
-            MetadataKeys.CONTROLLER,
-            { prefix: '' },
-            TestController
-        );
+        expect(Metadata.define).toHaveBeenCalledWith(MetadataKeys.CONTROLLER, { prefix: '' }, TestController);
     });
 
     it('should define controller metadata with the provided prefix', () => {
@@ -56,10 +52,6 @@ describe('Controller decorator', () => {
         @Controller('/users')
         class TestController {}
 
-        expect(Metadata.define).toHaveBeenCalledWith(
-            MetadataKeys.CONTROLLER,
-            { prefix: '/users' },
-            TestController
-        );
+        expect(Metadata.define).toHaveBeenCalledWith(MetadataKeys.CONTROLLER, { prefix: '/users' }, TestController);
     });
 });

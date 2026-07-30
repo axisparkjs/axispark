@@ -9,7 +9,7 @@ describe('ContextResolver', () => {
         const resolver = new ContextResolver();
         const context = {
             transport: 'http',
-            request: {},
+            request: {}
         } as any;
 
         expect(resolver.resolve(context)).toBe(context);

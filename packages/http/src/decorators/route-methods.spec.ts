@@ -27,16 +27,9 @@ describe('Method decorators', () => {
             index() {}
         }
 
-        Get('/users')(
-            TestController.prototype,
-            'index',
-            Object.getOwnPropertyDescriptor(TestController.prototype, 'index') as PropertyDescriptor
-        );
+        Get('/users')(TestController.prototype, 'index', Object.getOwnPropertyDescriptor(TestController.prototype, 'index') as PropertyDescriptor);
 
-        expect(Metadata.get).toHaveBeenCalledWith(
-            MetadataKeys.ROUTE,
-            TestController.prototype
-        );
+        expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.ROUTE, TestController.prototype);
 
         expect(Metadata.define).toHaveBeenCalledWith(
             MetadataKeys.ROUTE,
@@ -66,11 +59,7 @@ describe('Method decorators', () => {
             update() {}
         }
 
-        Put('/:id')(
-            TestController.prototype,
-            'update',
-            Object.getOwnPropertyDescriptor(TestController.prototype, 'update') as PropertyDescriptor
-        );
+        Put('/:id')(TestController.prototype, 'update', Object.getOwnPropertyDescriptor(TestController.prototype, 'update') as PropertyDescriptor);
 
         expect(Metadata.define).toHaveBeenCalledWith(
             MetadataKeys.ROUTE,
@@ -105,11 +94,7 @@ describe('Method decorators', () => {
             handler() {}
         }
 
-        decorator()(
-            TestController.prototype,
-            'handler',
-            Object.getOwnPropertyDescriptor(TestController.prototype, 'handler') as PropertyDescriptor
-        );
+        decorator()(TestController.prototype, 'handler', Object.getOwnPropertyDescriptor(TestController.prototype, 'handler') as PropertyDescriptor);
 
         expect(Metadata.define).toHaveBeenLastCalledWith(
             MetadataKeys.ROUTE,

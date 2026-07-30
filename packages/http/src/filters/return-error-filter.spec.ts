@@ -5,8 +5,8 @@ import { HttpStatusCode } from '../types/http-status-code';
 
 jest.mock('../execution-results/http-results', () => ({
     HttpResults: {
-        Error: jest.fn(),
-    },
+        Error: jest.fn()
+    }
 }));
 
 describe('ReturnErrorFilter', () => {

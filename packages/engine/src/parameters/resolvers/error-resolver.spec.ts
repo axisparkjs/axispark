@@ -10,7 +10,7 @@ describe('ErrorResolver', () => {
         const error = new Error('boom');
 
         const context = {
-            error,
+            error
         } as any;
 
         expect(resolver.resolve(context)).toBe(error);

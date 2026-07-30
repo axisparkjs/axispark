@@ -4,11 +4,11 @@ import { Parameter } from './parameter';
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
         getMethod: jest.fn(),
-        defineMethod: jest.fn(),
+        defineMethod: jest.fn()
     },
     MetadataKeys: {
-        PARAMETER: 'PARAMETER',
-    },
+        PARAMETER: 'PARAMETER'
+    }
 }));
 
 describe('Parameter', () => {
@@ -27,11 +27,7 @@ describe('Parameter', () => {
             method(@TestParameter('id') _value: unknown) {}
         }
 
-        expect(Metadata.getMethod).toHaveBeenCalledWith(
-            MetadataKeys.PARAMETER,
-            Controller.prototype,
-            'method',
-        );
+        expect(Metadata.getMethod).toHaveBeenCalledWith(MetadataKeys.PARAMETER, Controller.prototype, 'method');
 
         expect(Metadata.defineMethod).toHaveBeenCalledWith(
             MetadataKeys.PARAMETER,
@@ -41,11 +37,11 @@ describe('Parameter', () => {
                     name: 'id',
                     index: 0,
                     propertyKey: 'method',
-                    target: Controller.prototype,
-                },
+                    target: Controller.prototype
+                }
             ],
             Controller.prototype,
-            'method',
+            'method'
         );
     });
 
@@ -62,11 +58,11 @@ describe('Parameter', () => {
                     name: undefined,
                     index: 0,
                     propertyKey: 'method',
-                    target: Controller.prototype,
-                },
+                    target: Controller.prototype
+                }
             ],
             Controller.prototype,
-            'method',
+            'method'
         );
     });
 
@@ -77,15 +73,12 @@ describe('Parameter', () => {
                 name: 'foo',
                 index: 0,
                 propertyKey: 'method',
-                target: {},
-            },
+                target: {}
+            }
         ]);
 
         class Controller {
-            method(
-                _first: string,
-                @TestParameter('id') _second: unknown,
-            ) {}
+            method(_first: string, @TestParameter('id') _second: unknown) {}
         }
 
         expect(Metadata.defineMethod).toHaveBeenCalledWith(
@@ -96,39 +89,35 @@ describe('Parameter', () => {
                     name: 'foo',
                     index: 0,
                     propertyKey: 'method',
-                    target: {},
+                    target: {}
                 },
                 {
                     parameter: TestParameterName,
                     name: 'id',
                     index: 1,
                     propertyKey: 'method',
-                    target: Controller.prototype,
-                },
+                    target: Controller.prototype
+                }
             ],
             Controller.prototype,
-            'method',
+            'method'
         );
     });
 
     it('should store the correct parameter index', () => {
         class Controller {
-            method(
-                _first: string,
-                @TestParameter() _second: unknown,
-                _third: string,
-            ) {}
+            method(_first: string, @TestParameter() _second: unknown, _third: string) {}
         }
 
         expect(Metadata.defineMethod).toHaveBeenCalledWith(
             MetadataKeys.PARAMETER,
             [
                 expect.objectContaining({
-                    index: 1,
-                }),
+                    index: 1
+                })
             ],
             Controller.prototype,
-            'method',
+            'method'
         );
     });
 });

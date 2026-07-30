@@ -7,7 +7,7 @@ describe('LogHttpRequestInterceptor', () => {
 
     beforeEach(() => {
         logger = {
-            info: jest.fn(),
+            info: jest.fn()
         } as any;
 
         interceptor = new LogHttpRequestInterceptor(logger);
@@ -17,15 +17,13 @@ describe('LogHttpRequestInterceptor', () => {
         const context: any = {
             request: {
                 method: 'GET',
-                path: '/users',
-            },
+                path: '/users'
+            }
         };
 
         await interceptor.log(context);
 
         expect(logger.info).toHaveBeenCalledTimes(1);
-        expect(logger.info).toHaveBeenCalledWith(
-            'HTTP Request: GET /users'
-        );
+        expect(logger.info).toHaveBeenCalledWith('HTTP Request: GET /users');
     });
 });

@@ -47,22 +47,11 @@ describe('BodyHttpResult', () => {
     });
 
     it('should write headers', async () => {
-        await new BodyHttpResult({}, HttpStatusCode.Ok)
-            .header('Content-Type', 'application/json')
-            .header('X-Test', 'true')
-            .process(context);
+        await new BodyHttpResult({}, HttpStatusCode.Ok).header('Content-Type', 'application/json').header('X-Test', 'true').process(context);
 
-        expect(response.header).toHaveBeenNthCalledWith(
-            1,
-            'Content-Type',
-            'application/json'
-        );
+        expect(response.header).toHaveBeenNthCalledWith(1, 'Content-Type', 'application/json');
 
-        expect(response.header).toHaveBeenNthCalledWith(
-            2,
-            'X-Test',
-            'true'
-        );
+        expect(response.header).toHaveBeenNthCalledWith(2, 'X-Test', 'true');
     });
 
     it('should return itself from header()', () => {
@@ -101,15 +90,9 @@ describe('FileHttpResult', () => {
             contentType: 'text/plain'
         }).process(context);
 
-        expect(response.header).toHaveBeenCalledWith(
-            'Content-Type',
-            'text/plain'
-        );
+        expect(response.header).toHaveBeenCalledWith('Content-Type', 'text/plain');
 
-        expect(response.header).toHaveBeenCalledWith(
-            'Content-Disposition',
-            'attachment; filename="file.txt"'
-        );
+        expect(response.header).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="file.txt"');
     });
 });
 
@@ -130,15 +113,9 @@ describe('StreamHttpResult', () => {
             contentType: 'text/plain'
         }).process(context);
 
-        expect(response.header).toHaveBeenCalledWith(
-            'Content-Type',
-            'text/plain'
-        );
+        expect(response.header).toHaveBeenCalledWith('Content-Type', 'text/plain');
 
-        expect(response.header).toHaveBeenCalledWith(
-            'Content-Disposition',
-            'attachment; filename="file.txt"'
-        );
+        expect(response.header).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="file.txt"');
     });
 });
 

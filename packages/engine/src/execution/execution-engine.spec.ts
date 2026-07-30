@@ -8,14 +8,14 @@ import { ExecutionStepScope } from '../execution-steps/execution-step-scope';
 jest.mock('../execution-steps/execution-steps-generator', () => ({
     ExecutionStepsGenerator: {
         init: jest.fn(),
-        generate: jest.fn(),
-    },
+        generate: jest.fn()
+    }
 }));
 
 jest.mock('./execution-invoker', () => ({
     ExecutionInvoker: {
-        invoke: jest.fn(),
-    },
+        invoke: jest.fn()
+    }
 }));
 
 describe('ExecutionEngine', () => {
@@ -23,17 +23,17 @@ describe('ExecutionEngine', () => {
 
     const handler = {
         target: class TestController {},
-        method: 'execute',
+        method: 'execute'
     };
 
     const context: any = {
-        transport: ExecutionTransport.All,
+        transport: ExecutionTransport.All
     };
 
     const core: any = {
         processor: {
-            process: jest.fn(),
-        },
+            process: jest.fn()
+        }
     };
 
     beforeEach(() => {
@@ -74,7 +74,7 @@ describe('ExecutionEngine', () => {
         it('should process execution result', async () => {
             (ExecutionStepsGenerator.generate as jest.Mock).mockReturnValue([]);
 
-            const result = "OK";
+            const result = 'OK';
 
             (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(result);
 
@@ -91,7 +91,7 @@ describe('ExecutionEngine', () => {
                     global: true,
                     priority: 0,
                     transport: ExecutionTransport.Http,
-                    type: ExecutionStepType.Middleware,
+                    type: ExecutionStepType.Middleware
                 },
                 {
                     target: class {},
@@ -99,7 +99,7 @@ describe('ExecutionEngine', () => {
                     global: true,
                     priority: 0,
                     transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Guard,
+                    type: ExecutionStepType.Guard
                 },
                 {
                     target: class {},
@@ -107,18 +107,18 @@ describe('ExecutionEngine', () => {
                     global: true,
                     priority: 0,
                     transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Filter,
-                },
+                    type: ExecutionStepType.Filter
+                }
             ]);
 
             (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(undefined);
 
             await engine.execute(
                 {
-                    transport: ExecutionTransport.Http,
+                    transport: ExecutionTransport.Http
                 } as any,
                 handler,
-                core,
+                core
             );
 
             const plan = (ExecutionInvoker.invoke as jest.Mock).mock.calls[0][2];
@@ -138,7 +138,7 @@ describe('ExecutionEngine', () => {
                     priority: 0,
                     transport: ExecutionTransport.All,
                     type: ExecutionStepType.Interceptor,
-                    scope: ExecutionStepScope.After,
+                    scope: ExecutionStepScope.After
                 },
                 {
                     target: B,
@@ -147,8 +147,8 @@ describe('ExecutionEngine', () => {
                     priority: 0,
                     transport: ExecutionTransport.All,
                     type: ExecutionStepType.Interceptor,
-                    scope: ExecutionStepScope.After,
-                },
+                    scope: ExecutionStepScope.After
+                }
             ]);
 
             (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(undefined);
@@ -159,7 +159,7 @@ describe('ExecutionEngine', () => {
 
             expect(plan.after).toEqual([
                 { target: B, method: 'b' },
-                { target: A, method: 'a' },
+                { target: A, method: 'a' }
             ]);
         });
 
@@ -174,7 +174,7 @@ describe('ExecutionEngine', () => {
                     global: true,
                     priority: 1,
                     transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Middleware,
+                    type: ExecutionStepType.Middleware
                 },
                 {
                     target: High,
@@ -182,8 +182,8 @@ describe('ExecutionEngine', () => {
                     global: true,
                     priority: 10,
                     transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Middleware,
-                },
+                    type: ExecutionStepType.Middleware
+                }
             ]);
 
             (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(undefined);
@@ -194,7 +194,7 @@ describe('ExecutionEngine', () => {
 
             expect(plan.before).toEqual([
                 { target: High, method: 'high' },
-                { target: Low, method: 'low' },
+                { target: Low, method: 'low' }
             ]);
         });
     });

@@ -24,18 +24,9 @@ describe('HttpCode', () => {
             test() {}
         }
 
-        HttpCode(HttpStatusCode.Ok)(
-            TestController.prototype,
-            'test',
-            Object.getOwnPropertyDescriptor(TestController.prototype, 'test') as PropertyDescriptor
-        );
+        HttpCode(HttpStatusCode.Ok)(TestController.prototype, 'test', Object.getOwnPropertyDescriptor(TestController.prototype, 'test') as PropertyDescriptor);
 
         expect(Metadata.defineMethod).toHaveBeenCalledTimes(1);
-        expect(Metadata.defineMethod).toHaveBeenCalledWith(
-            MetadataKeys.HTTP_CODE,
-            HttpStatusCode.Ok,
-            TestController.prototype,
-            'test'
-        );
+        expect(Metadata.defineMethod).toHaveBeenCalledWith(MetadataKeys.HTTP_CODE, HttpStatusCode.Ok, TestController.prototype, 'test');
     });
 });

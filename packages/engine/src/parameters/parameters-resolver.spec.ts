@@ -4,18 +4,18 @@ import { ParameterResolver } from './parameter-resolver';
 
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
-        getMethod: jest.fn(),
+        getMethod: jest.fn()
     },
     MetadataKeys: {
-        PARAMETER: 'PARAMETER',
-    },
+        PARAMETER: 'PARAMETER'
+    }
 }));
 
 describe('ParametersResolver', () => {
     const executionContext = { transport: 'http' } as any;
     const executionHandler = {
         target: class Controller {},
-        method: 'find',
+        method: 'find'
     };
 
     beforeEach(() => {
@@ -34,7 +34,7 @@ describe('ParametersResolver', () => {
 
     it('should resolve a parameter', () => {
         const resolver: ParameterResolver<string> = {
-            resolve: jest.fn().mockReturnValue('value'),
+            resolve: jest.fn().mockReturnValue('value')
         };
 
         ParametersResolver.register('test', resolver);
@@ -43,8 +43,8 @@ describe('ParametersResolver', () => {
             {
                 parameter: 'test',
                 index: 0,
-                name: 'id',
-            },
+                name: 'id'
+            }
         ]);
 
         const result = ParametersResolver.resolve(executionContext, executionHandler);
@@ -52,7 +52,7 @@ describe('ParametersResolver', () => {
         expect(resolver.resolve).toHaveBeenCalledWith(executionContext, {
             parameter: 'test',
             index: 0,
-            name: 'id',
+            name: 'id'
         });
 
         expect(result).toEqual(['value']);
@@ -60,11 +60,11 @@ describe('ParametersResolver', () => {
 
     it('should resolve multiple parameters', () => {
         const resolver1 = {
-            resolve: jest.fn().mockReturnValue('one'),
+            resolve: jest.fn().mockReturnValue('one')
         };
 
         const resolver2 = {
-            resolve: jest.fn().mockReturnValue(2),
+            resolve: jest.fn().mockReturnValue(2)
         };
 
         ParametersResolver.register('first', resolver1);
@@ -73,12 +73,12 @@ describe('ParametersResolver', () => {
         (Metadata.getMethod as jest.Mock).mockReturnValue([
             {
                 parameter: 'first',
-                index: 0,
+                index: 0
             },
             {
                 parameter: 'second',
-                index: 1,
-            },
+                index: 1
+            }
         ]);
 
         const result = ParametersResolver.resolve(executionContext, executionHandler);
@@ -88,7 +88,7 @@ describe('ParametersResolver', () => {
 
     it('should ignore parameters without a registered resolver', () => {
         const resolver = {
-            resolve: jest.fn().mockReturnValue('value'),
+            resolve: jest.fn().mockReturnValue('value')
         };
 
         ParametersResolver.register('known', resolver);
@@ -96,8 +96,8 @@ describe('ParametersResolver', () => {
         (Metadata.getMethod as jest.Mock).mockReturnValue([
             {
                 parameter: 'unknown',
-                index: 0,
-            },
+                index: 0
+            }
         ]);
 
         const result = ParametersResolver.resolve(executionContext, executionHandler);
@@ -108,7 +108,7 @@ describe('ParametersResolver', () => {
 
     it('should preserve parameter indexes', () => {
         const resolver = {
-            resolve: jest.fn().mockReturnValue('value'),
+            resolve: jest.fn().mockReturnValue('value')
         };
 
         ParametersResolver.register('test', resolver);
@@ -116,8 +116,8 @@ describe('ParametersResolver', () => {
         (Metadata.getMethod as jest.Mock).mockReturnValue([
             {
                 parameter: 'test',
-                index: 2,
-            },
+                index: 2
+            }
         ]);
 
         const result = ParametersResolver.resolve(executionContext, executionHandler);
@@ -129,11 +129,11 @@ describe('ParametersResolver', () => {
 
     it('should overwrite a registered resolver', () => {
         const resolver1 = {
-            resolve: jest.fn().mockReturnValue('old'),
+            resolve: jest.fn().mockReturnValue('old')
         };
 
         const resolver2 = {
-            resolve: jest.fn().mockReturnValue('new'),
+            resolve: jest.fn().mockReturnValue('new')
         };
 
         ParametersResolver.register('test', resolver1);
@@ -142,8 +142,8 @@ describe('ParametersResolver', () => {
         (Metadata.getMethod as jest.Mock).mockReturnValue([
             {
                 parameter: 'test',
-                index: 0,
-            },
+                index: 0
+            }
         ]);
 
         const result = ParametersResolver.resolve(executionContext, executionHandler);

@@ -1,126 +1,105 @@
-import {
-    RequestResolver,
-    ResponseResolver,
-    BodyResolver,
-    ParamResolver,
-    QueryResolver,
-    HeaderResolver,
-    IpResolver,
-    SessionResolver,
-} from "./resolvers";
+import { RequestResolver, ResponseResolver, BodyResolver, ParamResolver, QueryResolver, HeaderResolver, IpResolver, SessionResolver } from './resolvers';
 
-describe("ParameterResolvers", () => {
+describe('ParameterResolvers', () => {
     const httpContext: any = {
         request: {
-            body: { name: "John" },
+            body: { name: 'John' },
             params: {
-                id: "123",
+                id: '123'
             },
             query: {
-                search: "test",
+                search: 'test'
             },
             headers: {
-                authorization: "Bearer token",
+                authorization: 'Bearer token'
             },
-            ip: "127.0.0.1",
+            ip: '127.0.0.1'
         },
         response: {
             status: jest.fn(),
-            json: jest.fn(),
+            json: jest.fn()
         },
         session: {
-            userId: 1,
-        },
+            userId: 1
+        }
     };
 
-    describe("RequestResolver", () => {
-        it("should return request", () => {
+    describe('RequestResolver', () => {
+        it('should return request', () => {
             const resolver = new RequestResolver();
 
             expect(resolver.resolve(httpContext)).toBe(httpContext.request);
         });
     });
 
-    describe("ResponseResolver", () => {
-        it("should return response", () => {
+    describe('ResponseResolver', () => {
+        it('should return response', () => {
             const resolver = new ResponseResolver();
 
             expect(resolver.resolve(httpContext)).toBe(httpContext.response);
         });
     });
 
-    describe("BodyResolver", () => {
-        it("should return request body", () => {
+    describe('BodyResolver', () => {
+        it('should return request body', () => {
             const resolver = new BodyResolver();
 
             expect(resolver.resolve(httpContext)).toEqual(httpContext.request.body);
         });
     });
 
-    describe("ParamResolver", () => {
-        it("should return parameter by name", () => {
+    describe('ParamResolver', () => {
+        it('should return parameter by name', () => {
             const resolver = new ParamResolver();
 
-            expect(
-                resolver.resolve(httpContext, { name: "id" } as any)
-            ).toBe("123");
+            expect(resolver.resolve(httpContext, { name: 'id' } as any)).toBe('123');
         });
 
-        it("should return undefined when parameter does not exist", () => {
+        it('should return undefined when parameter does not exist', () => {
             const resolver = new ParamResolver();
 
-            expect(
-                resolver.resolve(httpContext, { name: "unknown" } as any)
-            ).toBeUndefined();
+            expect(resolver.resolve(httpContext, { name: 'unknown' } as any)).toBeUndefined();
         });
     });
 
-    describe("QueryResolver", () => {
-        it("should return query parameter by name", () => {
+    describe('QueryResolver', () => {
+        it('should return query parameter by name', () => {
             const resolver = new QueryResolver();
 
-            expect(
-                resolver.resolve(httpContext, { name: "search" } as any)
-            ).toBe("test");
+            expect(resolver.resolve(httpContext, { name: 'search' } as any)).toBe('test');
         });
 
-        it("should return undefined when query parameter does not exist", () => {
+        it('should return undefined when query parameter does not exist', () => {
             const resolver = new QueryResolver();
 
-            expect(
-                resolver.resolve(httpContext, { name: "missing" } as any)
-            ).toBeUndefined();
+            expect(resolver.resolve(httpContext, { name: 'missing' } as any)).toBeUndefined();
         });
     });
 
-    describe("HeaderResolver", () => {
-        it("should return header by name", () => {
+    describe('HeaderResolver', () => {
+        it('should return header by name', () => {
             const resolver = new HeaderResolver();
 
-            expect(
-                resolver.resolve(httpContext, { name: "authorization" } as any)
-            ).toBe("Bearer token");
+            expect(resolver.resolve(httpContext, { name: 'authorization' } as any)).toBe('Bearer token');
         });
 
-        it("should return undefined when header does not exist", () => {
+        it('should return undefined when header does not exist', () => {
             const resolver = new HeaderResolver();
 
-            expect(
-                resolver.resolve(httpContext, { name: "missing" } as any)
-            ).toBeUndefined();
+            expect(resolver.resolve(httpContext, { name: 'missing' } as any)).toBeUndefined();
         });
     });
 
-    describe("IpResolver", () => {
-        it("should return request ip", () => {
+    describe('IpResolver', () => {
+        it('should return request ip', () => {
             const resolver = new IpResolver();
 
-            expect(resolver.resolve(httpContext)).toBe("127.0.0.1");
+            expect(resolver.resolve(httpContext)).toBe('127.0.0.1');
         });
     });
 
-    describe("SessionResolver", () => {
-        it("should return session", () => {
+    describe('SessionResolver', () => {
+        it('should return session', () => {
             const resolver = new SessionResolver();
 
             expect(resolver.resolve(httpContext)).toBe(httpContext.session);
