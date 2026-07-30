@@ -1,3 +1,3 @@
 export interface Destroyable {
-    destroy(...args: unknown[]): Promise<void>;
+    destroy(...args: unknown[]): void | Promise<void>;
 }

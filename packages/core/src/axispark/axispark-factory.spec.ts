@@ -1,9 +1,9 @@
-import { AxisparkCore } from './axispark-core';
-import { AxisparkFactory } from './axispark-factory';
+import { AxiSparkCore } from './axispark-core';
+import { AxiSparkFactory } from './axispark-factory';
 
-describe('AxisparkFactory', () => {
-    it('should create an instance of axisparkCore', () => {
-        const axisparkCore = AxisparkFactory.create();
-        expect(axisparkCore).toBeInstanceOf(AxisparkCore);
+describe('AxiSparkFactory', () => {
+    it('should create an instance of axiSparkCore', () => {
+        const axiSparkCore = AxiSparkFactory.create();
+        expect(axiSparkCore).toBeInstanceOf(AxiSparkCore);
     });
 });

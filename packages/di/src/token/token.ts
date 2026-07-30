@@ -10,7 +10,7 @@ export class InjectionToken {
 
 export type Token<T = unknown> = Constructor<T> | InjectionToken;
 
-export class TokenUtilsStatic {
+class TokenUtilsStatic {
     getName(token: Token): string {
         if (token instanceof InjectionToken) {
             return token.description;

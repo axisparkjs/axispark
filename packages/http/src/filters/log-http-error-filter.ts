@@ -1,0 +1,15 @@
+import { Inject } from '@axisparkjs/di';
+import { Error, Filter, Catch, ExecutionTransport, ExecutionPriority } from '@axisparkjs/engine';
+import { Logger } from '@axisparkjs/logger';
+import { HTTP_LOGGER } from '../di/tokens';
+import { HttpError } from '../errors';
+
+@Filter({ global: true, transport: ExecutionTransport.Http, priority: ExecutionPriority.Normal })
+export class LogHttpErrorFilter {
+    constructor(@Inject(HTTP_LOGGER) private readonly logger: Logger) {}
+
+    @Catch(HttpError)
+    public async httpError(@Error() error: HttpError): Promise<void> {
+        this.logger.info(`HTTP Error: ${error.status} ${error.response}`);
+    }
+}

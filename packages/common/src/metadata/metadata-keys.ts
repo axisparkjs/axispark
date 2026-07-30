@@ -6,10 +6,13 @@ export const MetadataKeys = {
     INJECTABLE: new MetadataKey('injectable'),
     INJECT: new MetadataKey('inject'),
     PLUGIN: new MetadataKey('plugin'),
+    PARAMETER: new MetadataKey('parameter'),
+    PIPE: new MetadataKey('pipe'),
+    EXECUTION_STEP_USE: new MetadataKey('execution-step-use'),
+    EXECUTION_STEP_TARGET: new MetadataKey('execution-step-target'),
+    EXECUTION_STEP_METHOD: new MetadataKey('execution-step-method'),
+
     CONTROLLER: new MetadataKey('controller'),
     ROUTE: new MetadataKey('route'),
-    HTTP_CODE: new MetadataKey('http-code'),
-    ROUTE_PARAMETER: new MetadataKey('route-parameter'),
-    ERROR_HANDLER: new MetadataKey('error-handler'),
-    CATCH: new MetadataKey('catch')
+    HTTP_CODE: new MetadataKey('http-code')
 } as const;

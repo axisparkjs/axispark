@@ -1,0 +1,59 @@
+import { WebhookTransport } from './webhook-transport';
+import { LogEntry } from '../log-entry';
+import { LogFormatter } from '../log-formatter';
+import { LogLevel } from '../log-level';
+
+describe('WebhookTransport', () => {
+    let formatter: jest.Mocked<LogFormatter>;
+    let transport: WebhookTransport;
+
+    const createEntry = (level: LogLevel): LogEntry => ({
+        timestamp: new Date(),
+        level,
+        message: 'Test',
+        scopes: []
+    });
+
+    beforeEach(() => {
+        formatter = {
+            format: jest.fn().mockReturnValue('formatted')
+        };
+
+        transport = new WebhookTransport({
+            url: 'https://discord.com/api/webhooks/test',
+            formatter,
+            minLevel: LogLevel.INFO
+        });
+
+        global.fetch = jest.fn().mockResolvedValue({} as Response);
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('should send formatted message to webhook', async () => {
+        const entry = createEntry(LogLevel.INFO);
+
+        await transport.write(entry);
+
+        expect(formatter.format).toHaveBeenCalledWith(entry);
+
+        expect(fetch).toHaveBeenCalledWith('https://discord.com/api/webhooks/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: 'formatted'
+            })
+        });
+    });
+
+    it('should not send logs below minLevel', async () => {
+        await transport.write(createEntry(LogLevel.DEBUG));
+
+        expect(formatter.format).not.toHaveBeenCalled();
+        expect(fetch).not.toHaveBeenCalled();
+    });
+});

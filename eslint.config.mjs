@@ -11,5 +11,14 @@ export default [
     ...tseslint.configs.strict,
     ...tseslint.configs.stylistic,
     { files: ['**/*.spec.ts'], rules: { '@typescript-eslint/no-extraneous-class': 'off', '@typescript-eslint/no-empty-function': 'off' } },
-    { files: ['**/*.ts'], rules: { '@typescript-eslint/no-explicit-any': 'off', '@typescript-eslint/no-unused-vars': 'off' } }
+    {
+        files: ['**/*.ts'],
+        rules: {
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-vars': 'off',
+            '@typescript-eslint/no-dynamic-delete': 'off',
+            '@typescript-eslint/no-unsafe-function-type': 'off',
+            '@typescript-eslint/no-empty-object-type': 'off'
+        }
+    }
 ];

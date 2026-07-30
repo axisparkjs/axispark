@@ -1,10 +1,10 @@
-import { AxisparkCore } from './axispark-core';
-import { AxisparkContext } from './axispark-context';
+import { AxiSparkCore } from './axispark-core';
+import { AxiSparkContext } from './axispark-context';
 import { InjectionToken } from '@axisparkjs/di';
 
-describe('AxisparkCore', () => {
-    let context: jest.Mocked<AxisparkContext>;
-    let core: AxisparkCore;
+describe('AxiSparkCore', () => {
+    let context: jest.Mocked<AxiSparkContext>;
+    let core: AxiSparkCore;
 
     beforeEach(() => {
         context = {
@@ -18,15 +18,18 @@ describe('AxisparkCore', () => {
                 register: jest.fn(),
                 getAll: jest.fn()
             },
+            engine: {
+                init: jest.fn()
+            },
             container: {
                 resolve: jest.fn()
             },
             config: {
                 banner: true
             }
-        } as unknown as jest.Mocked<AxisparkContext>;
+        } as unknown as jest.Mocked<AxiSparkContext>;
 
-        core = new AxisparkCore(context);
+        core = new AxiSparkCore(context);
     });
 
     describe('init', () => {
@@ -35,6 +38,7 @@ describe('AxisparkCore', () => {
 
             expect(context.plugins.init).toHaveBeenCalledTimes(1);
             expect(context.plugins.init).toHaveBeenCalledWith(context);
+            expect(context.engine.init).toHaveBeenCalledTimes(1);
             expect(context.logger.info).toHaveBeenCalledTimes(2);
             expect(context.logger.info).toHaveBeenCalledWith('App initialized');
         });
@@ -45,6 +49,7 @@ describe('AxisparkCore', () => {
 
             expect(context.plugins.init).toHaveBeenCalledTimes(1);
             expect(context.plugins.init).toHaveBeenCalledWith(context);
+            expect(context.engine.init).toHaveBeenCalledTimes(1);
             expect(context.logger.info).toHaveBeenCalledTimes(1);
             expect(context.logger.info).toHaveBeenCalledWith('App initialized');
         });

@@ -1,16 +1,18 @@
 import { ConsoleTransport, Logger, LogLevel, SimpleFormatter, LogTransport } from '@axisparkjs/logger';
 import { PluginRegistry } from '..';
 import { Container, Injector } from '@axisparkjs/di';
-import { AxisparkConfig } from './axispark-config';
+import { AxiSparkConfig } from './axispark-config';
+import { ExecutionEngine } from '@axisparkjs/engine';
 
-export class AxisparkContext {
+export class AxiSparkContext {
     public readonly logger: Logger;
     public readonly plugins: PluginRegistry;
     public readonly container: Container;
-    public readonly config: AxisparkConfig;
+    public readonly config: AxiSparkConfig;
     public readonly injector: Injector;
+    public readonly engine: ExecutionEngine;
 
-    public constructor(config?: AxisparkConfig) {
+    public constructor(config?: AxiSparkConfig) {
         this.config = {
             name: 'App',
             environment: 'development',
@@ -22,6 +24,7 @@ export class AxisparkContext {
         this.plugins = new PluginRegistry();
         this.container = new Container();
         this.injector = new Injector(this.container);
+        this.engine = new ExecutionEngine();
 
         this.container.bind({
             token: Logger,

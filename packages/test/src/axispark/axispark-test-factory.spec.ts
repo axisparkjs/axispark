@@ -1,12 +1,12 @@
-import { AxisparkFactory, Pluggable, Plugin } from '@axisparkjs/core';
-import { AxisparkTestFactory } from './axispark-test-factory';
+import { AxiSparkFactory, Pluggable, Plugin } from '@axisparkjs/core';
+import { AxiSparkTestFactory } from './axispark-test-factory';
 import { Injectable, InjectionToken } from '@axisparkjs/di';
-import { AxisparkTestCore } from './axispark-test-core';
+import { AxiSparkTestCore } from './axispark-test-core';
 
-describe('AxisparkTestFactory', () => {
-    it('should create an instance of AxisparkCore', () => {
-        const axisparkCore = AxisparkTestFactory.create();
-        expect(axisparkCore).toBeInstanceOf(AxisparkTestCore);
+describe('AxiSparkTestFactory', () => {
+    it('should create an instance of AxiSparkCore', () => {
+        const axisparkCore = AxiSparkTestFactory.create();
+        expect(axisparkCore).toBeInstanceOf(AxiSparkTestCore);
     });
 
     it('should accept override for injections', () => {
@@ -14,8 +14,8 @@ describe('AxisparkTestFactory', () => {
         @Injectable()
         class MockProvider {}
 
-        const axisparkCore = AxisparkTestFactory.create({ providers: [{ token, useClass: MockProvider }] });
-        expect(axisparkCore).toBeInstanceOf(AxisparkTestCore);
+        const axisparkCore = AxiSparkTestFactory.create({ providers: [{ token, useClass: MockProvider }] });
+        expect(axisparkCore).toBeInstanceOf(AxiSparkTestCore);
     });
 
     it('should accept override from a created AxisparkCore instance', () => {
@@ -26,12 +26,12 @@ describe('AxisparkTestFactory', () => {
             public onStop() {}
         }
 
-        const axisparkCore = AxisparkFactory.create({});
+        const axisparkCore = AxiSparkFactory.create({});
         axisparkCore.use(TestPlugin);
 
-        const axisparkTestCore = AxisparkTestFactory.create({ app: axisparkCore });
+        const axisparkTestCore = AxiSparkTestFactory.create({ app: axisparkCore });
 
-        expect(axisparkTestCore).toBeInstanceOf(AxisparkTestCore);
+        expect(axisparkTestCore).toBeInstanceOf(AxiSparkTestCore);
         expect(axisparkTestCore.used()).toEqual(axisparkCore.used());
     });
 });

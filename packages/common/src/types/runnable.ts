@@ -1,3 +1,3 @@
 export interface Runnable {
-    run(...args: unknown[]): Promise<void>;
+    run(...args: unknown[]): void | Promise<void>;
 }

@@ -1,9 +1,9 @@
-import { AxisparkContext } from '../axispark';
+import { AxiSparkContext } from '../axispark';
 
 export interface Pluggable {
-    onRegister?(context: AxisparkContext, options?: PluginOptions): Promise<void> | void;
-    onStart?(context: AxisparkContext, options?: PluginOptions): Promise<void> | void;
-    onStop?(context: AxisparkContext, options?: PluginOptions): Promise<void> | void;
+    onRegister?(context: AxiSparkContext, options?: PluginOptions): Promise<void> | void;
+    onStart?(context: AxiSparkContext, options?: PluginOptions): Promise<void> | void;
+    onStop?(context: AxiSparkContext, options?: PluginOptions): Promise<void> | void;
 }
 export type PluggableClass<T extends Pluggable = Pluggable> = new (...args: any[]) => T;
 

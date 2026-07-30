@@ -32,7 +32,6 @@
     "devDependencies": {
         "@changesets/cli": "^2.31.0",
         "@eslint/js": "^9.37.0",
-        "@types/express": "^5.0.6",
         "@types/jest": "^30.0.0",
         "@types/node": "^24.13.2",
         "eslint": "^9.37.0",
@@ -47,9 +46,5 @@
         "turbo": "^2.10.4",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.46.0"
-    },
-    "dependencies": {
-        "express": "^5.2.1",
-        "reflect-metadata": "^0.2.2"
     }
 }
