@@ -6,6 +6,10 @@ import { Token } from '@axisparkjs/di';
 export class AxiSparkCore implements Lifecycle {
     public constructor(private readonly axisparkContext: AxiSparkContext) {}
 
+    public get config() {
+        return this.axisparkContext.config;
+    }
+
     public async init() {
         // Banner logic here
         if (this.axisparkContext.config.banner) {
@@ -21,6 +25,8 @@ export class AxiSparkCore implements Lifecycle {
         }
 
         // Initialization logic here
+        await this.axisparkContext.scanner.scan();
+        await this.axisparkContext.container.init();
         await this.axisparkContext.plugins.init(this.axisparkContext);
         await this.axisparkContext.engine.init();
         await this.axisparkContext.logger.info('App initialized');
@@ -30,6 +36,9 @@ export class AxiSparkCore implements Lifecycle {
         await this.axisparkContext.plugins.run(this.axisparkContext);
         await this.axisparkContext.logger.info('App running, waiting for termination signal...');
 
+        if (this.axisparkContext.privateConfig.disableAwaitSignal)
+            return;
+        
         return new Promise((resolve) => {
             process.once('SIGINT', resolve);
             process.once('SIGTERM', resolve);

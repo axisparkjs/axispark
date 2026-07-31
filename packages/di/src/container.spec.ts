@@ -1,4 +1,4 @@
-import { Metadata } from '@axisparkjs/common';
+import { Metadata, MetadataKeys } from '@axisparkjs/common';
 import { Container } from './container';
 import { Resolver } from './resolver';
 import { InjectionToken } from './token';
@@ -33,6 +33,16 @@ describe('Container', () => {
     class Service {}
 
     class Dependency {}
+
+    it('should init all ClassRegistry entries with INJECTABLE metadata', () => {
+        const injectableClass = class InjectableClass {};
+        Metadata.define(MetadataKeys.INJECTABLE, true, injectableClass);
+        const spyBind = jest.spyOn(container, 'bind');
+
+        container.init();
+
+        expect(spyBind).toHaveBeenCalledWith(injectableClass);
+    });
 
     it('should bind a constructor as a class provider', () => {
         metadataMock.has.mockReturnValue(true);

@@ -92,7 +92,7 @@ export class StreamHttpResult extends HttpResult<undefined> {
         context.response.stream(this.stream);
     }
 }
-export class ErrorHttpResult extends ExecutionResult<HttpError> {
+export class ErrorHttpResult extends HttpResult<HttpError> {
     public constructor(value: HttpError) {
         super(value, value.status);
     }
@@ -101,7 +101,6 @@ export class ErrorHttpResult extends ExecutionResult<HttpError> {
         context.response.status(this.rc);
         context.response.json({
             error: this.value.message,
-            name: this.value.name,
             status: this.rc
         });
     }

@@ -24,6 +24,6 @@ export const config = {
         '^@axisparkjs/test/(.*)$': '<rootDir>/packages/test/src/$1',
         '^@axisparkjs/samples$': '<rootDir>/samples',
         '^@axisparkjs/samples/(.*)$': '<rootDir>/samples/$1'
-    },
+    }
 };
 export default config;

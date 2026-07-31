@@ -1,9 +1,10 @@
 import { AxiSparkFactory } from '@axisparkjs/core';
+import { HttpPlugin } from '@axisparkjs/http';
+import { HttpPluginOptionsFactory } from '@axisparkjs/http-express';
 import { ConsoleTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
-import { HelloWorldPlugin } from './plugin';
 
 export const app = AxiSparkFactory.create({
-    name: 'Hello World App',
+    name: 'TODO Crud',
     basePath: __dirname,
     logTransports: [
         new ConsoleTransport({
@@ -12,4 +13,4 @@ export const app = AxiSparkFactory.create({
         })
     ]
 });
-app.use(HelloWorldPlugin);
+app.use(HttpPlugin, HttpPluginOptionsFactory.create());

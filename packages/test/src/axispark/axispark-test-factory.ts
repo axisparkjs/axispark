@@ -1,25 +1,30 @@
 import { Factory } from '@axisparkjs/common';
 import { AxiSparkTestConfig } from './axispark-test-config';
-import { AxiSparkContext } from '@axisparkjs/core';
-import { ConsoleTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
-import { AxiSparkTestCore } from './axispark-test-core';
+import { AxiSparkContext, AxiSparkCore } from '@axisparkjs/core';
+import { NullTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
 
-class AxiSparkTestFactoryStatic implements Factory<AxiSparkTestCore> {
-    public create(config?: AxiSparkTestConfig): AxiSparkTestCore {
+class AxiSparkTestFactoryStatic implements Factory<AxiSparkCore> {
+    public create(config?: AxiSparkTestConfig): AxiSparkCore {
         // Perform any necessary setup or configuration here
-        const context = new AxiSparkContext({
-            banner: false,
-            environment: 'test',
-            name: 'Test',
-            logTransports: [new ConsoleTransport({ formatter: new SimpleFormatter(), minLevel: LogLevel.ERROR })]
-        });
+        const context = new AxiSparkContext(
+            {
+                ...config?.app?.config,
+                banner: false,
+                environment: 'test',
+                name: 'Test',
+                logTransports: [new NullTransport({ formatter: new SimpleFormatter(), minLevel: LogLevel.ERROR })],
+            }, {
+                scanner: 'file-system',
+                disableAwaitSignal: true
+            }
+        );
+
+        if (config?.app) config.app.used().forEach((plugin) => context.plugins.register(context, plugin.type, plugin.options));
 
         const providers = config?.providers || [];
         providers.forEach((provider) => context.container.bind(provider));
 
-        if (config?.app) config.app.used().forEach((plugin) => context.plugins.register(context, plugin.type, plugin.options));
-
-        return new AxiSparkTestCore(context);
+        return new AxiSparkCore(context);
     }
 }
 

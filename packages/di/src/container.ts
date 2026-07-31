@@ -1,4 +1,4 @@
-import { Metadata, MetadataKeys } from '@axisparkjs/common';
+import { Initializable, Metadata, MetadataKeys } from '@axisparkjs/common';
 import { Resolver } from './resolver';
 import { ProviderNotFoundError, DecoratorNotIncludedError } from './errors';
 import { ClassProvider, Provider, Constructor } from './types';
@@ -6,13 +6,15 @@ import { Token, TokenUtils } from './token';
 import { Injectable } from './decorators';
 import { ClassRegistry } from './class-registry';
 
-export class Container {
+export class Container implements Initializable {
     private readonly providers = new Map<Token, Provider>();
     private readonly resolver = new Resolver();
 
-    public constructor() {
+    init() {
         ClassRegistry.getWithMetadata(MetadataKeys.INJECTABLE).forEach((entry) => {
-            this.bind(entry);
+            if (!this.providers.has(entry)) {
+                this.bind(entry);
+            }
         });
     }
 
