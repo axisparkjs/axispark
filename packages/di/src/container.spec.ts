@@ -1,9 +1,10 @@
-import { Metadata, MetadataKeys } from '@axisparkjs/common';
+import { Metadata } from '@axisparkjs/common';
 import { Container } from './container';
 import { Resolver } from './resolver';
 import { InjectionToken } from './token';
 import { ProviderNotFoundError, DecoratorNotIncludedError } from './errors';
 import { Constructable } from './decorators/constructable';
+import { ClassRegistry } from './class-registry';
 
 jest.mock('@axisparkjs/common', () => {
     const originalModule = jest.requireActual('@axisparkjs/common');
@@ -12,6 +13,17 @@ jest.mock('@axisparkjs/common', () => {
         Metadata: {
             has: jest.fn(),
             define: jest.fn()
+        }
+    };
+});
+
+jest.mock('./class-registry', () => {
+    const originalModule = jest.requireActual('./class-registry');
+    return {
+        ...originalModule,
+        ClassRegistry: {
+            register: jest.fn(),
+            getWithMetadata: jest.fn().mockReturnValue([])
         }
     };
 });
@@ -36,9 +48,12 @@ describe('Container', () => {
 
     it('should init all ClassRegistry entries with INJECTABLE metadata', () => {
         const injectableClass = class InjectableClass {};
-        Metadata.define(MetadataKeys.INJECTABLE, true, injectableClass);
+        const alreadyInjectableClass = class AlreadyInjectableClass {};
+        ClassRegistry.getWithMetadata = jest.fn().mockReturnValue([injectableClass, alreadyInjectableClass]);
+        Metadata.has = jest.fn().mockReturnValue(true);
         const spyBind = jest.spyOn(container, 'bind');
 
+        container.bind(alreadyInjectableClass);
         container.init();
 
         expect(spyBind).toHaveBeenCalledWith(injectableClass);

@@ -22,20 +22,37 @@ describe('AxiSparkCore', () => {
                 init: jest.fn()
             },
             container: {
+                init: jest.fn(),
                 resolve: jest.fn()
             },
             config: {
                 banner: true
+            },
+            privateConfig: {
+                disableAwaitSignal: false
+            },
+            scanner: {
+                scan: jest.fn()
             }
         } as unknown as jest.Mocked<AxiSparkContext>;
 
         core = new AxiSparkCore(context);
     });
 
+    describe('config', () => {
+        it('should return the context config', () => {
+            const config = core.config;
+
+            expect(config).toBe(context.config);
+        });
+    });
+
     describe('init', () => {
         it('should init the application and log the initialization', async () => {
             await core.init();
 
+            expect(context.scanner.scan).toHaveBeenCalledTimes(1);
+            expect(context.container.init).toHaveBeenCalledTimes(1);
             expect(context.plugins.init).toHaveBeenCalledTimes(1);
             expect(context.plugins.init).toHaveBeenCalledWith(context);
             expect(context.engine.init).toHaveBeenCalledTimes(1);
@@ -47,6 +64,8 @@ describe('AxiSparkCore', () => {
             context.config.banner = false;
             await core.init();
 
+            expect(context.scanner.scan).toHaveBeenCalledTimes(1);
+            expect(context.container.init).toHaveBeenCalledTimes(1);
             expect(context.plugins.init).toHaveBeenCalledTimes(1);
             expect(context.plugins.init).toHaveBeenCalledWith(context);
             expect(context.engine.init).toHaveBeenCalledTimes(1);
@@ -60,6 +79,17 @@ describe('AxiSparkCore', () => {
             core.run();
 
             await new Promise(process.nextTick);
+
+            expect(context.plugins.run).toHaveBeenCalledTimes(1);
+            expect(context.plugins.run).toHaveBeenCalledWith(context);
+            expect(context.logger.info).toHaveBeenCalledTimes(1);
+            expect(context.logger.info).toHaveBeenCalledWith('App running, waiting for termination signal...');
+        });
+
+        it('should not await termination signal if disableAwaitSignal is true', async () => {
+            context.privateConfig.disableAwaitSignal = true;
+
+            await core.run();
 
             expect(context.plugins.run).toHaveBeenCalledTimes(1);
             expect(context.plugins.run).toHaveBeenCalledWith(context);

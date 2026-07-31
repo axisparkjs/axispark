@@ -2,6 +2,7 @@ import { ConsoleTransport, Logger, LogLevel, SimpleFormatter } from '@axisparkjs
 import { Container, Injector } from '@axisparkjs/di';
 import { AxiSparkContext } from './axispark-context';
 import { PluginRegistry } from '../plugin';
+import { NullScanner } from '../scanner';
 
 describe('AxiSparkContext', () => {
     describe('constructor', () => {
@@ -25,6 +26,20 @@ describe('AxiSparkContext', () => {
 
         it('should create an injector', () => {
             expect(context.injector).toBeInstanceOf(Injector);
+        });
+
+        it('should create an engine', () => {
+            expect(context.engine).toBeDefined();
+        });
+
+        it('should create a scanner', () => {
+            expect(context.scanner).toBeDefined();
+        });
+
+        it('should create the default private configuration', () => {
+            expect(context.privateConfig).toMatchObject({
+                scanner: 'file-system'
+            });
         });
 
         it('should create the default configuration', () => {
@@ -52,12 +67,15 @@ describe('AxiSparkContext', () => {
                 minLevel: LogLevel.ERROR
             });
 
-            const context = new AxiSparkContext({
-                name: 'MyApp',
-                environment: 'production',
-                banner: false,
-                logTransports: [transport]
-            });
+            const context = new AxiSparkContext(
+                {
+                    name: 'MyApp',
+                    environment: 'production',
+                    banner: false,
+                    logTransports: [transport]
+                },
+                { disableAwaitSignal: true, scanner: 'null' }
+            );
 
             expect(context.config).toEqual({
                 name: 'MyApp',
@@ -66,7 +84,17 @@ describe('AxiSparkContext', () => {
                 logTransports: [transport]
             });
 
+            expect(context.privateConfig).toEqual({
+                disableAwaitSignal: true,
+                scanner: 'null'
+            });
+
             expect(context.logger).toBeInstanceOf(Logger);
+            expect(context.plugins).toBeInstanceOf(PluginRegistry);
+            expect(context.container).toBeInstanceOf(Container);
+            expect(context.injector).toBeInstanceOf(Injector);
+            expect(context.engine).toBeDefined();
+            expect(context.scanner).toBeInstanceOf(NullScanner);
         });
     });
 });

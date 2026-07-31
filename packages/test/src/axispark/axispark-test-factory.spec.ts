@@ -1,12 +1,12 @@
 import { AxiSparkFactory, Pluggable, Plugin } from '@axisparkjs/core';
 import { AxiSparkTestFactory } from './axispark-test-factory';
 import { Injectable, InjectionToken } from '@axisparkjs/di';
-import { AxiSparkTestCore } from './axispark-test-core';
+import { AxiSparkCore } from '@axisparkjs/core';
 
 describe('AxiSparkTestFactory', () => {
     it('should create an instance of AxiSparkCore', () => {
         const axisparkCore = AxiSparkTestFactory.create();
-        expect(axisparkCore).toBeInstanceOf(AxiSparkTestCore);
+        expect(axisparkCore).toBeInstanceOf(AxiSparkCore);
     });
 
     it('should accept override for injections', () => {
@@ -15,7 +15,7 @@ describe('AxiSparkTestFactory', () => {
         class MockProvider {}
 
         const axisparkCore = AxiSparkTestFactory.create({ providers: [{ token, useClass: MockProvider }] });
-        expect(axisparkCore).toBeInstanceOf(AxiSparkTestCore);
+        expect(axisparkCore).toBeInstanceOf(AxiSparkCore);
     });
 
     it('should accept override from a created AxisparkCore instance', () => {
@@ -31,7 +31,8 @@ describe('AxiSparkTestFactory', () => {
 
         const axisparkTestCore = AxiSparkTestFactory.create({ app: axisparkCore });
 
-        expect(axisparkTestCore).toBeInstanceOf(AxiSparkTestCore);
+        expect(axisparkTestCore).toBeInstanceOf(AxiSparkCore);
         expect(axisparkTestCore.used()).toEqual(axisparkCore.used());
+        expect(axisparkTestCore.config.basePath).toEqual(axisparkCore.config.basePath);
     });
 });

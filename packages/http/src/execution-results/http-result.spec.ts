@@ -129,7 +129,6 @@ describe('ErrorHttpResult', () => {
 
         expect(response.json).toHaveBeenCalledWith({
             error: 'Invalid request',
-            name: 'Error',
             status: HttpStatusCode.BadRequest
         });
     });
