@@ -23,7 +23,7 @@ describe('TODO Crud App', () => {
         const plugins = axiSparkCore.used();
         expect(plugins).toHaveLength(1);
         expect(plugins).toStrictEqual([
-            { 
+            {
                 type: HttpPlugin,
                 options: {
                     adapter: ExpressHttpAdapter,

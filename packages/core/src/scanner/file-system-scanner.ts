@@ -8,19 +8,9 @@ export class FileSystemScanner implements Scanner {
         const files = await fg(['**/*.{js,ts}'], {
             cwd: this.root,
             absolute: true,
-            ignore: [   
-                '**/node_modules/**',
-                '**/dist/**',
-                '**/index.bootstrap.ts',
-                '**/index.bootstrap.js',
-                '**/*.d.ts',
-                '**/*.spec.ts',
-                '**/*.spec.js',
-            ],
+            ignore: ['**/node_modules/**', '**/dist/**', '**/index.bootstrap.ts', '**/index.bootstrap.js', '**/*.d.ts', '**/*.spec.ts', '**/*.spec.js']
         });
 
-        await Promise.all(
-            files.map(file => import(file))
-        );
+        await Promise.all(files.map((file) => import(file)));
     }
 }

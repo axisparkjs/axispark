@@ -2,7 +2,7 @@ import { AxiSparkTestFactory } from '@axisparkjs/test';
 import { AxiSparkCore } from '@axisparkjs/core';
 import { Logger } from '@axisparkjs/logger';
 import { app } from '@axisparkjs/samples/hello-world/src/app';
-import { HelloWorldPlugin, registerText, /*startText, stopText*/ } from '@axisparkjs/samples/hello-world/src/plugin';
+import { HelloWorldPlugin, registerText /*startText, stopText*/ } from '@axisparkjs/samples/hello-world/src/plugin';
 
 describe('Hello World App', () => {
     let axiSparkCore: AxiSparkCore;
@@ -20,9 +20,7 @@ describe('Hello World App', () => {
     beforeAll(async () => {
         axiSparkCore = AxiSparkTestFactory.create({
             app,
-            providers: [
-                { token: Logger, useValue: mockLogger }
-            ]
+            providers: [{ token: Logger, useValue: mockLogger }]
         });
     });
 

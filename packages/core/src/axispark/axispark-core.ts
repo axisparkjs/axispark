@@ -36,9 +36,8 @@ export class AxiSparkCore implements Lifecycle {
         await this.axisparkContext.plugins.run(this.axisparkContext);
         await this.axisparkContext.logger.info('App running, waiting for termination signal...');
 
-        if (this.axisparkContext.privateConfig.disableAwaitSignal)
-            return;
-        
+        if (this.axisparkContext.privateConfig.disableAwaitSignal) return;
+
         return new Promise((resolve) => {
             process.once('SIGINT', resolve);
             process.once('SIGTERM', resolve);

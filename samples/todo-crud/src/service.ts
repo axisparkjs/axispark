@@ -1,5 +1,5 @@
-import { Injectable } from "@axisparkjs/di";
-import { Todo } from "./todo";
+import { Injectable } from '@axisparkjs/di';
+import { Todo } from './todo';
 
 @Injectable()
 export class TodoService {

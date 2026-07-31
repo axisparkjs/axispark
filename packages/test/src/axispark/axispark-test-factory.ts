@@ -12,8 +12,9 @@ class AxiSparkTestFactoryStatic implements Factory<AxiSparkCore> {
                 banner: false,
                 environment: 'test',
                 name: 'Test',
-                logTransports: [new NullTransport({ formatter: new SimpleFormatter(), minLevel: LogLevel.ERROR })],
-            }, {
+                logTransports: [new NullTransport({ formatter: new SimpleFormatter(), minLevel: LogLevel.ERROR })]
+            },
+            {
                 scanner: 'file-system',
                 disableAwaitSignal: true
             }
