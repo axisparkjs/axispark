@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es2016",
-        "lib": ["ES2021"],
+        "lib": ["ES2021", "ES2023"],
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "removeComments": true,

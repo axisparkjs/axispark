@@ -12,8 +12,8 @@ export interface ParseIntPipeStepParameters extends PipeStepParameters {
 export class ParseIntPipeStep implements PipeStep<string, number> {
     execute(value: any, executionContext: PipeStepExecutionContext, parameters?: ParseIntPipeStepParameters): any {
         const radix = parameters?.radix ?? 10;
-        const res = parseInt(value, radix);
-        if (isNaN(res)) {
+        const res = Number.parseInt(value, radix);
+        if (Number.isNaN(res)) {
             throw new PipeStepParsingError(executionContext, `Value '${value}' is not a valid integer.`, 'integer');
         }
         return res;

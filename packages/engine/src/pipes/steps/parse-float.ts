@@ -6,9 +6,9 @@ import { PipeStepParsingError } from '../pipe-step-errors';
 @Injectable()
 export class ParseFloatPipeStep implements PipeStep<string, number> {
     execute(value: any, executionContext: PipeStepExecutionContext): any {
-        const res = parseFloat(value);
+        const res = Number.parseFloat(value);
 
-        if (isNaN(res)) {
+        if (Number.isNaN(res)) {
             throw new PipeStepParsingError(executionContext, `Value '${value}' is not a valid number.`, 'float');
         }
 

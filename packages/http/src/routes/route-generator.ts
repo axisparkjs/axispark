@@ -43,7 +43,8 @@ class RouteGeneratorStatic implements Generator<{ controller: Constructor; route
     }
 
     private joinPath(prefix: string, path: string): string {
-        return `${prefix.startsWith('/') ? prefix : `/${prefix}`}/${path}`.replace(/\/+/g, '/').replace(/\/$/, '') || '/';
+        prefix = prefix.startsWith('/') ? prefix : `/${prefix}`;
+        return `${prefix}/${path}`.replace(/\/+/g, '/').replace(/\/$/, '') || '/';
     }
 }
 export const RouteGenerator = new RouteGeneratorStatic();

@@ -3,11 +3,10 @@ import { ExecutionContext } from './execution-context';
 import { ExecutionHandler } from './execution-handler';
 import { ExecutionCore } from './execution-core';
 import { ExecutionStepsGenerator } from '../execution-steps/execution-steps-generator';
-import { ExecutionStep } from '../execution-steps/execution-step';
 import { ExecutionStepType } from '../execution-steps/execution-step-type';
 import { ExecutionStepScope } from '../execution-steps/execution-step-scope';
 import { ExecutionInvoker } from './execution-invoker';
-import { BeforeExecutionStep, AfterExecutionStep, CatchExecutionStep } from '../execution-steps/execution-step';
+import { BeforeExecutionStep, AfterExecutionStep, CatchExecutionStep, ExecutionStep } from '../execution-steps/execution-step';
 import { ExecutionPlan } from './execution-plan';
 import { ExecutionTransport } from './execution-transport';
 import { ErrorClass } from '../execution-steps/types';
@@ -73,7 +72,7 @@ export class ExecutionEngine implements Executable, Initializable {
         const globalInterceptors = this.getSteps(steps.globalSteps, ExecutionStepType.Interceptor, true);
         const usingInterceptors = this.getSteps(steps.usingSteps, ExecutionStepType.Interceptor, false);
         const interceptors = [...globalInterceptors, ...usingInterceptors] as AfterExecutionStep[];
-        const interceptorsReverse = interceptors.reverse();
+        const interceptorsReverse = interceptors.toReversed();
         after.push(...interceptorsReverse.filter((step) => step.scope === ExecutionStepScope.After).map(this.stepToExecutionHandler));
 
         return after;
@@ -84,7 +83,7 @@ export class ExecutionEngine implements Executable, Initializable {
 
         const globalFilters = this.getSteps(steps.globalSteps, ExecutionStepType.Filter, true);
         const usingFilters = this.getSteps(steps.usingSteps, ExecutionStepType.Filter, false);
-        const allFilters = [...globalFilters.reverse(), ...usingFilters.reverse()].reverse() as CatchExecutionStep[];
+        const allFilters = [...globalFilters.toReversed(), ...usingFilters.toReversed()].toReversed() as CatchExecutionStep[];
         filters.push(...allFilters.map((step) => ({ executionHandler: { target: step.target, method: step.propertyKey }, acceptedErrors: step.acceptedErrors })));
 
         return filters;

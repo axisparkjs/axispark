@@ -2,8 +2,7 @@ import { Metadata, MetadataKeys } from '@axisparkjs/common';
 import { Constructable } from '@axisparkjs/di';
 import { ExecutionStepTargetMetadata } from '../metadata/execution-step-target-metadata';
 import { ExecutionStepType } from '../execution-step-type';
-import { ExecutionTransport } from '../../execution';
-import { ExecutionPriority } from '../../execution';
+import { ExecutionTransport, ExecutionPriority } from '../../execution';
 
 function ExecutionStepTarget(config: Partial<ExecutionStepTargetMetadata>): ClassDecorator {
     return (target) => {
