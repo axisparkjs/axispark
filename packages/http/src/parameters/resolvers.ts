@@ -1,9 +1,8 @@
-import { ParameterResolver, ParametersResolver } from '@axisparkjs/engine';
+import { ParameterResolver, ParametersResolver, ParameterMetadata } from '@axisparkjs/engine';
 import { HttpContext } from '../types/http-context';
 import { HttpParameter } from '../types/http-parameter';
 import { HttpRequest } from '../types/http-request';
 import { HttpResponse } from '../types/http-response';
-import { ParameterMetadata } from '@axisparkjs/engine';
 
 export class RequestResolver implements ParameterResolver<HttpRequest> {
     resolve(httpContext: HttpContext) {

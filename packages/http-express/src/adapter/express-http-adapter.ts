@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@axisparkjs/di';
 import { HTTP_OPTIONS, HttpAdapter, HttpContext, Route } from '@axisparkjs/http';
 import express, { Request, Response } from 'express';
 import session from 'express-session';
-import { Server } from 'http';
+import { Server } from 'node:http';
 import { ExpressHttpRequest } from '../types/express-http-request';
 import { ExpressHttpResponse } from '../types/express-http-response';
 import { ExpressHttpPluginOptions } from '../plugin/express-http-plugin-options';

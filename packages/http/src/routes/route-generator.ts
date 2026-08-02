@@ -1,4 +1,4 @@
-import { Constructor, DecoratorNotIncludedError } from '@axisparkjs/di';
+import { Constructor, DecoratorNotIncludedError, ClassRegistry } from '@axisparkjs/di';
 import { AxiSparkContext } from '@axisparkjs/core';
 import { Generator, Metadata, MetadataKeys } from '@axisparkjs/common';
 import { Route } from './route';
@@ -7,7 +7,6 @@ import { RouteMetadata } from '../metadata/route-metadata';
 import { Controller } from '../decorators';
 import { HttpResultProcessor } from '../execution-results/http-result-processor';
 import { ExecutionTransport } from '@axisparkjs/engine';
-import { ClassRegistry } from '@axisparkjs/di';
 
 class RouteGeneratorStatic implements Generator<{ controller: Constructor; routes: Route[] }[]> {
     generate(context: AxiSparkContext): { controller: Constructor; routes: Route[] }[] {

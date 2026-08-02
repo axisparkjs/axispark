@@ -26,9 +26,9 @@ export class AxiSparkCore implements Lifecycle {
 
         // Initialization logic here
         await this.axisparkContext.scanner.scan();
-        await this.axisparkContext.container.init();
+        this.axisparkContext.container.init();
         await this.axisparkContext.plugins.init(this.axisparkContext);
-        await this.axisparkContext.engine.init();
+        this.axisparkContext.engine.init();
         await this.axisparkContext.logger.info('App initialized');
     }
 

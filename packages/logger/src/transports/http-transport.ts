@@ -3,7 +3,7 @@ import { LogTransport, LogTransportOptions } from '../log-transport';
 
 export interface HttpTransportOptions extends LogTransportOptions {
     url: string;
-    headers?: HeadersInit;
+    headers?: Record<string, string>;
 }
 
 export class HttpTransport extends LogTransport {

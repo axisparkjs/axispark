@@ -1,14 +1,12 @@
-import { AxiSparkContext, PluginNotConfiguredError } from '@axisparkjs/core';
+import { AxiSparkContext, PluginNotConfiguredError, Plugin, Pluggable } from '@axisparkjs/core';
 import { HttpPluginOptions } from './http-plugin-options';
 import { HTTP_ADAPTER, HTTP_LOGGER, HTTP_OPTIONS } from '../di/tokens';
 import { HttpAdapter } from '../adapter/http-adapter';
 import { RouteGenerator } from '../routes/route-generator';
 import { Logger } from '@axisparkjs/logger';
-import { Plugin, Pluggable } from '@axisparkjs/core';
-import { ClassRegistry } from '@axisparkjs/di';
+import { ClassRegistry, Constructor } from '@axisparkjs/di';
 import { LogHttpRequestInterceptor, LogHttpResponseInterceptor } from '../interceptors';
 import { LogHttpErrorFilter, LogErrorFilter } from '../filters';
-import { Constructor } from '@axisparkjs/di';
 import { Route } from '../routes/route';
 
 @Plugin()
