@@ -25,10 +25,11 @@ export class HealthEngine {
             };
         });
         const unhealthyPluginPresence = healthDatas.some((state) => state.status === HealthStatus.Unhealthy);
+        const statusOverall = unhealthyPluginPresence ? HealthStatus.Unhealthy : HealthStatus.Unknown;
         const appState: HealthData = {
             component: this.config.name as string,
             timestamp: new Date().toISOString(),
-            status: healthDatas.every((state) => state.status === HealthStatus.Healthy) ? HealthStatus.Healthy : unhealthyPluginPresence ? HealthStatus.Unhealthy : HealthStatus.Unknown,
+            status: healthDatas.every((state) => state.status === HealthStatus.Healthy) ? HealthStatus.Healthy : statusOverall,
             details: {
                 plugins: healthDatas.map((state) => ({
                     component: state.component,

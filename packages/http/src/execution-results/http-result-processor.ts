@@ -1,10 +1,9 @@
-import { ExecutionResultProcessor, ExecutionHandler } from '@axisparkjs/engine';
+import { ExecutionResultProcessor, ExecutionHandler, ExecutionResult } from '@axisparkjs/engine';
 import { BodyHttpResult } from './http-result';
 import { HttpContext } from '../types/http-context';
 import { Metadata, MetadataKeys } from '@axisparkjs/common';
 import { HttpStatusCode, defaultStatusCode } from '../types';
 import { RouteMetadata } from '../metadata/route-metadata';
-import { ExecutionResult } from '@axisparkjs/engine';
 
 class HttpResultProcessorStatic implements ExecutionResultProcessor {
     public async process(context: HttpContext, handler: ExecutionHandler, result: unknown): Promise<void> {

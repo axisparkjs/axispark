@@ -51,12 +51,12 @@ export class IntervalJobTrigger extends JobTrigger {
 
 export class DateJobTrigger extends JobTrigger {
     constructor(public readonly date: Date) {
-        if (date.getTime() <= new Date().getTime()) throw new JobError(`Date must be in the future, got: ${date}`);
+        if (date.getTime() <= Date.now()) throw new JobError(`Date must be in the future, got: ${date}`);
         super();
     }
 
     getNextExecutionTime(): Date | undefined {
-        if (this.date.getTime() <= new Date().getTime()) return undefined;
+        if (this.date.getTime() <= Date.now()) return undefined;
         return this.date;
     }
 }
