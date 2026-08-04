@@ -1,5 +1,5 @@
 import { Inject } from '@axisparkjs/di';
-import { Error as ErrorParam, Filter, Catch, ExecutionTransport, ExecutionPriority } from '@axisparkjs/engine';
+import { FilteredError as ErrorParam, Filter, Catch, ExecutionTransport, ExecutionPriority } from '@axisparkjs/engine';
 import { Logger } from '@axisparkjs/logger';
 import { HTTP_LOGGER } from '../di/tokens';
 

@@ -1,3 +1,3 @@
 export * from './context';
-export * from './error';
+export * from './filtered-error';
 export * from './parameter';

@@ -1,2 +1,2 @@
 export * from './context-resolver';
-export * from './error-resolver';
+export * from './filtered-error-resolver';

@@ -1,12 +1,12 @@
-import { ErrorResolver } from './error-resolver';
+import { FilteredErrorResolver } from './filtered-error-resolver';
 
-describe('ErrorResolver', () => {
+describe('FilteredErrorResolver', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
     it('should return the execution error', () => {
-        const resolver = new ErrorResolver();
+        const resolver = new FilteredErrorResolver();
         const error = new Error('boom');
 
         const context = {
@@ -17,7 +17,7 @@ describe('ErrorResolver', () => {
     });
 
     it('should return undefined when there is no error', () => {
-        const resolver = new ErrorResolver();
+        const resolver = new FilteredErrorResolver();
 
         const context = {} as any;
 

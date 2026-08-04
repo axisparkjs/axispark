@@ -1,4 +1,4 @@
-import { Error as ErrorParam, Filter, Catch, ExecutionTransport, ExecutionPriority } from '@axisparkjs/engine';
+import { FilteredError as ErrorParam, Filter, Catch, ExecutionTransport, ExecutionPriority } from '@axisparkjs/engine';
 import { ErrorHttpResult } from '../execution-results';
 import { HttpError } from '../errors';
 import { HttpStatusCode } from '../types/http-status-code';
