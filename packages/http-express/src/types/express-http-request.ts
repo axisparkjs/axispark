@@ -40,6 +40,14 @@ export class ExpressHttpRequest implements HttpRequest {
         return this.request.session;
     }
 
+    get cookies() {
+        return this.request.cookies;
+    }
+
+    getCookie(name: string): string | undefined {
+        return this.request.cookies[name];
+    }
+
     getHeader(name: string): string | string[] | undefined {
         return this.request.get(name);
     }

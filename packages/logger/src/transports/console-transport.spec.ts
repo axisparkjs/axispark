@@ -13,7 +13,7 @@ describe('ConsoleTransport', () => {
         };
 
         transport = new ConsoleTransport({
-            minLevel: LogLevel.INFO,
+            minLevel: LogLevel.Info,
             formatter
         });
 
@@ -27,7 +27,7 @@ describe('ConsoleTransport', () => {
     it('should write the formatted message when level is equal to minLevel', async () => {
         const entry: LogEntry = {
             timestamp: new Date(),
-            level: LogLevel.INFO,
+            level: LogLevel.Info,
             message: 'Test',
             scopes: []
         };
@@ -41,7 +41,7 @@ describe('ConsoleTransport', () => {
     it('should write the formatted message when level is greater than minLevel', async () => {
         const entry: LogEntry = {
             timestamp: new Date(),
-            level: LogLevel.ERROR,
+            level: LogLevel.Error,
             message: 'Test',
             scopes: []
         };
@@ -55,7 +55,7 @@ describe('ConsoleTransport', () => {
     it('should not write anything when level is lower than minLevel', async () => {
         const entry: LogEntry = {
             timestamp: new Date(),
-            level: LogLevel.DEBUG,
+            level: LogLevel.Debug,
             message: 'Test',
             scopes: []
         };

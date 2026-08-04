@@ -36,7 +36,7 @@ export class HttpPlugin implements Pluggable {
     }
 
     private async generateRoutes(context: AxiSparkContext): Promise<Route[]> {
-        const routeSets = RouteGenerator.generate(context);
+        const routeSets = RouteGenerator.generate(this.options, context);
         const totalRoutes: Route[] = [];
         for (const { controller, routes } of routeSets) {
             totalRoutes.push(...routes);

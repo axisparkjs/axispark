@@ -10,6 +10,8 @@ describe('ExpressHttpResponse', () => {
         response = {
             status: jest.fn(),
             setHeader: jest.fn(),
+            cookie: jest.fn(),
+            clearCookie: jest.fn(),
             json: jest.fn(),
             send: jest.fn(),
             sendFile: jest.fn(),
@@ -34,6 +36,38 @@ describe('ExpressHttpResponse', () => {
             const result = httpResponse.header('content-type', 'application/json');
 
             expect(response.setHeader).toHaveBeenCalledWith('content-type', 'application/json');
+            expect(result).toBe(httpResponse);
+        });
+    });
+
+    describe('cookie', () => {
+        it('should set a cookie and return itself', () => {
+            const result = httpResponse.cookie('token', 'abc123', { httpOnly: true });
+
+            expect(response.cookie).toHaveBeenCalledWith('token', 'abc123', { httpOnly: true });
+            expect(result).toBe(httpResponse);
+        });
+
+        it('should set a cookie with default options when options are not provided', () => {
+            const result = httpResponse.cookie('token', 'abc123');
+
+            expect(response.cookie).toHaveBeenCalledWith('token', 'abc123', {});
+            expect(result).toBe(httpResponse);
+        });
+    });
+
+    describe('clearCookie', () => {
+        it('should clear a cookie and return itself', () => {
+            const result = httpResponse.clearCookie('token', { path: '/' });
+
+            expect(response.clearCookie).toHaveBeenCalledWith('token', { path: '/' });
+            expect(result).toBe(httpResponse);
+        });
+
+        it('should clear a cookie with default options when options are not provided', () => {
+            const result = httpResponse.clearCookie('token');
+
+            expect(response.clearCookie).toHaveBeenCalledWith('token', {});
             expect(result).toBe(httpResponse);
         });
     });

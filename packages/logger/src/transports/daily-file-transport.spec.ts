@@ -26,12 +26,12 @@ describe('DailyFileTransport', () => {
         const transport = new DailyFileTransport({
             file: 'logs/app.log',
             formatter,
-            minLevel: LogLevel.DEBUG
+            minLevel: LogLevel.Debug
         });
 
         await transport.write({
             timestamp: new Date(),
-            level: LogLevel.INFO,
+            level: LogLevel.Info,
             message: '',
             scopes: []
         });

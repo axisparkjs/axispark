@@ -38,6 +38,8 @@
             "@axisparkjs/http-express/*": ["./packages/http-express/src/*"],
             "@axisparkjs/logger": ["./packages/logger/src"],
             "@axisparkjs/logger/*": ["./packages/logger/src/*"],
+            "@axisparkjs/schedule": ["./packages/schedule/src"],
+            "@axisparkjs/schedule/*": ["./packages/schedule/src/*"],
             "@axisparkjs/test": ["./packages/test/src"],
             "@axisparkjs/test/*": ["./packages/test/src/*"],
             "@axisparkjs/samples": ["./samples"],
@@ -45,6 +47,6 @@
         },
         "types": ["node", "jest"]
     },
-    "include": ["packages/**/*", "samples/**/*"],
+    "include": ["packages/**/*"],
     "exclude": ["node_modules", "lib", "**/jest.config.ts"]
 }

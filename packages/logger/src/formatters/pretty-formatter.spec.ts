@@ -16,7 +16,7 @@ describe('PrettyFormatter', () => {
     it('should format a log entry without scopes, metadata or error', () => {
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.INFO,
+            level: LogLevel.Info,
             message: 'Application started',
             scopes: []
         };
@@ -29,7 +29,7 @@ describe('PrettyFormatter', () => {
     it('should format a log entry with scopes', () => {
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.WARN,
+            level: LogLevel.Warn,
             message: 'Low memory',
             scopes: ['Server', 'API']
         };
@@ -42,7 +42,7 @@ describe('PrettyFormatter', () => {
     it('should include metadata', () => {
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.INFO,
+            level: LogLevel.Info,
             message: 'User created',
             scopes: [],
             metadata: {
@@ -64,7 +64,7 @@ describe('PrettyFormatter', () => {
 
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.ERROR,
+            level: LogLevel.Error,
             message: 'Operation failed',
             scopes: [],
             error
@@ -82,7 +82,7 @@ describe('PrettyFormatter', () => {
 
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.ERROR,
+            level: LogLevel.Error,
             message: 'Operation failed',
             scopes: ['API'],
             error
@@ -101,7 +101,7 @@ describe('PrettyFormatter', () => {
 
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.ERROR,
+            level: LogLevel.Error,
             message: 'Request failed',
             scopes: ['HTTP'],
             metadata: {
@@ -125,7 +125,7 @@ describe('PrettyFormatter', () => {
 
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.INFO,
+            level: LogLevel.Info,
             message: 'Test',
             scopes: ['Scope'],
             metadata: {

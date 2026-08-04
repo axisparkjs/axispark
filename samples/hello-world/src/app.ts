@@ -7,7 +7,7 @@ export const app = AxiSparkFactory.create({
     basePath: __dirname,
     logTransports: [
         new ConsoleTransport({
-            minLevel: LogLevel.INFO,
+            minLevel: LogLevel.Info,
             formatter: new SimpleFormatter()
         })
     ]

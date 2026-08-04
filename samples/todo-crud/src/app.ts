@@ -8,9 +8,14 @@ export const app = AxiSparkFactory.create({
     basePath: __dirname,
     logTransports: [
         new ConsoleTransport({
-            minLevel: LogLevel.INFO,
+            minLevel: LogLevel.Info,
             formatter: new SimpleFormatter()
         })
     ]
 });
-app.use(HttpPlugin, HttpPluginOptionsFactory.create());
+app.use(
+    HttpPlugin,
+    HttpPluginOptionsFactory.create({
+        rootPath: '/api'
+    })
+);

@@ -6,7 +6,7 @@ export class JsonFormatter implements LogFormatter {
     format(entry: LogEntry): string {
         return JSON.stringify({
             timestamp: entry.timestamp.toISOString(),
-            level: LogLevel[entry.level],
+            level: LogLevel[entry.level].toLocaleUpperCase(),
             message: entry.message,
             scopes: entry.scopes,
             metadata: entry.metadata,

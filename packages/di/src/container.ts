@@ -7,12 +7,12 @@ import { Injectable } from './decorators';
 import { ClassRegistry } from './class-registry';
 
 export class Container implements Initializable {
-    private readonly providers = new Map<Token, Provider>();
+    private readonly providers = new Map<string, Provider>();
     private readonly resolver = new Resolver();
 
     init() {
         ClassRegistry.getWithMetadata(MetadataKeys.INJECTABLE).forEach((entry) => {
-            if (!this.providers.has(entry)) {
+            if (!this.providers.has(TokenUtils.getName(entry))) {
                 this.bind(entry);
             }
         });
@@ -25,16 +25,15 @@ export class Container implements Initializable {
 
         if ('useClass' in provider && !Metadata.has(MetadataKeys.INJECTABLE, provider.useClass)) throw new DecoratorNotIncludedError(TokenUtils.getName(provider.useClass), Injectable.name);
 
-        this.providers.set(provider.token, provider);
+        this.providers.set(TokenUtils.getName(provider.token), provider);
     }
 
     unbind<T>(token: Token<T>): void {
-        this.providers.delete(token);
+        this.providers.delete(TokenUtils.getName(token));
     }
 
     resolve<T>(token: Token<T>): T {
-        const provider = this.providers.get(token);
-
+        const provider = this.providers.get(TokenUtils.getName(token));
         if (!provider) throw new ProviderNotFoundError(token);
 
         if ('useValue' in provider) return provider.useValue as T;

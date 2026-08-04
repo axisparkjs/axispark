@@ -13,7 +13,7 @@ describe('Logger', () => {
 
     beforeEach(() => {
         const config: LogTransportOptions = {
-            minLevel: LogLevel.INFO,
+            minLevel: LogLevel.Info,
             formatter: {
                 format: jest.fn().mockReturnValue('formatted message')
             }
@@ -32,7 +32,7 @@ describe('Logger', () => {
 
             expect(transport1.write).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    level: LogLevel.INFO,
+                    level: LogLevel.Info,
                     message: 'info message',
                     scopes: []
                 })
@@ -48,7 +48,7 @@ describe('Logger', () => {
 
             expect(transport1.write).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    level: LogLevel.WARN,
+                    level: LogLevel.Warn,
                     message: 'warn message',
                     scopes: []
                 })
@@ -62,7 +62,7 @@ describe('Logger', () => {
 
             expect(transport1.write).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    level: LogLevel.DEBUG,
+                    level: LogLevel.Debug,
                     message: 'debug message',
                     scopes: []
                 })
@@ -76,7 +76,7 @@ describe('Logger', () => {
 
             expect(transport1.write).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    level: LogLevel.TRACE,
+                    level: LogLevel.Trace,
                     message: 'trace message',
                     scopes: []
                 })
@@ -92,7 +92,7 @@ describe('Logger', () => {
 
             expect(transport1.write).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    level: LogLevel.ERROR,
+                    level: LogLevel.Error,
                     message: 'error message',
                     error,
                     scopes: []
@@ -105,7 +105,7 @@ describe('Logger', () => {
 
             expect(transport1.write).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    level: LogLevel.ERROR,
+                    level: LogLevel.Error,
                     message: 'error message',
                     error: undefined
                 })
@@ -121,7 +121,7 @@ describe('Logger', () => {
 
             expect(transport1.write).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    level: LogLevel.FATAL,
+                    level: LogLevel.Fatal,
                     message: 'fatal message',
                     error,
                     scopes: []
@@ -134,7 +134,7 @@ describe('Logger', () => {
 
             expect(transport1.write).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    level: LogLevel.FATAL,
+                    level: LogLevel.Fatal,
                     message: 'fatal message',
                     error: undefined
                 })
@@ -150,14 +150,14 @@ describe('Logger', () => {
             };
 
             await logger.log({
-                level: LogLevel.INFO,
+                level: LogLevel.Info,
                 message: 'message',
                 metadata
             });
 
             expect(transport1.write).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    level: LogLevel.INFO,
+                    level: LogLevel.Info,
                     message: 'message',
                     metadata,
                     scopes: []
@@ -167,7 +167,7 @@ describe('Logger', () => {
 
         it('should send the log to every transport', async () => {
             await logger.log({
-                level: LogLevel.INFO,
+                level: LogLevel.Info,
                 message: 'message'
             });
 
@@ -177,7 +177,7 @@ describe('Logger', () => {
 
         it('should include a timestamp', async () => {
             await logger.log({
-                level: LogLevel.INFO,
+                level: LogLevel.Info,
                 message: 'message'
             });
 

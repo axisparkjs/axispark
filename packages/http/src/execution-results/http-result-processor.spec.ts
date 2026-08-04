@@ -62,7 +62,7 @@ describe('HttpResultProcessor', () => {
     it('should use the HTTP_CODE metadata when present', async () => {
         const process = jest.fn();
 
-        (Metadata.get as jest.Mock).mockReturnValue([{ method: HttpMethod.GET, propertyKey: 'index' }]);
+        (Metadata.get as jest.Mock).mockReturnValue([{ method: HttpMethod.Get, propertyKey: 'index' }]);
 
         (Metadata.getMethod as jest.Mock).mockReturnValue(HttpStatusCode.Created);
 
@@ -81,7 +81,7 @@ describe('HttpResultProcessor', () => {
     it('should use the default status code when HTTP_CODE is not defined', async () => {
         const process = jest.fn();
 
-        (Metadata.get as jest.Mock).mockReturnValue([{ method: HttpMethod.POST, propertyKey: 'index' }]);
+        (Metadata.get as jest.Mock).mockReturnValue([{ method: HttpMethod.Post, propertyKey: 'index' }]);
 
         (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
 
@@ -93,7 +93,7 @@ describe('HttpResultProcessor', () => {
 
         await HttpResultProcessor.process(context, handler, { ok: true });
 
-        expect(defaultStatusCode).toHaveBeenCalledWith(HttpMethod.POST);
+        expect(defaultStatusCode).toHaveBeenCalledWith(HttpMethod.Post);
 
         expect(BodyHttpResult).toHaveBeenCalledWith({ ok: true }, HttpStatusCode.Created);
 

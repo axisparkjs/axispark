@@ -26,6 +26,10 @@ describe('ExpressHttpRequest', () => {
             session: {
                 userId: '123'
             } as never,
+            cookies: {
+                sessionId: 'abc123'
+            },
+
             get: jest.fn()
         };
 
@@ -66,6 +70,23 @@ describe('ExpressHttpRequest', () => {
 
     it('should return the request session', () => {
         expect(httpRequest.session).toBe(request.session);
+    });
+
+    it('should return the request cookies', () => {
+        request.cookies = { sessionId: 'abc123' };
+        expect(httpRequest.cookies).toBe(request.cookies);
+    });
+
+    it('should return a cookie value', () => {
+        request.cookies = { sessionId: 'abc123' };
+
+        expect(httpRequest.getCookie('sessionId')).toBe('abc123');
+    });
+
+    it('should return undefined when the cookie does not exist', () => {
+        request.cookies = { sessionId: 'abc123' };
+
+        expect(httpRequest.getCookie('nonexistent')).toBeUndefined();
     });
 
     it('should return a header value', () => {

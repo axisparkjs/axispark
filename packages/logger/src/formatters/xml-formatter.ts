@@ -19,7 +19,7 @@ export class XmlFormatter implements LogFormatter {
 
         return `<log>
     <timestamp>${entry.timestamp.toISOString()}</timestamp>
-    <level>${LogLevel[entry.level]}</level>
+    <level>${LogLevel[entry.level].toLocaleUpperCase()}</level>
     <message>${this.escape(entry.message)}</message>
     <scopes>${scopes}</scopes>
     ${metadata}
@@ -28,6 +28,6 @@ export class XmlFormatter implements LogFormatter {
     }
 
     private escape(value: string): string {
-        return value.replaceAll(/&/g, '&amp;').replaceAll(/</g, '&lt;').replaceAll(/>/g, '&gt;').replaceAll(/"/g, '&quot;').replaceAll(/'/g, '&apos;');
+        return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
     }
 }

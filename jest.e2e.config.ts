@@ -22,6 +22,8 @@ export const config = {
         '^@axisparkjs/logger/(.*)$': '<rootDir>/packages/logger/src/$1',
         '^@axisparkjs/test$': '<rootDir>/packages/test/src',
         '^@axisparkjs/test/(.*)$': '<rootDir>/packages/test/src/$1',
+        '^@axisparkjs/schedule$': '<rootDir>/packages/schedule/src',
+        '^@axisparkjs/schedule/(.*)$': '<rootDir>/packages/schedule/src/$1',
         '^@axisparkjs/samples$': '<rootDir>/samples',
         '^@axisparkjs/samples/(.*)$': '<rootDir>/samples/$1'
     }

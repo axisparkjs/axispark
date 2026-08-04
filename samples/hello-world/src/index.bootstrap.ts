@@ -1,16 +1,17 @@
 import { app } from './app';
 
 const bootstrap = async () => {
-    const keepAlive = setInterval(() => {}, 1 << 30); // ~12 días
     try {
         await app.init();
         await app.run();
+    } catch (e) {
+        console.error('Error during bootstrap:', e);
     } finally {
         await app.destroy();
-        clearInterval(keepAlive);
     }
 };
 
-bootstrap().catch(() => {
+bootstrap().catch((e) => {
+    console.error('Error during bootstrap:', e);
     process.exit(1);
 });

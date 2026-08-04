@@ -35,7 +35,7 @@ describe('Method decorators', () => {
             MetadataKeys.ROUTE,
             [
                 {
-                    method: HttpMethod.GET,
+                    method: HttpMethod.Get,
                     path: '/users',
                     propertyKey: 'index'
                 }
@@ -47,7 +47,7 @@ describe('Method decorators', () => {
     it('should append a route to the existing routes', () => {
         const routes = [
             {
-                method: HttpMethod.POST,
+                method: HttpMethod.Post,
                 path: '/users',
                 propertyKey: 'create'
             }
@@ -65,12 +65,12 @@ describe('Method decorators', () => {
             MetadataKeys.ROUTE,
             [
                 {
-                    method: HttpMethod.POST,
+                    method: HttpMethod.Post,
                     path: '/users',
                     propertyKey: 'create'
                 },
                 {
-                    method: HttpMethod.PUT,
+                    method: HttpMethod.Put,
                     path: '/:id',
                     propertyKey: 'update'
                 }
@@ -80,13 +80,13 @@ describe('Method decorators', () => {
     });
 
     it.each([
-        [Delete, HttpMethod.DELETE],
-        [Get, HttpMethod.GET],
-        [Head, HttpMethod.HEAD],
-        [Options, HttpMethod.OPTIONS],
-        [Patch, HttpMethod.PATCH],
-        [Post, HttpMethod.POST],
-        [Put, HttpMethod.PUT]
+        [Delete, HttpMethod.Delete],
+        [Get, HttpMethod.Get],
+        [Head, HttpMethod.Head],
+        [Options, HttpMethod.Options],
+        [Patch, HttpMethod.Patch],
+        [Post, HttpMethod.Post],
+        [Put, HttpMethod.Put]
     ])('should create a %s route', (decorator, method) => {
         (Metadata.get as jest.Mock).mockReturnValue(undefined);
 

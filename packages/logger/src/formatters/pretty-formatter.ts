@@ -5,7 +5,7 @@ import { LogLevel } from '../log-level';
 export class PrettyFormatter implements LogFormatter {
     format(entry: LogEntry): string {
         const timestamp = entry.timestamp.toISOString();
-        const level = LogLevel[entry.level].padEnd(5);
+        const level = LogLevel[entry.level].toLocaleUpperCase().padEnd(5);
         const scope = entry.scopes.length ? `[${entry.scopes.join(' > ')}]` : '';
 
         let output = `${timestamp} │ ${level}`;

@@ -21,11 +21,12 @@ export class AxiSparkContext {
             name: 'App',
             environment: 'development',
             banner: true,
-            logTransports: [new ConsoleTransport({ formatter: new SimpleFormatter(), minLevel: LogLevel.TRACE })],
+            logTransports: [new ConsoleTransport({ formatter: new SimpleFormatter(), minLevel: LogLevel.Trace })],
             ...config
         };
         this.privateConfig = {
             scanner: 'file-system',
+            wait: true,
             ...privateConfig
         };
         this.logger = new Logger(this.config.logTransports as LogTransport[], [this.config.name as string]);

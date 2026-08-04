@@ -12,11 +12,17 @@ describe('HttpPluginOptionsFactory', () => {
                 port: 3000,
                 adapter: ExpressHttpAdapter,
                 bodyParser: true,
-                bodyParserOptions: {},
+                bodyParserOptions: undefined,
                 urlEncoded: true,
-                urlEncodedOptions: {},
+                urlEncodedOptions: undefined,
+                cors: false,
+                corsOptions: undefined,
                 session: false,
-                sessionOptions: {},
+                sessionOptions: undefined,
+                cookies: true,
+                cookiesOptions: undefined,
+                compression: false,
+                compressionOptions: undefined,
                 logHttpErrors: false,
                 logErrors: true,
                 logHttpRequests: false,
@@ -28,6 +34,9 @@ describe('HttpPluginOptionsFactory', () => {
             const bodyParserOptions = { limit: '10mb' };
             const urlEncodedOptions = { extended: false };
             const sessionOptions = { secret: 'secret' };
+            const cookiesOptions = { secret: 'secret' };
+            const compressionOptions = { threshold: 1024 };
+            const corsOptions = { origin: 'http://example.com' };
 
             const options = HttpPluginOptionsFactory.create({
                 port: 8080,
@@ -36,8 +45,14 @@ describe('HttpPluginOptionsFactory', () => {
                 bodyParserOptions,
                 urlEncoded: false,
                 urlEncodedOptions,
+                cors: true,
+                corsOptions,
                 session: true,
                 sessionOptions,
+                cookies: true,
+                cookiesOptions,
+                compression: true,
+                compressionOptions,
                 logHttpErrors: true,
                 logErrors: false,
                 logHttpRequests: true,
@@ -52,8 +67,14 @@ describe('HttpPluginOptionsFactory', () => {
                 bodyParserOptions,
                 urlEncoded: false,
                 urlEncodedOptions,
+                cors: true,
+                corsOptions,
                 session: true,
                 sessionOptions,
+                cookies: true,
+                cookiesOptions,
+                compression: true,
+                compressionOptions,
                 logHttpErrors: true,
                 logErrors: false,
                 logHttpRequests: true,

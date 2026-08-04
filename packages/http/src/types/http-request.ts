@@ -7,6 +7,8 @@ export interface HttpRequest {
     params: Readonly<Record<string, string | string[]>>;
     body: unknown;
     ip: string | undefined;
+    cookies: Readonly<Record<string, string | undefined>>;
 
+    getCookie(name: string): string | undefined;
     getHeader(name: string): string | string[] | undefined;
 }

@@ -16,7 +16,7 @@ describe('JsonFormatter', () => {
     it('should format a basic log entry', () => {
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.INFO,
+            level: LogLevel.Info,
             message: 'Application started',
             scopes: []
         };
@@ -36,7 +36,7 @@ describe('JsonFormatter', () => {
 
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.ERROR,
+            level: LogLevel.Error,
             message: 'Failure',
             scopes: ['API'],
             metadata: {
@@ -64,7 +64,7 @@ describe('JsonFormatter', () => {
     it('should preserve the original log entry', () => {
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.INFO,
+            level: LogLevel.Info,
             message: 'Test',
             scopes: []
         };

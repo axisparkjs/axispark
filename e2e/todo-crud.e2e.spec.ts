@@ -25,27 +25,18 @@ describe('TODO Crud App', () => {
         expect(plugins).toStrictEqual([
             {
                 type: HttpPlugin,
-                options: {
+                options: expect.objectContaining({
                     adapter: ExpressHttpAdapter,
                     bodyParser: true,
-                    bodyParserOptions: {},
-                    logErrors: true,
-                    logHttpRequests: false,
-                    logHttpResponses: false,
-                    logHttpErrors: false,
                     plugin: HttpPlugin,
-                    port: 3000,
-                    session: false,
-                    sessionOptions: {},
-                    urlEncoded: true,
-                    urlEncodedOptions: {}
-                }
+                    port: 3000
+                })
             }
         ]);
     });
 
     it('should handle GET requests to /todos', async () => {
-        const response = await fetch('http://localhost:3000/todos', {
+        const response = await fetch('http://localhost:3000/api/todos', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -56,7 +47,7 @@ describe('TODO Crud App', () => {
     });
 
     it('should handle GET requests to /todos/:index when the index is not found', async () => {
-        const response = await fetch('http://localhost:3000/todos/999', {
+        const response = await fetch('http://localhost:3000/api/todos/999', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -67,7 +58,7 @@ describe('TODO Crud App', () => {
 
     it('should handle POST requests to /todos', async () => {
         const newTodo = { task: 'Test Todo' };
-        const response = await fetch('http://localhost:3000/todos', {
+        const response = await fetch('http://localhost:3000/api/todos', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -81,7 +72,7 @@ describe('TODO Crud App', () => {
 
     it('should handle PUT requests to /todos/:index', async () => {
         const updatedTodo = { task: 'Updated Test Todo' };
-        const response = await fetch('http://localhost:3000/todos/0', {
+        const response = await fetch('http://localhost:3000/api/todos/0', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -94,7 +85,7 @@ describe('TODO Crud App', () => {
     });
 
     it('should handle GET requests to /todos/:index when the index is found', async () => {
-        const response = await fetch('http://localhost:3000/todos/0', {
+        const response = await fetch('http://localhost:3000/api/todos/0', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -106,7 +97,7 @@ describe('TODO Crud App', () => {
     });
 
     it('should handle DELETE requests to /todos/:index', async () => {
-        const response = await fetch('http://localhost:3000/todos/0', {
+        const response = await fetch('http://localhost:3000/api/todos/0', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

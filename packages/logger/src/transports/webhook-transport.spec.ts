@@ -22,7 +22,7 @@ describe('WebhookTransport', () => {
         transport = new WebhookTransport({
             url: 'https://discord.com/api/webhooks/test',
             formatter,
-            minLevel: LogLevel.INFO
+            minLevel: LogLevel.Info
         });
 
         global.fetch = jest.fn().mockResolvedValue({} as Response);
@@ -33,7 +33,7 @@ describe('WebhookTransport', () => {
     });
 
     it('should send formatted message to webhook', async () => {
-        const entry = createEntry(LogLevel.INFO);
+        const entry = createEntry(LogLevel.Info);
 
         await transport.write(entry);
 
@@ -51,7 +51,7 @@ describe('WebhookTransport', () => {
     });
 
     it('should not send logs below minLevel', async () => {
-        await transport.write(createEntry(LogLevel.DEBUG));
+        await transport.write(createEntry(LogLevel.Debug));
 
         expect(formatter.format).not.toHaveBeenCalled();
         expect(fetch).not.toHaveBeenCalled();

@@ -12,32 +12,32 @@ export class Logger {
     ) {}
 
     async info(message: string) {
-        await this.log({ level: LogLevel.INFO, message });
+        await this.log({ level: LogLevel.Info, message });
     }
 
     async warn(message: string) {
-        await this.log({ level: LogLevel.WARN, message });
+        await this.log({ level: LogLevel.Warn, message });
     }
 
     async error(message: string, error?: Error) {
         await this.log({
-            level: LogLevel.ERROR,
+            level: LogLevel.Error,
             message,
             error
         });
     }
 
     async debug(message: string) {
-        await this.log({ level: LogLevel.DEBUG, message });
+        await this.log({ level: LogLevel.Debug, message });
     }
 
     async trace(message: string) {
-        await this.log({ level: LogLevel.TRACE, message });
+        await this.log({ level: LogLevel.Trace, message });
     }
 
     async fatal(message: string, error?: Error) {
         await this.log({
-            level: LogLevel.FATAL,
+            level: LogLevel.Fatal,
             message,
             error
         });

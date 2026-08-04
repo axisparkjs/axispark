@@ -9,14 +9,14 @@ describe('NullTransport', () => {
     beforeEach(() => {
         transport = new NullTransport({
             formatter: {} as LogFormatter,
-            minLevel: LogLevel.INFO
+            minLevel: LogLevel.Info
         });
     });
 
     it('should resolve without throwing', async () => {
         const entry: LogEntry = {
             timestamp: new Date(),
-            level: LogLevel.ERROR,
+            level: LogLevel.Error,
             message: 'Test',
             scopes: []
         };

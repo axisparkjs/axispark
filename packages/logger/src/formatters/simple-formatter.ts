@@ -6,6 +6,6 @@ export class SimpleFormatter implements LogFormatter {
     format(entry: LogEntry): string {
         const scope = entry.scopes.length ? `[${entry.scopes.join(' > ')}] ` : '';
 
-        return `[${entry.timestamp.toISOString()}] ${LogLevel[entry.level]} ${scope}${entry.message}`;
+        return `[${entry.timestamp.toISOString()}] ${LogLevel[entry.level].toLocaleUpperCase()} ${scope}${entry.message}`;
     }
 }

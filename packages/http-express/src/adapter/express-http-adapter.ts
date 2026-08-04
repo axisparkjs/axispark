@@ -2,6 +2,9 @@ import { Inject, Injectable } from '@axisparkjs/di';
 import { HTTP_OPTIONS, HttpAdapter, HttpContext, Route } from '@axisparkjs/http';
 import express, { Request, Response } from 'express';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import compression from 'compression';
+import cors from 'cors';
 import { Server } from 'node:http';
 import { ExpressHttpRequest } from '../types/express-http-request';
 import { ExpressHttpResponse } from '../types/express-http-response';
@@ -20,6 +23,9 @@ export class ExpressHttpAdapter implements HttpAdapter {
         if (this.options.bodyParser) this.app.use(express.json(this.options.bodyParserOptions));
         if (this.options.urlEncoded) this.app.use(express.urlencoded(this.options.urlEncodedOptions));
         if (this.options.session) this.app.use(session(this.options.sessionOptions));
+        if (this.options.cookies) this.app.use(cookieParser(this.options.cookiesOptions?.secret, this.options.cookiesOptions?.options));
+        if (this.options.compression) this.app.use(compression(this.options.compressionOptions));
+        if (this.options.cors) this.app.use(cors(this.options.corsOptions));
     }
 
     registerRoutes(routes: readonly Route[]): void {

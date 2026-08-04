@@ -20,7 +20,6 @@
         "@axisparkjs/common": "0.0.2",
         "@axisparkjs/di": "0.0.2",
         "@axisparkjs/core": "0.0.2",
-        "@axisparkjs/logger": "0.0.2",
-        "reflect-metadata": "^0.2.0"
+        "@axisparkjs/logger": "0.0.2"
     }
 }

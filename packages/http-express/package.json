@@ -22,11 +22,16 @@
         "@axisparkjs/di": "0.0.2",
         "@axisparkjs/http": "0.0.1",
         "@axisparkjs/logger": "0.0.2",
+        "compression": "^1.8.1",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.6",
         "express": "^5.2.1",
-        "express-session": "^1.19.0",
-        "reflect-metadata": "^0.2.0"
+        "express-session": "^1.19.0"
     },
     "devDependencies": {
+        "@types/compression": "^1.8.1",
+        "@types/cookie-parser": "^1.4.10",
+        "@types/cors": "^2.8.19",
         "@types/express": "^5.0.6",
         "@types/express-session": "^1.19.0"
     }

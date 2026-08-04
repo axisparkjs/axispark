@@ -5,7 +5,7 @@ import { LogLevel } from '../log-level';
 describe('TemplateFormatter', () => {
     const entry: LogEntry = {
         timestamp: new Date('2025-01-01T10:00:00.000Z'),
-        level: LogLevel.INFO,
+        level: LogLevel.Info,
         message: 'Application started',
         scopes: ['Server'],
         metadata: {
@@ -15,7 +15,7 @@ describe('TemplateFormatter', () => {
 
     const otherEntry: LogEntry = {
         timestamp: new Date('2025-01-01T10:00:00.000Z'),
-        level: LogLevel.INFO,
+        level: LogLevel.Info,
         message: 'Application started',
         scopes: ['Server'],
         error: new Error('Failure')

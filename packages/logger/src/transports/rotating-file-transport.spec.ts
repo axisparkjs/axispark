@@ -30,7 +30,7 @@ describe('RotatingFileTransport', () => {
         transport = new RotatingFileTransport({
             file: 'logs/app.log',
             formatter,
-            minLevel: LogLevel.INFO,
+            minLevel: LogLevel.Info,
             maxSize: 1024,
             maxFiles: 3
         });
@@ -41,7 +41,7 @@ describe('RotatingFileTransport', () => {
     it('should write without rotating when file does not exist', async () => {
         (stat as jest.Mock).mockRejectedValue(new Error());
 
-        await transport.write(createEntry(LogLevel.INFO));
+        await transport.write(createEntry(LogLevel.Info));
 
         expect(rename).not.toHaveBeenCalled();
 
@@ -53,7 +53,7 @@ describe('RotatingFileTransport', () => {
             size: 100
         });
 
-        await transport.write(createEntry(LogLevel.INFO));
+        await transport.write(createEntry(LogLevel.Info));
 
         expect(rename).not.toHaveBeenCalled();
 
@@ -67,7 +67,7 @@ describe('RotatingFileTransport', () => {
 
         (rename as jest.Mock).mockResolvedValue(undefined);
 
-        await transport.write(createEntry(LogLevel.INFO));
+        await transport.write(createEntry(LogLevel.Info));
 
         expect(rename).toHaveBeenNthCalledWith(1, 'logs/app.2.log', 'logs/app.3.log');
 
@@ -85,7 +85,7 @@ describe('RotatingFileTransport', () => {
 
         (rename as jest.Mock).mockRejectedValue(new Error());
 
-        await expect(transport.write(createEntry(LogLevel.INFO))).resolves.not.toThrow();
+        await expect(transport.write(createEntry(LogLevel.Info))).resolves.not.toThrow();
 
         expect(appendFile).toHaveBeenCalledWith('logs/app.log', 'formatted\n');
     });
@@ -94,7 +94,7 @@ describe('RotatingFileTransport', () => {
         transport = new RotatingFileTransport({
             file: 'logs/app.log',
             formatter,
-            minLevel: LogLevel.INFO,
+            minLevel: LogLevel.Info,
             maxSize: 1024,
             maxFiles: 5
         });
@@ -103,7 +103,7 @@ describe('RotatingFileTransport', () => {
             size: 2048
         });
 
-        await transport.write(createEntry(LogLevel.INFO));
+        await transport.write(createEntry(LogLevel.Info));
 
         expect(rename).toHaveBeenNthCalledWith(1, 'logs/app.4.log', 'logs/app.5.log');
 
@@ -117,7 +117,7 @@ describe('RotatingFileTransport', () => {
     });
 
     it('should not write when level is below minLevel', async () => {
-        await transport.write(createEntry(LogLevel.DEBUG));
+        await transport.write(createEntry(LogLevel.Debug));
 
         expect(stat).not.toHaveBeenCalled();
         expect(rename).not.toHaveBeenCalled();

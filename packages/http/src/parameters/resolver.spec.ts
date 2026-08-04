@@ -1,4 +1,4 @@
-import { RequestResolver, ResponseResolver, BodyResolver, ParamResolver, QueryResolver, HeaderResolver, IpResolver, SessionResolver } from './resolvers';
+import { RequestResolver, ResponseResolver, BodyResolver, ParamResolver, QueryResolver, HeaderResolver, IpResolver, SessionResolver, CookieResolver } from './resolvers';
 
 describe('ParameterResolvers', () => {
     const httpContext: any = {
@@ -103,6 +103,24 @@ describe('ParameterResolvers', () => {
             const resolver = new SessionResolver();
 
             expect(resolver.resolve(httpContext)).toBe(httpContext.session);
+        });
+    });
+
+    describe('CookieResolver', () => {
+        it('should return cookie by name', () => {
+            const resolver = new CookieResolver();
+
+            httpContext.request.cookies = { sessionId: 'abc123' };
+
+            expect(resolver.resolve(httpContext, { name: 'sessionId' } as any)).toBe('abc123');
+        });
+
+        it('should return undefined when cookie does not exist', () => {
+            const resolver = new CookieResolver();
+
+            httpContext.request.cookies = { sessionId: 'abc123' };
+
+            expect(resolver.resolve(httpContext, { name: 'missing' } as any)).toBeUndefined();
         });
     });
 });

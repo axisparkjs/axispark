@@ -14,5 +14,8 @@ export const MetadataKeys = {
 
     CONTROLLER: new MetadataKey('controller'),
     ROUTE: new MetadataKey('route'),
-    HTTP_CODE: new MetadataKey('http-code')
+    HTTP_CODE: new MetadataKey('http-code'),
+
+    SCHEDULER: new MetadataKey('scheduler'),
+    JOB: new MetadataKey('job')
 } as const;

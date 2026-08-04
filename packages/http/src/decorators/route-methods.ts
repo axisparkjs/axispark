@@ -18,10 +18,10 @@ function Method(method: HttpMethod) {
     };
 }
 
-export const Delete = Method(HttpMethod.DELETE);
-export const Get = Method(HttpMethod.GET);
-export const Head = Method(HttpMethod.HEAD);
-export const Options = Method(HttpMethod.OPTIONS);
-export const Patch = Method(HttpMethod.PATCH);
-export const Post = Method(HttpMethod.POST);
-export const Put = Method(HttpMethod.PUT);
+export const Delete = Method(HttpMethod.Delete);
+export const Get = Method(HttpMethod.Get);
+export const Head = Method(HttpMethod.Head);
+export const Options = Method(HttpMethod.Options);
+export const Patch = Method(HttpMethod.Patch);
+export const Post = Method(HttpMethod.Post);
+export const Put = Method(HttpMethod.Put);

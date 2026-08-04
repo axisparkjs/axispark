@@ -22,7 +22,7 @@ describe('HttpTransport', () => {
         transport = new HttpTransport({
             url: 'https://example.com/logs',
             formatter,
-            minLevel: LogLevel.INFO
+            minLevel: LogLevel.Info
         });
 
         global.fetch = jest.fn().mockResolvedValue({} as Response);
@@ -33,7 +33,7 @@ describe('HttpTransport', () => {
     });
 
     it('should send the log entry', async () => {
-        const entry = createEntry(LogLevel.INFO);
+        const entry = createEntry(LogLevel.Info);
 
         await transport.write(entry);
 
@@ -52,13 +52,13 @@ describe('HttpTransport', () => {
         transport = new HttpTransport({
             url: 'https://example.com/logs',
             formatter,
-            minLevel: LogLevel.INFO,
+            minLevel: LogLevel.Info,
             headers: {
                 Authorization: 'Bearer token'
             }
         });
 
-        await transport.write(createEntry(LogLevel.INFO));
+        await transport.write(createEntry(LogLevel.Info));
 
         expect(fetch).toHaveBeenCalledWith(
             'https://example.com/logs',
@@ -72,7 +72,7 @@ describe('HttpTransport', () => {
     });
 
     it('should not send logs below minLevel', async () => {
-        await transport.write(createEntry(LogLevel.DEBUG));
+        await transport.write(createEntry(LogLevel.Debug));
 
         expect(fetch).not.toHaveBeenCalled();
     });

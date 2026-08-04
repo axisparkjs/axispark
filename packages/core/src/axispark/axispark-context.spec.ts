@@ -64,7 +64,7 @@ describe('AxiSparkContext', () => {
         it('should override default configuration', () => {
             const transport = new ConsoleTransport({
                 formatter: new SimpleFormatter(),
-                minLevel: LogLevel.ERROR
+                minLevel: LogLevel.Error
             });
 
             const context = new AxiSparkContext(
@@ -74,7 +74,7 @@ describe('AxiSparkContext', () => {
                     banner: false,
                     logTransports: [transport]
                 },
-                { disableAwaitSignal: true, scanner: 'null' }
+                { wait: true, scanner: 'null' }
             );
 
             expect(context.config).toEqual({
@@ -85,7 +85,7 @@ describe('AxiSparkContext', () => {
             });
 
             expect(context.privateConfig).toEqual({
-                disableAwaitSignal: true,
+                wait: true,
                 scanner: 'null'
             });
 

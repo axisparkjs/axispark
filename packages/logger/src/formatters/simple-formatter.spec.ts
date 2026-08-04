@@ -16,7 +16,7 @@ describe('SimpleFormatter', () => {
     it('should format a log entry without scopes', () => {
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.INFO,
+            level: LogLevel.Info,
             message: 'Application started',
             scopes: []
         };
@@ -29,7 +29,7 @@ describe('SimpleFormatter', () => {
     it('should format a log entry with one scope', () => {
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.WARN,
+            level: LogLevel.Warn,
             message: 'Low memory',
             scopes: ['Server']
         };
@@ -42,7 +42,7 @@ describe('SimpleFormatter', () => {
     it('should format a log entry with multiple scopes', () => {
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.ERROR,
+            level: LogLevel.Error,
             message: 'Unexpected error',
             scopes: ['API', 'Users', 'Controller']
         };
@@ -55,7 +55,7 @@ describe('SimpleFormatter', () => {
     it('should preserve the original log entry', () => {
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
-            level: LogLevel.INFO,
+            level: LogLevel.Info,
             message: 'Test',
             scopes: ['Scope']
         };

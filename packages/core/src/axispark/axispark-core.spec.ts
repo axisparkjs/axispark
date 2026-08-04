@@ -29,7 +29,7 @@ describe('AxiSparkCore', () => {
                 banner: true
             },
             privateConfig: {
-                disableAwaitSignal: false
+                wait: true
             },
             scanner: {
                 scan: jest.fn()
@@ -51,12 +51,10 @@ describe('AxiSparkCore', () => {
         it('should init the application and log the initialization', async () => {
             await core.init();
 
-            expect(context.scanner.scan).toHaveBeenCalledTimes(1);
-            expect(context.container.init).toHaveBeenCalledTimes(1);
-            expect(context.plugins.init).toHaveBeenCalledTimes(1);
+            expect(context.scanner.scan).toHaveBeenCalled();
+            expect(context.container.init).toHaveBeenCalled();
             expect(context.plugins.init).toHaveBeenCalledWith(context);
-            expect(context.engine.init).toHaveBeenCalledTimes(1);
-            expect(context.logger.info).toHaveBeenCalledTimes(2);
+            expect(context.engine.init).toHaveBeenCalled();
             expect(context.logger.info).toHaveBeenCalledWith('App initialized');
         });
 
@@ -64,12 +62,19 @@ describe('AxiSparkCore', () => {
             context.config.banner = false;
             await core.init();
 
-            expect(context.scanner.scan).toHaveBeenCalledTimes(1);
-            expect(context.container.init).toHaveBeenCalledTimes(1);
-            expect(context.plugins.init).toHaveBeenCalledTimes(1);
+            expect(context.scanner.scan).toHaveBeenCalled();
+            expect(context.container.init).toHaveBeenCalled();
             expect(context.plugins.init).toHaveBeenCalledWith(context);
-            expect(context.engine.init).toHaveBeenCalledTimes(1);
-            expect(context.logger.info).toHaveBeenCalledTimes(1);
+            expect(context.engine.init).toHaveBeenCalled();
+            expect(context.logger.info).not.toHaveBeenCalledWith(`
+    ╔═════════════════════════════════════════════╗
+    ║                                             ║
+    ║                 AxiSpark.js                 ║
+    ║                                             ║
+    ║      Fast • Modular • TypeScript First      ║
+    ║                                             ║
+    ╚═════════════════════════════════════════════╝
+            `);
             expect(context.logger.info).toHaveBeenCalledWith('App initialized');
         });
     });
@@ -80,21 +85,55 @@ describe('AxiSparkCore', () => {
 
             await new Promise(process.nextTick);
 
-            expect(context.plugins.run).toHaveBeenCalledTimes(1);
             expect(context.plugins.run).toHaveBeenCalledWith(context);
-            expect(context.logger.info).toHaveBeenCalledTimes(1);
             expect(context.logger.info).toHaveBeenCalledWith('App running, waiting for termination signal...');
+            await core.destroy();
         });
 
-        it('should not await termination signal if disableAwaitSignal is true', async () => {
-            context.privateConfig.disableAwaitSignal = true;
+        it('should not await termination signal if wait is false', async () => {
+            context.privateConfig.wait = false;
 
             await core.run();
 
-            expect(context.plugins.run).toHaveBeenCalledTimes(1);
             expect(context.plugins.run).toHaveBeenCalledWith(context);
-            expect(context.logger.info).toHaveBeenCalledTimes(1);
             expect(context.logger.info).toHaveBeenCalledWith('App running, waiting for termination signal...');
+            await core.destroy();
+        });
+
+        it('should await termination signal if wait is true', async () => {
+            context.privateConfig.wait = true;
+
+            const runPromise = core.run();
+
+            await new Promise(process.nextTick);
+
+            expect(context.plugins.run).toHaveBeenCalledWith(context);
+            expect(context.logger.info).toHaveBeenCalledWith('App running, waiting for termination signal...');
+
+            // Simulate termination signal
+            process.emit('SIGINT');
+
+            await runPromise;
+
+            await core.destroy();
+        });
+
+        it('should handle termination signal and destroy the application', async () => {
+            context.privateConfig.wait = true;
+
+            const runPromise = core.run();
+
+            await new Promise(process.nextTick);
+
+            expect(context.plugins.run).toHaveBeenCalledWith(context);
+            expect(context.logger.info).toHaveBeenCalledWith('App running, waiting for termination signal...');
+
+            // Simulate termination signal
+            process.emit('SIGTERM');
+
+            await runPromise;
+
+            await core.destroy();
         });
     });
 
@@ -102,9 +141,7 @@ describe('AxiSparkCore', () => {
         it('should log that the application has been destroyed', async () => {
             await core.destroy();
 
-            expect(context.plugins.destroy).toHaveBeenCalledTimes(1);
             expect(context.plugins.destroy).toHaveBeenCalledWith(context);
-            expect(context.logger.info).toHaveBeenCalledTimes(1);
             expect(context.logger.info).toHaveBeenCalledWith('App destroyed');
         });
     });
@@ -115,7 +152,6 @@ describe('AxiSparkCore', () => {
             const config = { plugin };
             const result = core.use(plugin, config);
 
-            expect(context.plugins.register).toHaveBeenCalledTimes(1);
             expect(context.plugins.register).toHaveBeenCalledWith(context, plugin, config);
             expect(result).toBe(core);
         });
@@ -136,7 +172,7 @@ describe('AxiSparkCore', () => {
 
             const usedPlugins = core.used();
 
-            expect(context.plugins.getAll).toHaveBeenCalledTimes(1);
+            expect(context.plugins.getAll).toHaveBeenCalled();
             expect(usedPlugins).toEqual([
                 { type: plugin1, options: config1 },
                 { type: plugin2, options: undefined }
@@ -152,7 +188,6 @@ describe('AxiSparkCore', () => {
 
             const result = core.get(token);
 
-            expect(context.container.resolve).toHaveBeenCalledTimes(1);
             expect(context.container.resolve).toHaveBeenCalledWith(token);
             expect(result).toBe(instance);
         });

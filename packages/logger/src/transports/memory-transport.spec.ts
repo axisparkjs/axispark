@@ -16,12 +16,12 @@ describe('MemoryTransport', () => {
     beforeEach(() => {
         transport = new MemoryTransport({
             formatter: {} as LogFormatter,
-            minLevel: LogLevel.INFO
+            minLevel: LogLevel.Info
         });
     });
 
     it('should store entries', async () => {
-        const entry = createEntry(LogLevel.INFO);
+        const entry = createEntry(LogLevel.Info);
 
         await transport.write(entry);
 
@@ -29,7 +29,7 @@ describe('MemoryTransport', () => {
     });
 
     it('should ignore entries below minLevel', async () => {
-        const entry = createEntry(LogLevel.DEBUG);
+        const entry = createEntry(LogLevel.Debug);
 
         await transport.write(entry);
 
@@ -37,8 +37,8 @@ describe('MemoryTransport', () => {
     });
 
     it('should clear all entries', async () => {
-        await transport.write(createEntry(LogLevel.INFO));
-        await transport.write(createEntry(LogLevel.ERROR));
+        await transport.write(createEntry(LogLevel.Info));
+        await transport.write(createEntry(LogLevel.Error));
 
         transport.clear();
 

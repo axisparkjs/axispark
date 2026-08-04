@@ -8,7 +8,7 @@ export class TemplateFormatter implements LogFormatter {
     format(entry: LogEntry): string {
         const values: Record<string, string> = {
             timestamp: entry.timestamp.toISOString(),
-            level: LogLevel[entry.level],
+            level: LogLevel[entry.level].toLocaleUpperCase(),
             message: entry.message,
             scopes: entry.scopes.join(' > '),
             metadata: entry.metadata ? JSON.stringify(entry.metadata) : '',

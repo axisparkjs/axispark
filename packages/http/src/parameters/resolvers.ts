@@ -44,12 +44,18 @@ export class SessionResolver implements ParameterResolver<any> {
         return httpContext.session;
     }
 }
+export class CookieResolver implements ParameterResolver<string | undefined> {
+    resolve(httpContext: HttpContext, parameterMetadata: ParameterMetadata) {
+        return httpContext.request.cookies[parameterMetadata.name as string];
+    }
+}
 
-ParametersResolver.register(HttpParameter.RESPONSE, new ResponseResolver());
-ParametersResolver.register(HttpParameter.REQUEST, new RequestResolver());
-ParametersResolver.register(HttpParameter.BODY, new BodyResolver());
-ParametersResolver.register(HttpParameter.PARAM, new ParamResolver());
-ParametersResolver.register(HttpParameter.QUERY, new QueryResolver());
-ParametersResolver.register(HttpParameter.HEADER, new HeaderResolver());
-ParametersResolver.register(HttpParameter.IP, new IpResolver());
-ParametersResolver.register(HttpParameter.SESSION, new SessionResolver());
+ParametersResolver.register(HttpParameter.Response, new ResponseResolver());
+ParametersResolver.register(HttpParameter.Request, new RequestResolver());
+ParametersResolver.register(HttpParameter.Body, new BodyResolver());
+ParametersResolver.register(HttpParameter.Param, new ParamResolver());
+ParametersResolver.register(HttpParameter.Query, new QueryResolver());
+ParametersResolver.register(HttpParameter.Header, new HeaderResolver());
+ParametersResolver.register(HttpParameter.Ip, new IpResolver());
+ParametersResolver.register(HttpParameter.Session, new SessionResolver());
+ParametersResolver.register(HttpParameter.Cookie, new CookieResolver());

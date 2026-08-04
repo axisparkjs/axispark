@@ -1,5 +1,5 @@
 import { HttpResponse } from '@axisparkjs/http';
-import { Response } from 'express';
+import { CookieOptions, Response } from 'express';
 
 export class ExpressHttpResponse implements HttpResponse {
     constructor(private readonly response: Response) {}
@@ -11,6 +11,16 @@ export class ExpressHttpResponse implements HttpResponse {
 
     header(name: string, value: string): this {
         this.response.setHeader(name, value);
+        return this;
+    }
+
+    cookie(name: string, value: string, options?: CookieOptions): this {
+        this.response.cookie(name, value, options ?? {});
+        return this;
+    }
+
+    clearCookie(name: string, options?: CookieOptions): this {
+        this.response.clearCookie(name, options ?? {});
         return this;
     }
 

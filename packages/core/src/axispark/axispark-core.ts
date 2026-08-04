@@ -4,6 +4,10 @@ import { AxiSparkContext } from './axispark-context';
 import { Token } from '@axisparkjs/di';
 
 export class AxiSparkCore implements Lifecycle {
+    private shutdown!: Promise<void>;
+    private resolveShutdown!: () => void;
+    private keepAlive!: NodeJS.Timeout;
+
     public constructor(private readonly axisparkContext: AxiSparkContext) {}
 
     public get config() {
@@ -32,20 +36,28 @@ export class AxiSparkCore implements Lifecycle {
         await this.axisparkContext.logger.info('App initialized');
     }
 
+    private async keepAliveCallback() {
+        // This function is intentionally left empty to keep the event loop alive.
+    }
+
     public async run(): Promise<void> {
+        this.keepAlive = setInterval(this.keepAliveCallback.bind(this), 60_000);
+        this.shutdown = new Promise((resolve) => {
+            this.resolveShutdown = resolve;
+        });
         await this.axisparkContext.plugins.run(this.axisparkContext);
         await this.axisparkContext.logger.info('App running, waiting for termination signal...');
 
-        if (this.axisparkContext.privateConfig.disableAwaitSignal) return;
+        process.once('SIGINT', () => this.resolveShutdown());
+        process.once('SIGTERM', () => this.resolveShutdown());
 
-        return new Promise((resolve) => {
-            process.once('SIGINT', resolve);
-            process.once('SIGTERM', resolve);
-        });
+        if (this.axisparkContext.privateConfig.wait) await this.shutdown;
     }
 
     public async destroy() {
         // Cleanup logic here
+        this.keepAliveCallback();
+        clearInterval(this.keepAlive);
         await this.axisparkContext.plugins.destroy(this.axisparkContext);
         await this.axisparkContext.logger.info('App destroyed');
     }

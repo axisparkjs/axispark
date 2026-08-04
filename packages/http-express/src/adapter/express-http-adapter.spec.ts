@@ -5,6 +5,9 @@ import { ExpressHttpRequest } from '../types/express-http-request';
 import { ExpressHttpResponse } from '../types/express-http-response';
 import { ExpressHttpSession } from '../types/express-http-session';
 import { HttpMethod } from '@axisparkjs/http';
+import cookieParser from 'cookie-parser';
+import compression from 'compression';
+import cors from 'cors';
 
 jest.mock('express', () => {
     const app = {
@@ -27,9 +30,29 @@ jest.mock('express', () => {
 });
 
 jest.mock('express-session', () => jest.fn(() => 'session-middleware'));
+jest.mock('cookie-parser', () => jest.fn(() => 'cookie-parser-middleware'));
+jest.mock('compression', () => jest.fn(() => 'compression-middleware'));
+jest.mock('cors', () => jest.fn(() => 'cors-middleware'));
 
 describe('ExpressHttpAdapter', () => {
     const app = (express as unknown as jest.Mock)();
+    const baseConfig = {
+        port: 8080,
+        plugin: {} as never,
+        adapter: {} as never,
+        bodyParser: false,
+        bodyParserOptions: {},
+        urlEncoded: false,
+        urlEncodedOptions: {},
+        cors: false,
+        session: false,
+        cookies: false,
+        compression: false,
+        logErrors: false,
+        logHttpErrors: false,
+        logHttpRequests: false,
+        logHttpResponses: false
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -38,71 +61,65 @@ describe('ExpressHttpAdapter', () => {
     describe('constructor', () => {
         it('should register all enabled middlewares', () => {
             new ExpressHttpAdapter({
-                port: 3000,
-                plugin: {} as never,
-                adapter: {} as never,
+                ...baseConfig,
                 bodyParser: true,
                 bodyParserOptions: { limit: '10mb' },
                 urlEncoded: true,
                 urlEncodedOptions: { extended: false },
+                cors: true,
+                corsOptions: { origin: 'http://example.com' },
                 session: true,
                 sessionOptions: { secret: 'secret' },
-                logErrors: false,
-                logHttpErrors: false,
-                logHttpRequests: false,
-                logHttpResponses: false
+                cookies: true,
+                cookiesOptions: { secret: 'secret', options: undefined },
+                compression: true,
+                compressionOptions: { threshold: 1024 }
             });
 
             expect(express.json).toHaveBeenCalledWith({ limit: '10mb' });
             expect(express.urlencoded).toHaveBeenCalledWith({ extended: false });
             expect(session).toHaveBeenCalledWith({ secret: 'secret' });
+            expect(cookieParser).toHaveBeenCalledWith('secret', undefined);
+            expect(compression).toHaveBeenCalledWith({ threshold: 1024 });
+            expect(cors).toHaveBeenCalledWith({ origin: 'http://example.com' });
 
-            expect(app.use).toHaveBeenCalledTimes(3);
+            expect(app.use).toHaveBeenCalledTimes(6);
         });
 
         it('should not register disabled middlewares', () => {
             new ExpressHttpAdapter({
-                port: 3000,
-                plugin: {} as never,
-                adapter: {} as never,
+                ...baseConfig,
                 bodyParser: false,
-                bodyParserOptions: {},
                 urlEncoded: false,
-                urlEncodedOptions: {},
                 session: false,
-                logErrors: false,
-                logHttpErrors: false,
-                logHttpRequests: false,
-                logHttpResponses: false
+                cookies: false,
+                compression: false,
+                cors: false
             });
 
             expect(app.use).not.toHaveBeenCalled();
+        });
+
+        it('should register cookies without options', () => {
+            new ExpressHttpAdapter({
+                ...baseConfig,
+                cookies: true
+            });
+
+            expect(app.use).toHaveBeenCalled();
         });
     });
 
     describe('registerRoutes', () => {
         it('should register every route', () => {
-            const adapter = new ExpressHttpAdapter({
-                port: 3000,
-                plugin: {} as never,
-                adapter: {} as never,
-                bodyParser: false,
-                bodyParserOptions: {},
-                urlEncoded: false,
-                urlEncodedOptions: {},
-                session: false,
-                logErrors: false,
-                logHttpErrors: false,
-                logHttpRequests: false,
-                logHttpResponses: false
-            });
+            const adapter = new ExpressHttpAdapter(baseConfig);
 
             const handler = jest.fn();
 
             adapter.registerRoutes([
                 {
                     controller: class TestController {},
-                    method: HttpMethod.GET,
+                    method: HttpMethod.Get,
                     path: '/users',
                     handler
                 }
@@ -112,27 +129,14 @@ describe('ExpressHttpAdapter', () => {
         });
 
         it('should create the http context', async () => {
-            const adapter = new ExpressHttpAdapter({
-                port: 3000,
-                plugin: {} as never,
-                adapter: {} as never,
-                bodyParser: false,
-                bodyParserOptions: {},
-                urlEncoded: false,
-                urlEncodedOptions: {},
-                session: false,
-                logErrors: false,
-                logHttpErrors: false,
-                logHttpRequests: false,
-                logHttpResponses: false
-            });
+            const adapter = new ExpressHttpAdapter(baseConfig);
 
             const handler = jest.fn();
 
             adapter.registerRoutes([
                 {
                     controller: class TestController {},
-                    method: HttpMethod.GET,
+                    method: HttpMethod.Get,
                     path: '/',
                     handler
                 }
@@ -154,18 +158,9 @@ describe('ExpressHttpAdapter', () => {
 
         it('should include session when available', async () => {
             const adapter = new ExpressHttpAdapter({
-                port: 3000,
-                plugin: {} as never,
-                adapter: {} as never,
-                bodyParser: false,
-                bodyParserOptions: {},
-                urlEncoded: false,
-                urlEncodedOptions: {},
+                ...baseConfig,
                 session: true,
-                logErrors: false,
-                logHttpErrors: false,
-                logHttpRequests: false,
-                logHttpResponses: false
+                sessionOptions: { secret: 'secret' }
             });
 
             const handler = jest.fn();
@@ -173,7 +168,7 @@ describe('ExpressHttpAdapter', () => {
             adapter.registerRoutes([
                 {
                     controller: class TestController {},
-                    method: HttpMethod.GET,
+                    method: HttpMethod.Get,
                     path: '/',
                     handler
                 }
@@ -197,20 +192,7 @@ describe('ExpressHttpAdapter', () => {
 
             app.listen.mockReturnValue(server);
 
-            const adapter = new ExpressHttpAdapter({
-                port: 8080,
-                plugin: {} as never,
-                adapter: {} as never,
-                bodyParser: false,
-                bodyParserOptions: {},
-                urlEncoded: false,
-                urlEncodedOptions: {},
-                session: false,
-                logErrors: false,
-                logHttpErrors: false,
-                logHttpRequests: false,
-                logHttpResponses: false
-            });
+            const adapter = new ExpressHttpAdapter(baseConfig);
 
             adapter.start();
 
@@ -224,20 +206,7 @@ describe('ExpressHttpAdapter', () => {
 
             app.listen.mockReturnValue({ close });
 
-            const adapter = new ExpressHttpAdapter({
-                port: 8080,
-                plugin: {} as never,
-                adapter: {} as never,
-                bodyParser: false,
-                bodyParserOptions: {},
-                urlEncoded: false,
-                urlEncodedOptions: {},
-                session: false,
-                logErrors: false,
-                logHttpErrors: false,
-                logHttpRequests: false,
-                logHttpResponses: false
-            });
+            const adapter = new ExpressHttpAdapter(baseConfig);
 
             adapter.start();
             adapter.stop();
@@ -246,20 +215,7 @@ describe('ExpressHttpAdapter', () => {
         });
 
         it('should do nothing when server has not been started', () => {
-            const adapter = new ExpressHttpAdapter({
-                port: 8080,
-                plugin: {} as never,
-                adapter: {} as never,
-                bodyParser: false,
-                bodyParserOptions: {},
-                urlEncoded: false,
-                urlEncodedOptions: {},
-                session: false,
-                logErrors: false,
-                logHttpErrors: false,
-                logHttpRequests: false,
-                logHttpResponses: false
-            });
+            const adapter = new ExpressHttpAdapter(baseConfig);
 
             expect(() => adapter.stop()).not.toThrow();
         });

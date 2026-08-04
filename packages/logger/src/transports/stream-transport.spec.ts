@@ -28,13 +28,13 @@ describe('StreamTransport', () => {
 
         transport = new StreamTransport({
             formatter,
-            minLevel: LogLevel.INFO,
+            minLevel: LogLevel.Info,
             stream
         });
     });
 
     it('should write formatted message to stream', async () => {
-        const entry = createEntry(LogLevel.INFO);
+        const entry = createEntry(LogLevel.Info);
 
         await transport.write(entry);
 
@@ -43,7 +43,7 @@ describe('StreamTransport', () => {
     });
 
     it('should ignore entries below minLevel', async () => {
-        await transport.write(createEntry(LogLevel.DEBUG));
+        await transport.write(createEntry(LogLevel.Debug));
 
         expect(formatter.format).not.toHaveBeenCalled();
         expect(stream.write).not.toHaveBeenCalled();

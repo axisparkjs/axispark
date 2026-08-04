@@ -9,6 +9,7 @@ export class Resolver {
 
     resolve<T>(type: Constructor<T>, container: Container): T {
         if (this.resolving.includes(type)) {
+            this.resolving.push(type);
             throw new CircularDependencyError(this.resolving.map((t) => TokenUtils.getName(t)).join(' -> '));
         }
 

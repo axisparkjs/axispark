@@ -28,14 +28,14 @@ describe('FileTransport', () => {
         transport = new FileTransport({
             file: 'app.log',
             formatter,
-            minLevel: LogLevel.INFO
+            minLevel: LogLevel.Info
         });
 
         jest.clearAllMocks();
     });
 
     it('should append the formatted message', async () => {
-        const entry = createEntry(LogLevel.INFO);
+        const entry = createEntry(LogLevel.Info);
 
         await transport.write(entry);
 
@@ -45,7 +45,7 @@ describe('FileTransport', () => {
     });
 
     it('should ignore entries below minLevel', async () => {
-        await transport.write(createEntry(LogLevel.DEBUG));
+        await transport.write(createEntry(LogLevel.Debug));
 
         expect(formatter.format).not.toHaveBeenCalled();
         expect(appendFile).not.toHaveBeenCalled();
