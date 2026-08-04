@@ -63,12 +63,12 @@ export class AxiSparkCore implements Lifecycle {
     }
 
     public use(plugin: PluggableClass, options?: PluginOptions): this {
-        this.axisparkContext.plugins.register(this.axisparkContext, plugin, options);
+        this.axisparkContext.plugins.register(plugin, options);
         return this;
     }
 
     public used(): readonly { type: PluggableClass; options?: PluginOptions }[] {
-        return this.axisparkContext.plugins.getAll();
+        return this.axisparkContext.plugins.getAll().map((p) => ({ type: p.type, options: p.options }));
     }
 
     public get<T>(token: Token<T>): T {

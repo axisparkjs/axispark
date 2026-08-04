@@ -53,20 +53,58 @@ describe('SimpleFormatter', () => {
     });
 
     it('should preserve the original log entry', () => {
+        const error = new Error('Test error');
+        error.stack = 'Error: Test error';
+
         const entry: LogEntry = {
             timestamp: new Date('2025-01-01T10:00:00.000Z'),
             level: LogLevel.Info,
             message: 'Test',
-            scopes: ['Scope']
+            scopes: ['Scope'],
+            error
         };
 
-        const original = structuredClone({
+        const original = {
             ...entry,
             timestamp: new Date(entry.timestamp)
-        });
+        };
 
         formatter.format(entry);
 
         expect(entry).toEqual(original);
+    });
+
+    it('should format a log entry with an error stack', () => {
+        const error = new Error('Something went wrong');
+        error.stack = 'Error: Something went wrong\n    at test.ts:1:1';
+
+        const entry: LogEntry = {
+            timestamp: new Date('2025-01-01T10:00:00.000Z'),
+            level: LogLevel.Error,
+            message: 'Unexpected error',
+            scopes: [],
+            error
+        };
+
+        const result = formatter.format(entry);
+
+        expect(result).toBe(`[2025-01-01T10:00:00.000Z] ERROR Unexpected error\n${error.stack}`);
+    });
+
+    it('should format a log entry with an error message when stack is not available', () => {
+        const error = new Error('Something went wrong');
+        error.stack = undefined;
+
+        const entry: LogEntry = {
+            timestamp: new Date('2025-01-01T10:00:00.000Z'),
+            level: LogLevel.Error,
+            message: 'Unexpected error',
+            scopes: [],
+            error
+        };
+
+        const result = formatter.format(entry);
+
+        expect(result).toBe('[2025-01-01T10:00:00.000Z] ERROR Unexpected error\nSomething went wrong');
     });
 });

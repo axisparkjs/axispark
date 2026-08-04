@@ -4,6 +4,7 @@ import { Container, Injector } from '@axisparkjs/di';
 import { AxiSparkConfig } from './axispark-config';
 import { ExecutionEngine } from '@axisparkjs/engine';
 import { Scanner, FileSystemScanner, NullScanner } from '../scanner';
+import { HealthEngine } from '../health';
 import { AxiSparkPrivateConfig } from './axispark-private-config';
 
 export class AxiSparkContext {
@@ -15,6 +16,7 @@ export class AxiSparkContext {
     public readonly injector: Injector;
     public readonly engine: ExecutionEngine;
     public readonly scanner: Scanner;
+    public readonly health: HealthEngine;
 
     public constructor(config?: AxiSparkConfig, privateConfig?: AxiSparkPrivateConfig) {
         this.config = {
@@ -35,6 +37,7 @@ export class AxiSparkContext {
         this.injector = new Injector(this.container);
         this.engine = new ExecutionEngine();
         this.scanner = this.privateConfig.scanner === 'null' ? new NullScanner() : new FileSystemScanner(this.config.basePath);
+        this.health = new HealthEngine(this.config, this.plugins);
 
         this.container.bind({
             token: Logger,
@@ -43,6 +46,10 @@ export class AxiSparkContext {
         this.container.bind({
             token: Injector,
             useValue: this.injector
+        });
+        this.container.bind({
+            token: HealthEngine,
+            useValue: this.health
         });
     }
 }

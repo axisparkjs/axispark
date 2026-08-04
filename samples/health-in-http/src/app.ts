@@ -4,11 +4,11 @@ import { HttpPluginOptionsFactory } from '@axisparkjs/http-express';
 import { ConsoleTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
 
 export const app = AxiSparkFactory.create({
-    name: 'TODO Crud',
+    name: 'Health in HTTP',
     basePath: __dirname,
     logTransports: [
         new ConsoleTransport({
-            minLevel: LogLevel.Info,
+            minLevel: LogLevel.Debug,
             formatter: new SimpleFormatter()
         })
     ]
@@ -16,6 +16,7 @@ export const app = AxiSparkFactory.create({
 app.use(
     HttpPlugin,
     HttpPluginOptionsFactory.create({
-        basePath: '/api'
+        basePath: '/api',
+        healthChecks: true
     })
 );

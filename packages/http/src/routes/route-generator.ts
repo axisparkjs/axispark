@@ -30,7 +30,7 @@ class RouteGeneratorStatic implements Generator<{ controller: Constructor; route
         return routes.map((route) => {
             return {
                 method: route.method,
-                path: this.joinPath(controllerMetadata.prefix, route.path, options.rootPath),
+                path: this.joinPath(controllerMetadata.prefix, route.path, options.basePath),
                 controller,
                 handler: async (httpContext) => {
                     await context.engine.execute(
@@ -43,11 +43,11 @@ class RouteGeneratorStatic implements Generator<{ controller: Constructor; route
         });
     }
 
-    private joinPath(prefix: string, path: string, rootPath = ''): string {
-        rootPath = rootPath.startsWith('/') ? rootPath : `/${rootPath}`;
+    private joinPath(prefix: string, path: string, basePath = ''): string {
+        basePath = basePath.startsWith('/') ? basePath : `/${basePath}`;
         prefix = prefix.startsWith('/') ? prefix : `/${prefix}`;
         path = path.startsWith('/') ? path : `/${path}`;
-        return `${rootPath}${prefix}${path}`.replace(/\/+/g, '/').replace(/\/$/, '') || '/';
+        return `${basePath}${prefix}${path}`.replace(/\/+/g, '/').replace(/\/$/, '') || '/';
     }
 }
 export const RouteGenerator = new RouteGeneratorStatic();

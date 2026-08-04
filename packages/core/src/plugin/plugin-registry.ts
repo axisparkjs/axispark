@@ -3,7 +3,7 @@ import { DecoratorNotIncludedError } from '@axisparkjs/di';
 import { AxiSparkContext } from '../axispark';
 import { PluginAlreadyRegisteredError } from './plugin-already-registered-error';
 import { PluginConfigMismatchError } from './plugin-config-mismatch-error';
-import { Pluggable, PluggableClass, PluginOptions } from './pluggable';
+import { Pluggable, PluginLifecycle, PluggableClass, PluginOptions } from './pluggable';
 import { Plugin } from '../decorators';
 
 interface RegisteredPlugin {
@@ -15,18 +15,16 @@ interface RegisteredPlugin {
 export class PluginRegistry implements Lifecycle {
     private readonly plugins: RegisteredPlugin[] = [];
 
-    register(context: AxiSparkContext, plugin: PluggableClass, options?: PluginOptions): void {
+    register(plugin: PluggableClass, options?: PluginOptions): void {
         if (!Metadata.has(MetadataKeys.PLUGIN, plugin)) throw new DecoratorNotIncludedError(plugin.name, Plugin.name);
         if (this.plugins.some((p) => p.type === plugin)) throw new PluginAlreadyRegisteredError(plugin.name);
         if (options && plugin !== options.plugin) throw new PluginConfigMismatchError(plugin.name);
 
-        context.container.bind(plugin);
-
         this.plugins.push({ type: plugin, options });
     }
 
-    getAll(): readonly { type: PluggableClass; options?: PluginOptions }[] {
-        return this.plugins.map((p) => ({ type: p.type, options: p.options }));
+    getAll(): readonly { type: PluggableClass; options?: PluginOptions; instance?: Pluggable }[] {
+        return this.plugins.map((p) => ({ type: p.type, options: p.options, instance: p.instance }));
     }
 
     private instantiate(context: AxiSparkContext): void {
@@ -37,14 +35,30 @@ export class PluginRegistry implements Lifecycle {
 
     async init(context: AxiSparkContext): Promise<void> {
         this.instantiate(context);
-        for (const plugin of this.plugins) await (plugin.instance as Pluggable).onRegister?.(context, plugin.options);
+        await this.executeLifecycleMethod(context, 'onRegister', PluginLifecycle.Registered);
     }
 
     async run(context: AxiSparkContext): Promise<void> {
-        for (const plugin of this.plugins) await (plugin.instance as Pluggable).onStart?.(context, plugin.options);
+        await this.executeLifecycleMethod(context, 'onStart', PluginLifecycle.Started);
     }
 
     async destroy(context: AxiSparkContext): Promise<void> {
-        for (const plugin of [...this.plugins].reverse()) await (plugin.instance as Pluggable).onStop?.(context, plugin.options);
+        await this.executeLifecycleMethod(context, 'onStop', PluginLifecycle.Stopped);
+    }
+
+    private async executeLifecycleMethod(context: AxiSparkContext, methodName: 'onRegister' | 'onStart' | 'onStop', lifecycleState: PluginLifecycle): Promise<void> {
+        await Promise.all(
+            this.plugins.map(async ({ instance, type, options }) => {
+                try {
+                    if ((instance as Pluggable).getState() === PluginLifecycle.Error) return;
+
+                    await (instance as Pluggable)[methodName]?.(context, options);
+                    (instance as Pluggable).setState(lifecycleState);
+                } catch (error) {
+                    (instance as Pluggable).setStateError(error as Error);
+                    context.logger.fatal(`Error executing ${methodName} for plugin ${type.name}: ${error}`, error as Error);
+                }
+            })
+        );
     }
 }

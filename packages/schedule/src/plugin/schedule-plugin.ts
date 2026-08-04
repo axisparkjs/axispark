@@ -6,7 +6,7 @@ import { JobGenerator } from '../jobs/job-generator';
 import { Job } from '../jobs';
 
 @Plugin()
-export class SchedulePlugin implements Pluggable {
+export class SchedulePlugin extends Pluggable {
     private logger!: Logger;
     private scheduler: SchedulerService;
     private jobsToStart: Job[] = [];

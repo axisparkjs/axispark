@@ -1,7 +1,7 @@
 # AxiSpark.js - TODO List to implement
 ## Core Features
 - Dependency Injection Scoped
-- Health Checks
+- Health Checks mediante @HealthCheck para que añadan automaticamente al engine de Health
 
 ## HTTP Plugin
 - Versionable API
@@ -12,6 +12,3 @@
 - Timeout handling for requests
 - Rate limiting (to prevent abuse)
 - OpenAPI/Swagger documentation generation
-
-## Task Scheduling Plugin
-- Cron job support

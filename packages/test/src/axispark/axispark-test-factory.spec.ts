@@ -20,7 +20,7 @@ describe('AxiSparkTestFactory', () => {
 
     it('should accept override from a created AxisparkCore instance', () => {
         @Plugin()
-        class TestPlugin implements Pluggable {
+        class TestPlugin extends Pluggable {
             public onRegister() {}
             public onStart() {}
             public onStop() {}

@@ -33,7 +33,7 @@ describe('RouteGenerator', () => {
         logHttpResponses: true,
         logHttpErrors: true,
         logErrors: true,
-        rootPath: '/api'
+        basePath: '/api'
     } as unknown as HttpPluginOptions;
 
     beforeEach(() => {
@@ -51,7 +51,7 @@ describe('RouteGenerator', () => {
         };
     });
 
-    it('should generate routes with rootPath', () => {
+    it('should generate routes with basePath', () => {
         (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
         (Metadata.get as jest.Mock)
@@ -83,8 +83,8 @@ describe('RouteGenerator', () => {
         expect(typeof routes[0].routes[0].handler).toBe('function');
     });
 
-    it('should generate routes without rootPath', () => {
-        options.rootPath = undefined;
+    it('should generate routes without basePath', () => {
+        options.basePath = undefined;
         (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
         (Metadata.get as jest.Mock)
@@ -186,8 +186,8 @@ describe('RouteGenerator', () => {
         ['', 'users', '/test', '/test/users'],
         ['/', '', '/test', '/test'],
         ['', '', '', '/']
-    ])('should join "%s" and "%s" with rootPath "%s" as "%s"', (prefix, path, rootPath, expected) => {
-        options.rootPath = rootPath;
+    ])('should join "%s" and "%s" with basePath "%s" as "%s"', (prefix, path, basePath, expected) => {
+        options.basePath = basePath;
         (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
         (Metadata.get as jest.Mock)

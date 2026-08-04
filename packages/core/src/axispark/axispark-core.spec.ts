@@ -152,7 +152,7 @@ describe('AxiSparkCore', () => {
             const config = { plugin };
             const result = core.use(plugin, config);
 
-            expect(context.plugins.register).toHaveBeenCalledWith(context, plugin, config);
+            expect(context.plugins.register).toHaveBeenCalledWith(plugin, config);
             expect(result).toBe(core);
         });
     });

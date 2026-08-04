@@ -8,7 +8,7 @@ class HttpPluginOptionsFactoryStatic implements Factory<ExpressHttpPluginOptions
         return {
             plugin: HttpPlugin,
             port: 3000,
-            rootPath: undefined,
+            basePath: undefined,
             adapter: ExpressHttpAdapter,
             bodyParser: true,
             bodyParserOptions: undefined,
@@ -22,6 +22,7 @@ class HttpPluginOptionsFactoryStatic implements Factory<ExpressHttpPluginOptions
             cookiesOptions: undefined,
             compression: false,
             compressionOptions: undefined,
+            healthChecks: false,
             logHttpErrors: false,
             logErrors: true,
             logHttpRequests: false,

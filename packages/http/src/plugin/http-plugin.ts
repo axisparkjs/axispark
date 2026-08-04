@@ -7,12 +7,13 @@ import { Logger } from '@axisparkjs/logger';
 import { ClassRegistry, Constructor } from '@axisparkjs/di';
 import { LogHttpRequestInterceptor, LogHttpResponseInterceptor } from '../interceptors';
 import { LogHttpErrorFilter, LogErrorFilter } from '../filters';
+import { HealthController } from '../controllers';
 import { Route } from '../routes/route';
 
 @Plugin()
-export class HttpPlugin implements Pluggable {
+export class HttpPlugin extends Pluggable {
     private logger!: Logger;
-    private options!: HttpPluginOptions;
+    protected options!: HttpPluginOptions;
     private adapter!: HttpAdapter;
 
     async onRegister(context: AxiSparkContext, options?: HttpPluginOptions): Promise<void> {
@@ -21,8 +22,8 @@ export class HttpPlugin implements Pluggable {
         this.options = options;
 
         this.registerContainerBindings(context);
+        this.configureComponents(context);
         const routes = await this.generateRoutes(context);
-        this.configureLogging(context);
 
         this.adapter = context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
         await this.adapter.registerRoutes(routes);
@@ -48,8 +49,9 @@ export class HttpPlugin implements Pluggable {
         return totalRoutes;
     }
 
-    private configureLogging(context: AxiSparkContext): void {
+    private configureComponents(context: AxiSparkContext): void {
         const items: [boolean, Constructor][] = [
+            [this.options.healthChecks ?? false, HealthController],
             [this.options.logHttpRequests ?? false, LogHttpRequestInterceptor],
             [this.options.logHttpResponses ?? false, LogHttpResponseInterceptor],
             [this.options.logHttpErrors ?? false, LogHttpErrorFilter],

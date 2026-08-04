@@ -20,7 +20,7 @@ class AxiSparkTestFactoryStatic implements Factory<AxiSparkCore> {
             }
         );
 
-        if (config?.app) config.app.used().forEach((plugin) => context.plugins.register(context, plugin.type, plugin.options));
+        if (config?.app) config.app.used().forEach((plugin) => context.plugins.register(plugin.type, plugin.options));
 
         const providers = config?.providers || [];
         providers.forEach((provider) => context.container.bind(provider));

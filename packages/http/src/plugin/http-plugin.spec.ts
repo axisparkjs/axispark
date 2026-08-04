@@ -7,6 +7,7 @@ import { HTTP_ADAPTER, HTTP_LOGGER, HTTP_OPTIONS } from '../di/tokens';
 import { LogErrorFilter, LogHttpErrorFilter } from '../filters';
 import { LogHttpRequestInterceptor, LogHttpResponseInterceptor } from '../interceptors';
 import { HttpPluginOptions } from './http-plugin-options';
+import { HealthController } from '../controllers';
 
 jest.mock('../routes/route-generator');
 jest.mock('@axisparkjs/di', () => ({
@@ -44,13 +45,14 @@ describe('HttpPlugin', () => {
     const options = {
         adapter: class TestAdapter {},
         port: 3000,
+        healthChecks: true,
         logHttpRequests: true,
         logHttpResponses: true,
         logHttpErrors: true,
         logErrors: true
     } as unknown as HttpPluginOptions;
 
-    const optionsWithoutLog = {
+    const optionsWithoutComponents = {
         adapter: class TestAdapter {},
         port: 3000
     } as unknown as HttpPluginOptions;
@@ -154,8 +156,8 @@ describe('HttpPlugin', () => {
         });
     });
 
-    describe('configureLogging', () => {
-        it('should keep all logging components when enabled', async () => {
+    describe('configureComponents', () => {
+        it('should keep all components when enabled', async () => {
             await plugin.onRegister(context, options);
 
             expect(ClassRegistry.remove).not.toHaveBeenCalled();
@@ -163,13 +165,14 @@ describe('HttpPlugin', () => {
         });
 
         it.each([
+            ['healthChecks', HealthController],
             ['logHttpRequests', LogHttpRequestInterceptor],
             ['logHttpResponses', LogHttpResponseInterceptor],
             ['logHttpErrors', LogHttpErrorFilter],
             ['logErrors', LogErrorFilter]
         ])('should disable %s when set to false', async (_flag, target) => {
             await plugin.onRegister(context, {
-                ...optionsWithoutLog
+                ...optionsWithoutComponents
             });
 
             expect(ClassRegistry.remove).toHaveBeenCalledWith(target);

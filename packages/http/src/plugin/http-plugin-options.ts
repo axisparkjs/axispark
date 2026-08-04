@@ -3,7 +3,7 @@ import { HttpAdapterClass } from '../adapter/http-adapter';
 
 export interface HttpPluginOptions extends PluginOptions {
     port: number;
-    rootPath?: string;
+    basePath?: string;
     adapter: HttpAdapterClass;
     bodyParser: boolean;
     bodyParserOptions?: any;
@@ -17,6 +17,7 @@ export interface HttpPluginOptions extends PluginOptions {
     cookiesOptions?: any;
     compression: boolean;
     compressionOptions?: any;
+    healthChecks?: boolean;
     logHttpRequests?: boolean;
     logHttpResponses?: boolean;
     logHttpErrors?: boolean;
