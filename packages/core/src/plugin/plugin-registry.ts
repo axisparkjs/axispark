@@ -4,6 +4,7 @@ import { AxiSparkContext } from '../axispark';
 import { PluginAlreadyRegisteredError } from './plugin-already-registered-error';
 import { PluginConfigMismatchError } from './plugin-config-mismatch-error';
 import { PluginCircularDependencyError } from './plugin-circular-dependency-error';
+import { PluginDependencyNotIncludedError } from './plugin-dependency-not-included-error';
 import { Pluggable, PluginLifecycle, PluggableClass, PluginOptions } from './pluggable';
 import { Plugin } from '../decorators';
 
@@ -50,8 +51,8 @@ export class PluginRegistry implements Lifecycle {
         for (const plugin of this.plugins) {
             const dependencies = plugin.type.dependencies || [];
             for (const dependency of dependencies) {
-                if (!graph.has(dependency)) throw new Error(`Dependency ${dependency.name} not registered`);
-                graph.get(dependency)?.push(plugin.type);
+                if (!graph.has(dependency)) throw new PluginDependencyNotIncludedError(dependency.name);
+                (graph.get(dependency) as PluggableClass[]).push(plugin.type);
                 inDegree.set(plugin.type, (inDegree.get(plugin.type) || 0) + 1);
             }
         }
@@ -66,8 +67,8 @@ export class PluginRegistry implements Lifecycle {
             const currentPlugin = plugins.get(current) as RegisteredPlugin;
             this.executionOrder.push(currentPlugin);
 
-            for (const neighbor of graph.get(current) || []) {
-                inDegree.set(neighbor, (inDegree.get(neighbor) || 0) - 1);
+            for (const neighbor of graph.get(current) as PluggableClass[]) {
+                inDegree.set(neighbor, (inDegree.get(neighbor) as number) - 1);
                 if (inDegree.get(neighbor) === 0) queue.push(neighbor);
             }
         }
@@ -88,7 +89,7 @@ export class PluginRegistry implements Lifecycle {
     }
 
     async destroy(context: AxiSparkContext): Promise<void> {
-        await this.executeLifecycleMethod(context, 'onStop', PluginLifecycle.Stopped);
+        await this.executeLifecycleMethod(context, 'onStop', PluginLifecycle.Stopped, true);
     }
 
     private async executeLifecycleMethod(context: AxiSparkContext, methodName: 'onRegister' | 'onStart' | 'onStop', lifecycleState: PluginLifecycle, reversed = false): Promise<void> {

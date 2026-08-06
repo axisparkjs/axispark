@@ -121,7 +121,8 @@ describe('ExpressHttpAdapter', () => {
                     controller: class TestController {},
                     method: HttpMethod.Get,
                     path: '/users',
-                    handler
+                    handler,
+                    propertyKey: 'getUsers'
                 }
             ]);
 
@@ -138,7 +139,8 @@ describe('ExpressHttpAdapter', () => {
                     controller: class TestController {},
                     method: HttpMethod.Get,
                     path: '/',
-                    handler
+                    handler,
+                    propertyKey: 'test'
                 }
             ]);
 
@@ -170,7 +172,8 @@ describe('ExpressHttpAdapter', () => {
                     controller: class TestController {},
                     method: HttpMethod.Get,
                     path: '/',
-                    handler
+                    handler,
+                    propertyKey: 'test'
                 }
             ]);
 
@@ -183,6 +186,28 @@ describe('ExpressHttpAdapter', () => {
                 response: expect.any(ExpressHttpResponse),
                 session: expect.any(ExpressHttpSession)
             });
+        });
+    });
+
+    describe('getRegisteredRoutes', () => {
+        it('should return all registered routes', () => {
+            const adapter = new ExpressHttpAdapter(baseConfig);
+
+            const handler = jest.fn();
+
+            const routes = [
+                {
+                    controller: class TestController {},
+                    method: HttpMethod.Get,
+                    path: '/users',
+                    handler,
+                    propertyKey: 'getUsers'
+                }
+            ];
+
+            adapter.registerRoutes(routes);
+
+            expect(adapter.getRegisteredRoutes()).toEqual(routes);
         });
     });
 

@@ -9,6 +9,6 @@ describe('PluginAlreadyRegisteredError', () => {
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(PluginAlreadyRegisteredError);
         expect(error.name).toBe('PluginAlreadyRegisteredError');
-        expect(error.message).toBe('LoggerPlugin is already registered.');
+        expect(error.message).toBe('LoggerPlugin is already registered');
     });
 });

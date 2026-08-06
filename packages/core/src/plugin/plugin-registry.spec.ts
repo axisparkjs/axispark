@@ -5,6 +5,8 @@ import { PluginRegistry } from './plugin-registry';
 import { AxiSparkContext } from '../axispark';
 import { PluginAlreadyRegisteredError } from './plugin-already-registered-error';
 import { PluginConfigMismatchError } from './plugin-config-mismatch-error';
+import { PluginCircularDependencyError } from './plugin-circular-dependency-error';
+import { PluginDependencyNotIncludedError } from './plugin-dependency-not-included-error';
 
 const onRegisterMock = jest.fn();
 const onStartMock = jest.fn();
@@ -41,6 +43,46 @@ class BrokenPlugin extends Pluggable {
         onRegisterMock();
     }
 }
+
+const executionOrder: string[] = [];
+
+@Plugin()
+class DependencyPlugin extends Pluggable {
+    async onRegister() {
+        executionOrder.push('dependency');
+    }
+}
+
+@Plugin()
+class MainPlugin extends Pluggable {
+    static override dependencies = [DependencyPlugin];
+
+    async onRegister() {
+        executionOrder.push('main');
+    }
+}
+
+@Plugin()
+class MissingDependencyPlugin extends Pluggable {
+    static override dependencies = [DependencyPlugin];
+}
+
+@Plugin()
+class ExtraMissingDependencyPlugin extends Pluggable {
+    static override dependencies = [DependencyPlugin, MissingDependencyPlugin];
+}
+
+@Plugin()
+class CircularA extends Pluggable {
+    static override dependencies = [] as any;
+}
+
+@Plugin()
+class CircularB extends Pluggable {
+    static override dependencies = [CircularA];
+}
+
+CircularA.dependencies = [CircularB];
 
 describe('PluginRegistry', () => {
     let registry: PluginRegistry;
@@ -118,6 +160,10 @@ describe('PluginRegistry', () => {
     });
 
     describe('lifecycle methods', () => {
+        beforeEach(() => {
+            executionOrder.length = 0;
+        });
+
         it('should call onRegister, onStart, and onStop in order', async () => {
             const mockPluginInstance = new MockPlugin();
             const testPluginInstance = new TestPlugin();
@@ -162,6 +208,51 @@ describe('PluginRegistry', () => {
             await expect(registry.destroy(context)).resolves.not.toThrow();
             expect(context.logger.fatal).not.toHaveBeenCalled();
             expect(errorPluginInstance.getState()).toBe(PluginLifecycle.Error);
+        });
+
+        it('should execute plugins respecting dependency order', async () => {
+            registry.register(MainPlugin, { plugin: MainPlugin });
+            registry.register(DependencyPlugin, { plugin: DependencyPlugin });
+            registry.register(MissingDependencyPlugin, { plugin: MissingDependencyPlugin });
+            registry.register(ExtraMissingDependencyPlugin);
+
+            context.container.resolve = jest.fn().mockImplementation((type) => {
+                if (type === MainPlugin) return new MainPlugin();
+                if (type === DependencyPlugin) return new DependencyPlugin();
+                if (type === MissingDependencyPlugin) return new MissingDependencyPlugin();
+                if (type === ExtraMissingDependencyPlugin) return new ExtraMissingDependencyPlugin();
+                throw new Error(`Unknown type: ${type}`);
+            });
+
+            await registry.init(context);
+
+            expect(executionOrder).toEqual(['dependency', 'main']);
+        });
+
+        it('should throw if a dependency is not registered', async () => {
+            registry.register(MissingDependencyPlugin, {
+                plugin: MissingDependencyPlugin
+            });
+
+            context.container.resolve = jest.fn().mockImplementation((type) => {
+                if (type === MissingDependencyPlugin) return new MissingDependencyPlugin();
+                throw new Error(`Unknown type: ${type}`);
+            });
+
+            await expect(registry.init(context)).rejects.toThrow(PluginDependencyNotIncludedError);
+        });
+
+        it('should throw if circular dependencies are detected', async () => {
+            registry.register(CircularA, { plugin: CircularA });
+            registry.register(CircularB, { plugin: CircularB });
+
+            context.container.resolve = jest.fn().mockImplementation((type) => {
+                if (type === CircularA) return new CircularA();
+                if (type === CircularB) return new CircularB();
+                throw new Error(`Unknown type: ${type}`);
+            });
+
+            await expect(registry.init(context)).rejects.toThrow(PluginCircularDependencyError);
         });
     });
 });

@@ -9,6 +9,7 @@ export const MetadataKeys = {
     /* Di */
     CONSTRUCTABLE: new MetadataKey('constructable'),
     INJECTABLE: new MetadataKey('injectable'),
+    INJECTABLE_TOKEN: new MetadataKey('injectable-token'),
     INJECT: new MetadataKey('inject'),
 
     /* Core */
@@ -30,7 +31,7 @@ export const MetadataKeys = {
     SCHEDULER: new MetadataKey('scheduler'),
     JOB: new MetadataKey('job'),
 
-    /* OpenApi */
+    /* OpenApi (in progress) */
     OPENAPI_RESPONSE: new MetadataKey('openapi-response'),
     OPENAPI_SCHEMA: new MetadataKey('openapi-schema'),
     OPENAPI_PROPERTY: new MetadataKey('openapi-property')

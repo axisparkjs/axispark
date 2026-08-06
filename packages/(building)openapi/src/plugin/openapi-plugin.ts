@@ -13,7 +13,7 @@ import { HTTP_ADAPTER } from '@axisparkjs/http';
 import { Route } from '@axisparkjs/http';
 import { HttpMethod } from '@axisparkjs/http';
 import { Constructor } from '@axisparkjs/di';
-import { createConfig, lintFromString } from "@redocly/openapi-core";
+import { createConfig, lintFromString } from '@redocly/openapi-core';
 
 @Plugin()
 export class OpenApiPlugin extends Pluggable {
@@ -47,11 +47,11 @@ export class OpenApiPlugin extends Pluggable {
     private async generateAndValidateDocument(): Promise<void> {
         this.document = OpenApiDocumentGenerator.generate(this.options, this.httpAdapter.getRegisteredRoutes());
         const config = await createConfig({
-            extends: ["minimal"],
+            extends: ['minimal']
         });
         const result = await lintFromString({
             source: this.document.toJson(),
-            config,
+            config
         });
 
         if (result.length > 0) {

@@ -2,7 +2,7 @@ import { Initializable, Metadata, MetadataKeys } from '@axisparkjs/common';
 import { Resolver } from './resolver';
 import { ProviderNotFoundError, DecoratorNotIncludedError } from './errors';
 import { ClassProvider, Provider, Constructor } from './types';
-import { Token, TokenUtils } from './token';
+import { InjectionToken, Token, TokenUtils } from './token';
 import { Injectable } from './decorators';
 import { ClassRegistry } from './class-registry';
 
@@ -12,9 +12,10 @@ export class Container implements Initializable {
 
     init() {
         ClassRegistry.getWithMetadata(MetadataKeys.INJECTABLE).forEach((entry) => {
-            if (!this.providers.has(TokenUtils.getName(entry))) {
-                this.bind(entry);
-            }
+            const injectionToken = Metadata.get<InjectionToken>(MetadataKeys.INJECTABLE_TOKEN, entry);
+            if (injectionToken) this.bind({ token: injectionToken, useClass: entry });
+
+            if (!this.providers.has(TokenUtils.getName(entry))) this.bind(entry);
         });
     }
 

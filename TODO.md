@@ -1,6 +1,7 @@
 # AxiSpark.js - TODO List to implement
 ## Core Features
 - Dependency Injection Scoped
+- @Injectable with Token for interfaces
 - Health Checks mediante @HealthCheck para que añadan automaticamente al engine de Health
 
 ## HTTP Plugin
@@ -11,7 +12,6 @@
 - File uploads
 - Timeout handling for requests
 - Rate limiting (to prevent abuse)
-- OpenAPI/Swagger documentation generation
 
 ## OpenAPI/Swagger Plugin
 - Automatic generation of OpenAPI/Swagger documentation based on the defined routes and their metadata.

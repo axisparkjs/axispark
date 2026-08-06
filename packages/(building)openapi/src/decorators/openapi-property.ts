@@ -9,11 +9,11 @@ export function OpenApiProperty(metadata?: OpenApiPropertyMetadata): PropertyDec
         const metaType = extractTypeFromMetadata(target, propertyKey);
         const newMetadata: OpenApiPropertyMetadata = {
             name: propertyKey.toString(),
-            type: metaType === "array" ? "string" : metaType,
+            type: metaType === 'array' ? 'string' : metaType,
             required: !metadata?.nullable && !metadata?.default,
-            isArray: metaType === "array",
+            isArray: metaType === 'array',
             ...metadata
-        }
+        };
         existingMetadata.push(newMetadata);
 
         Metadata.define(MetadataKeys.OPENAPI_PROPERTY, existingMetadata, target);

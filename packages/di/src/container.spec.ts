@@ -11,6 +11,7 @@ jest.mock('@axisparkjs/common', () => {
     return {
         ...originalModule,
         Metadata: {
+            get: jest.fn(),
             has: jest.fn(),
             define: jest.fn()
         }
@@ -57,6 +58,18 @@ describe('Container', () => {
         container.init();
 
         expect(spyBind).toHaveBeenCalledWith(injectableClass);
+    });
+
+    it('should init all ClassRegistry entries with INJECTABLE metadata and add TOKEN metadata', () => {
+        const token = new InjectionToken('token');
+        const injectableClass = class InjectableClass {};
+        ClassRegistry.getWithMetadata = jest.fn().mockReturnValue([injectableClass]);
+        Metadata.get = jest.fn().mockReturnValue(token);
+        const spyBind = jest.spyOn(container, 'bind');
+
+        container.init();
+
+        expect(spyBind).toHaveBeenCalledWith({token, useClass: injectableClass });
     });
 
     it('should bind a constructor as a class provider', () => {

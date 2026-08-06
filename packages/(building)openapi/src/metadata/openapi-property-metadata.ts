@@ -1,14 +1,8 @@
-import { Constructor } from "@axisparkjs/di";
+import { Constructor } from '@axisparkjs/di';
 
 export interface OpenApiPropertyMetadata {
     name: string;
-    type:
-    | "string"
-    | "number"
-    | "integer"
-    | "boolean"
-    | "null"
-    | Constructor;
+    type: 'string' | 'number' | 'integer' | 'boolean' | 'null' | Constructor;
     isArray?: boolean;
     description?: string;
     required?: boolean;
