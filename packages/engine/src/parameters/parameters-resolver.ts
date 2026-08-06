@@ -11,7 +11,7 @@ class ParametersResolverStatic implements Resolver<any[]> {
     }
 
     resolve(executionContext: ExecutionContext, executionHandler: ExecutionHandler): any[] {
-        const parameters = Metadata.getMethod<ParameterMetadata[]>(MetadataKeys.PARAMETER, executionHandler.target, executionHandler.method) ?? [];
+        const parameters = Metadata.get<ParameterMetadata[]>(MetadataKeys.PARAMETER, executionHandler.target, executionHandler.method) ?? [];
         const args = [];
         for (const parameter of parameters) {
             if (!this.resolvers.has(parameter.parameter)) continue;

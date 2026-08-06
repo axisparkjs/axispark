@@ -1,18 +1,18 @@
 import { Executable, Metadata, MetadataKeys } from '@axisparkjs/common';
 import { PipeMetadata } from './metadata';
 import { PipeExecutionContext } from './pipe-execution-context';
-import { ExecutionHandler } from '../execution/execution-handler';
+import { ExecutionHandler, ExecutionCore } from '../execution';
+import { PipeScope } from './pipe-scope';
 import { PipeStepExecutionContext } from './pipe-step-execution-context';
-import { ExecutionCore } from '../execution/execution-core';
 
 class PipeExecutorStatic implements Executable {
     execute(context: PipeExecutionContext, handler: ExecutionHandler, core: ExecutionCore): any[] {
         const classPipes = Metadata.get<PipeMetadata[]>(MetadataKeys.PIPE, handler.target) ?? [];
-        const methodPipes = Metadata.getMethod<PipeMetadata[]>(MetadataKeys.PIPE, handler.target, handler.method) ?? [];
-        let pipes = [...classPipes, ...methodPipes.filter((x) => x.scope === 'method')];
+        const methodPipes = Metadata.get<PipeMetadata[]>(MetadataKeys.PIPE, handler.target, handler.method) ?? [];
+        let pipes = [...classPipes, ...methodPipes.filter((x) => x.scope === PipeScope.Method)];
 
         context.args.forEach((value, index) => {
-            pipes = [...methodPipes.filter((x) => x.scope === 'parameter' && x.index === index)];
+            pipes = [...methodPipes.filter((x) => x.scope === PipeScope.Parameter && x.index === index)];
 
             const executionContext: PipeStepExecutionContext = {
                 parameter: handler.method,

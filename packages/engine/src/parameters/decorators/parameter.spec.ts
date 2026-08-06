@@ -3,8 +3,8 @@ import { Parameter } from './parameter';
 
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
-        getMethod: jest.fn(),
-        defineMethod: jest.fn()
+        get: jest.fn(),
+        define: jest.fn()
     },
     MetadataKeys: {
         PARAMETER: 'PARAMETER'
@@ -17,19 +17,19 @@ describe('Parameter', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        (Metadata.getMethod as jest.Mock).mockReturnValue([]);
+        (Metadata.get as jest.Mock).mockReturnValue([]);
     });
 
     it('should register parameter metadata', () => {
-        (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
+        (Metadata.get as jest.Mock).mockReturnValue(undefined);
 
         class Controller {
             method(@TestParameter('id') _value: unknown) {}
         }
 
-        expect(Metadata.getMethod).toHaveBeenCalledWith(MetadataKeys.PARAMETER, Controller.prototype, 'method');
+        expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.PARAMETER, Controller.prototype, 'method');
 
-        expect(Metadata.defineMethod).toHaveBeenCalledWith(
+        expect(Metadata.define).toHaveBeenCalledWith(
             MetadataKeys.PARAMETER,
             [
                 {
@@ -50,7 +50,7 @@ describe('Parameter', () => {
             method(@TestParameter() _value: unknown) {}
         }
 
-        expect(Metadata.defineMethod).toHaveBeenCalledWith(
+        expect(Metadata.define).toHaveBeenCalledWith(
             MetadataKeys.PARAMETER,
             [
                 {
@@ -67,7 +67,7 @@ describe('Parameter', () => {
     });
 
     it('should append existing metadata', () => {
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 parameter: 'existing',
                 name: 'foo',
@@ -81,7 +81,7 @@ describe('Parameter', () => {
             method(_first: string, @TestParameter('id') _second: unknown) {}
         }
 
-        expect(Metadata.defineMethod).toHaveBeenCalledWith(
+        expect(Metadata.define).toHaveBeenCalledWith(
             MetadataKeys.PARAMETER,
             [
                 {
@@ -109,7 +109,7 @@ describe('Parameter', () => {
             method(_first: string, @TestParameter() _second: unknown, _third: string) {}
         }
 
-        expect(Metadata.defineMethod).toHaveBeenCalledWith(
+        expect(Metadata.define).toHaveBeenCalledWith(
             MetadataKeys.PARAMETER,
             [
                 expect.objectContaining({

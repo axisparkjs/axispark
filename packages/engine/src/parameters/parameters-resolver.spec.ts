@@ -4,7 +4,7 @@ import { ParameterResolver } from './parameter-resolver';
 
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
-        getMethod: jest.fn()
+        get: jest.fn()
     },
     MetadataKeys: {
         PARAMETER: 'PARAMETER'
@@ -20,13 +20,13 @@ describe('ParametersResolver', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        (Metadata.getMethod as jest.Mock).mockReturnValue([]);
+        (Metadata.get as jest.Mock).mockReturnValue([]);
 
         (ParametersResolver as any).resolvers.clear();
     });
 
     it('should return an empty array when no parameters are registered', () => {
-        (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
+        (Metadata.get as jest.Mock).mockReturnValue(undefined);
         const result = ParametersResolver.resolve(executionContext, executionHandler);
 
         expect(result).toEqual([]);
@@ -39,7 +39,7 @@ describe('ParametersResolver', () => {
 
         ParametersResolver.register('test', resolver);
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 parameter: 'test',
                 index: 0,
@@ -70,7 +70,7 @@ describe('ParametersResolver', () => {
         ParametersResolver.register('first', resolver1);
         ParametersResolver.register('second', resolver2);
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 parameter: 'first',
                 index: 0
@@ -93,7 +93,7 @@ describe('ParametersResolver', () => {
 
         ParametersResolver.register('known', resolver);
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 parameter: 'unknown',
                 index: 0
@@ -113,7 +113,7 @@ describe('ParametersResolver', () => {
 
         ParametersResolver.register('test', resolver);
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 parameter: 'test',
                 index: 2
@@ -139,7 +139,7 @@ describe('ParametersResolver', () => {
         ParametersResolver.register('test', resolver1);
         ParametersResolver.register('test', resolver2);
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 parameter: 'test',
                 index: 0

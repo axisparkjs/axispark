@@ -7,9 +7,7 @@ import { ExecutionTransport } from '../execution';
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
         get: jest.fn(),
-        getMethod: jest.fn(),
         define: jest.fn(),
-        defineMethod: jest.fn()
     },
     MetadataKeys: {
         EXECUTION_STEP_TARGET: 'EXECUTION_STEP_TARGET',
@@ -121,10 +119,12 @@ describe('ExecutionStepsGenerator', () => {
             class Controller {}
 
             (Metadata.get as jest.Mock)
-                // class @Use
+                // EXECUTION_STEP_USE 1
                 .mockReturnValueOnce({
                     targets: [LocalStep]
                 })
+                // EXECUTION_STEP_USE 2
+                .mockReturnValueOnce(undefined)
                 // EXECUTION_STEP_TARGET
                 .mockReturnValueOnce([
                     {
@@ -141,8 +141,6 @@ describe('ExecutionStepsGenerator', () => {
                         propertyKey: 'check'
                     }
                 ]);
-
-            (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
 
             const result = ExecutionStepsGenerator.generate({
                 target: Controller,
@@ -169,21 +167,20 @@ describe('ExecutionStepsGenerator', () => {
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
                     targets: [Step1]
+                }).mockReturnValueOnce({
+                    targets: [Step2]
                 })
                 .mockReturnValueOnce(undefined)
                 .mockReturnValueOnce(undefined)
                 .mockReturnValueOnce(undefined);
-
-            (Metadata.getMethod as jest.Mock).mockReturnValueOnce({
-                targets: [Step2]
-            });
 
             const result = ExecutionStepsGenerator.generate({
                 target: Controller,
                 method: 'find'
             });
 
-            expect(Metadata.getMethod).toHaveBeenCalledWith(MetadataKeys.EXECUTION_STEP_USE, Controller, 'find');
+            expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.EXECUTION_STEP_USE, Controller);
+            expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.EXECUTION_STEP_USE, Controller, 'find');
 
             expect(result).toEqual([]);
         });
@@ -196,6 +193,7 @@ describe('ExecutionStepsGenerator', () => {
                 .mockReturnValueOnce({
                     targets: [Step]
                 })
+                .mockReturnValueOnce(undefined)
                 .mockReturnValueOnce([
                     {
                         type: ExecutionStepType.Guard,
@@ -210,8 +208,6 @@ describe('ExecutionStepsGenerator', () => {
                         propertyKey: 'execute'
                     }
                 ]);
-
-            (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
 
             const result = ExecutionStepsGenerator.generate({
                 target: Controller,
@@ -250,6 +246,8 @@ describe('ExecutionStepsGenerator', () => {
                 .mockReturnValueOnce({
                     targets: [LocalStep]
                 })
+                // generate - @Use
+                .mockReturnValueOnce(undefined)
                 // generate - target metadata
                 .mockReturnValueOnce([
                     {
@@ -266,8 +264,6 @@ describe('ExecutionStepsGenerator', () => {
                         propertyKey: 'check'
                     }
                 ]);
-
-            (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
 
             ExecutionStepsGenerator.init();
 

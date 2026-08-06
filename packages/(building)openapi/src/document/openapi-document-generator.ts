@@ -115,7 +115,7 @@ class OpenApiDocumentGeneratorStatic implements Generator<OpenApiDocument> {
             route.path = openApiPath;
 
             if (!acc[openApiPath]) acc[openApiPath] = {};
-            const openApiResponseMetadata = Metadata.getMethod<OpenApiResponseMetadata[]>(MetadataKeys.OPENAPI_RESPONSE, controller, propertyKey) ?? [];
+            const openApiResponseMetadata = Metadata.get<OpenApiResponseMetadata[]>(MetadataKeys.OPENAPI_RESPONSE, controller, propertyKey) ?? [];
 
             acc[openApiPath][method] = {
                 responses: this.generateResponses(route, openApiResponseMetadata),
@@ -130,7 +130,7 @@ class OpenApiDocumentGeneratorStatic implements Generator<OpenApiDocument> {
 
     private generateParameters(route: Route) {
         const allowedParameterTypes = ['param', 'header', 'query', 'cookie'];
-        let parameters = Metadata.getMethod<ParameterMetadata[]>(MetadataKeys.PARAMETER, route.controller, route.propertyKey) ?? [];
+        let parameters = Metadata.get<ParameterMetadata[]>(MetadataKeys.PARAMETER, route.controller, route.propertyKey) ?? [];
         parameters = parameters.filter((parameter) => allowedParameterTypes.includes(parameter.parameter));
         if (parameters.length === 0) return undefined;
 
@@ -150,7 +150,7 @@ class OpenApiDocumentGeneratorStatic implements Generator<OpenApiDocument> {
 
     private generateRequestBody(route: Route) {
         const allowedParameterTypes = ['body'];
-        let parameters = Metadata.getMethod<ParameterMetadata[]>(MetadataKeys.PARAMETER, route.controller, route.propertyKey) ?? [];
+        let parameters = Metadata.get<ParameterMetadata[]>(MetadataKeys.PARAMETER, route.controller, route.propertyKey) ?? [];
         parameters = parameters.filter((parameter) => allowedParameterTypes.includes(parameter.parameter));
         if (parameters.length === 0) return undefined;
         const param = parameters[0];

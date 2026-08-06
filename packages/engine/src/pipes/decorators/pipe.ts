@@ -22,7 +22,7 @@ export function Pipe(...steps: (PipeStepClass | { pipeStep: PipeStepClass; pipeS
         }
 
         const [target, propertyKey, third] = args;
-        const pipes = Metadata.getMethod<PipeMetadata[]>(MetadataKeys.PIPE, target, propertyKey) ?? [];
+        const pipes = Metadata.get<PipeMetadata[]>(MetadataKeys.PIPE, target, propertyKey) ?? [];
 
         // Parámetro
         if (typeof third === 'number') {
@@ -33,7 +33,7 @@ export function Pipe(...steps: (PipeStepClass | { pipeStep: PipeStepClass; pipeS
                 steps
             });
 
-            Metadata.defineMethod(MetadataKeys.PIPE, pipes, target, propertyKey);
+            Metadata.define(MetadataKeys.PIPE, pipes, target, propertyKey);
 
             return;
         }
@@ -45,6 +45,6 @@ export function Pipe(...steps: (PipeStepClass | { pipeStep: PipeStepClass; pipeS
             steps
         });
 
-        Metadata.defineMethod(MetadataKeys.PIPE, pipes, target, propertyKey);
+        Metadata.define(MetadataKeys.PIPE, pipes, target, propertyKey);
     };
 }

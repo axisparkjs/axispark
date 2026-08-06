@@ -29,7 +29,7 @@ describe('PipeExecutor', () => {
         };
 
         jest.spyOn(Metadata, 'get').mockReturnValue([]);
-        jest.spyOn(Metadata, 'getMethod').mockReturnValue([]);
+        jest.spyOn(Metadata, 'get').mockReturnValue([]);
     });
 
     afterEach(() => {
@@ -40,7 +40,7 @@ describe('PipeExecutor', () => {
         context.args = ['10'];
 
         (Metadata.get as jest.Mock).mockReturnValue(undefined);
-        (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
+        (Metadata.get as jest.Mock).mockReturnValue(undefined);
 
         const result = PipeExecutor.execute(context, handler, core);
 
@@ -56,7 +56,7 @@ describe('PipeExecutor', () => {
             }
         }
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 scope: PipeScope.Parameter,
                 index: 0,
@@ -88,7 +88,7 @@ describe('PipeExecutor', () => {
             }
         }
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 scope: PipeScope.Parameter,
                 index: 0,
@@ -117,7 +117,7 @@ describe('PipeExecutor', () => {
             value: 10
         };
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 scope: PipeScope.Parameter,
                 index: 0,
@@ -149,7 +149,7 @@ describe('PipeExecutor', () => {
 
         handler.method = 'find';
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 scope: PipeScope.Parameter,
                 index: 0,
@@ -184,7 +184,7 @@ describe('PipeExecutor', () => {
             }
         }
 
-        (Metadata.getMethod as jest.Mock).mockReturnValue([
+        (Metadata.get as jest.Mock).mockReturnValue([
             {
                 scope: PipeScope.Parameter,
                 index: 0,

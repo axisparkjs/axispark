@@ -25,19 +25,16 @@ class ExecutionStepsGeneratorStatic implements Generator<ExecutionStep[]>, Initi
 
     private getTargets(handler: ExecutionHandler): Constructor[] {
         const classMetadata = Metadata.get<ExecutionStepUseMetadata>(MetadataKeys.EXECUTION_STEP_USE, handler.target);
-
-        const methodMetadata = Metadata.getMethod<ExecutionStepUseMetadata>(MetadataKeys.EXECUTION_STEP_USE, handler.target, handler.method);
+        const methodMetadata = Metadata.get<ExecutionStepUseMetadata>(MetadataKeys.EXECUTION_STEP_USE, handler.target, handler.method);
 
         return [...(classMetadata?.targets ?? []), ...(methodMetadata?.targets ?? [])];
     }
 
     private buildSteps(target: Constructor, global: boolean): ExecutionStep[] {
         const targetMetadata = Metadata.get<ExecutionStepTargetMetadata[]>(MetadataKeys.EXECUTION_STEP_TARGET, target) ?? [];
-
         const methodMetadata = Metadata.get<ExecutionStepMethodMetadata[]>(MetadataKeys.EXECUTION_STEP_METHOD, target) ?? [];
 
         const steps: ExecutionStep[] = [];
-
         for (const metadata of targetMetadata) {
             if (metadata.global !== global) {
                 continue;

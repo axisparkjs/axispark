@@ -6,9 +6,7 @@ import { PipeStep } from '../pipe-step';
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
         get: jest.fn(),
-        getMethod: jest.fn(),
         define: jest.fn(),
-        defineMethod: jest.fn()
     },
     MetadataKeys: {
         PIPE: 'PIPE'
@@ -87,16 +85,16 @@ describe('@Pipe', () => {
 
     describe('method decorator', () => {
         it('should define method metadata', () => {
-            (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
+            (Metadata.get as jest.Mock).mockReturnValue(undefined);
 
             class Controller {
                 @Pipe(TestPipe)
                 method() {}
             }
 
-            expect(Metadata.getMethod).toHaveBeenCalledWith(MetadataKeys.PIPE, Controller.prototype, 'method');
+            expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.PIPE, Controller.prototype, 'method');
 
-            expect(Metadata.defineMethod).toHaveBeenCalledWith(
+            expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.PIPE,
                 [
                     {
@@ -111,7 +109,7 @@ describe('@Pipe', () => {
         });
 
         it('should append method metadata', () => {
-            (Metadata.getMethod as jest.Mock).mockReturnValue([
+            (Metadata.get as jest.Mock).mockReturnValue([
                 {
                     scope: PipeScope.Method,
                     propertyKey: 'method',
@@ -124,7 +122,7 @@ describe('@Pipe', () => {
                 method() {}
             }
 
-            expect(Metadata.defineMethod).toHaveBeenCalledWith(
+            expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.PIPE,
                 [
                     {
@@ -146,13 +144,13 @@ describe('@Pipe', () => {
 
     describe('parameter decorator', () => {
         it('should define parameter metadata', () => {
-            (Metadata.getMethod as jest.Mock).mockReturnValue(undefined);
+            (Metadata.get as jest.Mock).mockReturnValue(undefined);
 
             class Controller {
                 method(@Pipe(TestPipe) _value: string) {}
             }
 
-            expect(Metadata.defineMethod).toHaveBeenCalledWith(
+            expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.PIPE,
                 [
                     {
@@ -168,7 +166,7 @@ describe('@Pipe', () => {
         });
 
         it('should append parameter metadata', () => {
-            (Metadata.getMethod as jest.Mock).mockReturnValue([
+            (Metadata.get as jest.Mock).mockReturnValue([
                 {
                     scope: PipeScope.Parameter,
                     propertyKey: 'method',
@@ -181,7 +179,7 @@ describe('@Pipe', () => {
                 method(@Pipe(NewPipe) _value: string) {}
             }
 
-            expect(Metadata.defineMethod).toHaveBeenCalledWith(
+            expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.PIPE,
                 [
                     {

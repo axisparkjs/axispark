@@ -5,7 +5,7 @@ export function Parameter(parameter: string) {
     return (name?: string): ParameterDecorator => {
         return (target, propertyKey, parameterIndex) => {
             const key = propertyKey as string | symbol;
-            const parameters = Metadata.getMethod<ParameterMetadata[]>(MetadataKeys.PARAMETER, target, key) ?? [];
+            const parameters = Metadata.get<ParameterMetadata[]>(MetadataKeys.PARAMETER, target, key) ?? [];
 
             parameters.push({
                 parameter,
@@ -15,7 +15,7 @@ export function Parameter(parameter: string) {
                 target
             });
 
-            Metadata.defineMethod(MetadataKeys.PARAMETER, parameters, target, key);
+            Metadata.define(MetadataKeys.PARAMETER, parameters, target, key);
         };
     };
 }

@@ -1,8 +1,9 @@
 import { DomainEvent } from './domain-event';
 import { Entity } from './entity';
+import { HasDomainEvents } from './has-domain-events';
 import { Identifier } from './identifier';
 
-export abstract class AggregateRoot<T extends Identifier> extends Entity<T> {
+export abstract class AggregateRoot<T extends Identifier> extends Entity<T> implements HasDomainEvents {
     private readonly _domainEvents: DomainEvent[] = [];
 
     public addDomainEvent(event: DomainEvent): void {

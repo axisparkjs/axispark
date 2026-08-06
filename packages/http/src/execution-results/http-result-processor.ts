@@ -12,7 +12,7 @@ class HttpResultProcessorStatic implements ExecutionResultProcessor {
             return;
         }
         const route = (Metadata.get<RouteMetadata[]>(MetadataKeys.ROUTE, handler.target) as RouteMetadata[]).find((r) => r.propertyKey === handler.method) as RouteMetadata;
-        const statusCode = Metadata.getMethod<HttpStatusCode>(MetadataKeys.HTTP_CODE, handler.target, handler.method) ?? defaultStatusCode(route.method as string);
+        const statusCode = Metadata.get<HttpStatusCode>(MetadataKeys.HTTP_CODE, handler.target, handler.method) ?? defaultStatusCode(route.method as string);
         return new BodyHttpResult(result, statusCode).process(context);
     }
 }

@@ -10,7 +10,7 @@ export function Use(...targets: Constructor[]): ClassDecorator & MethodDecorator
 
         // Método
         if (descriptor) {
-            Metadata.defineMethod(MetadataKeys.EXECUTION_STEP_USE, metadata, target, propertyKey as string | symbol);
+            Metadata.define(MetadataKeys.EXECUTION_STEP_USE, metadata, target, propertyKey as string | symbol);
         }
         // Clase
         else {

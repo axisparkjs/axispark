@@ -4,7 +4,6 @@ import { Use } from './execution-step-use';
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
         define: jest.fn(),
-        defineMethod: jest.fn()
     },
     MetadataKeys: {
         EXECUTION_STEP_USE: 'EXECUTION_STEP_USE'
@@ -32,8 +31,6 @@ describe('@Use', () => {
                 },
                 Controller
             );
-
-            expect(Metadata.defineMethod).not.toHaveBeenCalled();
         });
     });
 
@@ -47,8 +44,8 @@ describe('@Use', () => {
                 execute() {}
             }
 
-            expect(Metadata.defineMethod).toHaveBeenCalledTimes(1);
-            expect(Metadata.defineMethod).toHaveBeenCalledWith(
+            expect(Metadata.define).toHaveBeenCalledTimes(1);
+            expect(Metadata.define).toHaveBeenCalledWith(
                 MetadataKeys.EXECUTION_STEP_USE,
                 {
                     targets: [Step1, Step2]
@@ -56,8 +53,6 @@ describe('@Use', () => {
                 Controller.prototype,
                 'execute'
             );
-
-            expect(Metadata.define).not.toHaveBeenCalled();
         });
     });
 
