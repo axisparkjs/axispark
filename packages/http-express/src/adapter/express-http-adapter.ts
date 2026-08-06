@@ -15,6 +15,7 @@ import { ExpressHttpSession } from '../types/express-http-session';
 export class ExpressHttpAdapter implements HttpAdapter {
     private readonly app = express();
     private server?: Server;
+    private readonly registeredRoutes: Route[] = [];
 
     constructor(
         @Inject(HTTP_OPTIONS)
@@ -28,7 +29,12 @@ export class ExpressHttpAdapter implements HttpAdapter {
         if (this.options.cors) this.app.use(cors(this.options.corsOptions));
     }
 
+    getRegisteredRoutes(): readonly Route[] {
+        return this.registeredRoutes;
+    }
+
     registerRoutes(routes: readonly Route[]): void {
+        this.registeredRoutes.push(...routes);
         for (const route of routes) {
             const { path, method } = route;
             this.app[method](path, async (req, res) => {

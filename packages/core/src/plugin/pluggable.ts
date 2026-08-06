@@ -8,10 +8,16 @@ export enum PluginLifecycle {
     Error = 'error'
 }
 
+export interface PluggableClass<T extends Pluggable = Pluggable> {
+    new (...args: any[]): T;
+    readonly dependencies?: readonly PluggableClass[];
+}
+
 export abstract class Pluggable {
     protected state: PluginLifecycle = PluginLifecycle.Created;
     protected stateError?: Error;
     protected options?: PluginOptions;
+    static readonly dependencies?: PluggableClass[];
 
     public setStateError(error: Error): void {
         this.state = PluginLifecycle.Error;
@@ -34,7 +40,6 @@ export abstract class Pluggable {
     onStart?(): Promise<void> | void;
     onStop?(): Promise<void> | void;
 }
-export type PluggableClass<T extends Pluggable = Pluggable> = new (...args: any[]) => T;
 
 export interface PluginOptions {
     plugin: PluggableClass;

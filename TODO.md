@@ -12,3 +12,6 @@
 - Timeout handling for requests
 - Rate limiting (to prevent abuse)
 - OpenAPI/Swagger documentation generation
+
+## OpenAPI/Swagger Plugin
+- Automatic generation of OpenAPI/Swagger documentation based on the defined routes and their metadata.

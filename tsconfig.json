@@ -38,6 +38,8 @@
             "@axisparkjs/http-express/*": ["./packages/http-express/src/*"],
             "@axisparkjs/logger": ["./packages/logger/src"],
             "@axisparkjs/logger/*": ["./packages/logger/src/*"],
+            "@axisparkjs/openapi": ["./packages/openapi/src"],
+            "@axisparkjs/openapi/*": ["./packages/openapi/src/*"],
             "@axisparkjs/schedule": ["./packages/schedule/src"],
             "@axisparkjs/schedule/*": ["./packages/schedule/src/*"],
             "@axisparkjs/test": ["./packages/test/src"],
