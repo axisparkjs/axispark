@@ -31,10 +31,10 @@ export class OpenApiPlugin extends Pluggable {
 
     async onRegister(context: AxiSparkContext, options?: OpenApiPluginOptions): Promise<void> {
         if (!options) throw new PluginNotConfiguredError(OpenApiPlugin.name);
-        this.logger = context.container.resolve(Logger).child('OpenApiPlugin');
+        this.logger = (await context.container.resolve(Logger)).child('OpenApiPlugin');
         this.options = options;
-        this.httpOptions = context.container.resolve(HTTP_OPTIONS);
-        this.httpAdapter = context.container.resolve(HTTP_ADAPTER);
+        this.httpOptions = await context.container.resolve(HTTP_OPTIONS);
+        this.httpAdapter = await context.container.resolve(HTTP_ADAPTER);
 
         this.registerContainerBindings(context);
         this.generateDocsUrl(this.httpOptions.basePath, this.options.docsUrl, this.options.yamlDocumentUrl, this.options.jsonDocumentUrl);

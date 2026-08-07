@@ -4,7 +4,7 @@ import { HTTP_ADAPTER, HTTP_LOGGER, HTTP_OPTIONS } from '../di/tokens';
 import { HttpAdapter } from '../adapter/http-adapter';
 import { RouteGenerator } from '../routes/route-generator';
 import { Logger } from '@axisparkjs/logger';
-import { ClassRegistry, Constructor } from '@axisparkjs/di';
+import { ClassRegistry, Constructor, InjectableScope } from '@axisparkjs/di';
 import { LogHttpRequestInterceptor, LogHttpResponseInterceptor } from '../interceptors';
 import { LogHttpErrorFilter, LogErrorFilter } from '../filters';
 import { HealthController } from '../controllers';
@@ -18,21 +18,21 @@ export class HttpPlugin extends Pluggable {
 
     async onRegister(context: AxiSparkContext, options?: HttpPluginOptions): Promise<void> {
         if (!options) throw new PluginNotConfiguredError(HttpPlugin.name);
-        this.logger = context.container.resolve(Logger).child('HttpPlugin');
+        this.logger = (await context.container.resolve(Logger)).child('HttpPlugin');
         this.options = options;
 
         this.registerContainerBindings(context);
         this.configureComponents(context);
         const routes = await this.generateRoutes(context);
 
-        this.adapter = context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
+        this.adapter = await context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
         await this.adapter.registerRoutes(routes);
         await this.logger.info(`Plugin registered`);
     }
 
     private registerContainerBindings(context: AxiSparkContext): void {
         context.container.bind({ token: HTTP_OPTIONS, useValue: this.options });
-        context.container.bind({ token: HTTP_ADAPTER, useClass: this.options.adapter });
+        context.container.bind({ token: HTTP_ADAPTER, useClass: this.options.adapter, scope: InjectableScope.Singleton });
         context.container.bind({ token: HTTP_LOGGER, useValue: this.logger });
     }
 

@@ -20,36 +20,33 @@ export class InjectingBlood1Plugin extends Pluggable {
     async onRegister(context: AxiSparkContext) {
         context.container.bind({ token: InjectingBlood1Plugin.token_exposed, useValue: this.dep2 });
 
-        this.logger.info(`InjectingBlood1Plugin logger: ${this.logger !== undefined}`);
-        this.logger.info(`InjectingBlood1Plugin dep1: ${this.dep1 !== undefined}`);
-        this.logger.info(`InjectingBlood1Plugin dep2: ${this.dep2 !== undefined}`);
-        this.logger.info(`InjectingBlood1Plugin dep3impl: ${this.dep3impl !== undefined}`);
-        this.logger.info(`InjectingBlood1Plugin dep3: ${this.dep3 !== undefined}`);
-        this.logger.info('InjectingBlood1Plugin registered');
+        await this.logger.info(`InjectingBlood1Plugin logger: ${this.logger !== undefined}`);
+        await this.logger.info(`InjectingBlood1Plugin dep1: ${this.dep1 !== undefined}`);
+        await this.logger.info(`InjectingBlood1Plugin dep2: ${this.dep2 !== undefined}`);
+        await this.logger.info(`InjectingBlood1Plugin dep3impl: ${this.dep3impl !== undefined}`);
+        await this.logger.info(`InjectingBlood1Plugin dep3: ${this.dep3 !== undefined}`);
+        await this.logger.info('InjectingBlood1Plugin registered');
     }
 }
 
 @Plugin()
 export class InjectingBlood2Plugin extends Pluggable {
-    static readonly dependencies = [InjectingBlood1Plugin]
+    static readonly dependencies = [InjectingBlood1Plugin];
     static readonly token_exposed = new InjectionToken('dep2-as-token');
     public dep2FromPlugin!: Dependecy2;
 
-    constructor(
-        private readonly logger: Logger,
-    ) {
+    constructor(private readonly logger: Logger) {
         super();
     }
 
     async onRegister(context: AxiSparkContext) {
-        this.dep2FromPlugin = context.container.resolve(InjectingBlood1Plugin.token_exposed);
+        this.dep2FromPlugin = await context.container.resolve(InjectingBlood1Plugin.token_exposed);
 
-        this.logger.info(`InjectingBlood2Plugin logger: ${this.logger !== undefined}`);
-        this.logger.info(`InjectingBlood2Plugin dep2FromPlugin: ${this.dep2FromPlugin !== undefined}`);
-        this.logger.info('InjectingBlood2Plugin registered');
+        await this.logger.info(`InjectingBlood2Plugin logger: ${this.logger !== undefined}`);
+        await this.logger.info(`InjectingBlood2Plugin dep2FromPlugin: ${this.dep2FromPlugin !== undefined}`);
+        await this.logger.info('InjectingBlood2Plugin registered');
     }
 }
-
 
 @Plugin()
 export class InjectingBlood3Plugin extends Pluggable {
@@ -67,9 +64,9 @@ export class InjectingBlood3Plugin extends Pluggable {
         this.dep1FromInjector = this.injector.get(Dependecy1);
         this.dep3FromInjector = this.injector.get(DEPENDENCY_3_TOKEN);
 
-        this.logger.info(`InjectingBlood3Plugin logger: ${this.logger !== undefined}`);
-        this.logger.info(`InjectingBlood3Plugin dep1FromInjector: ${this.dep1FromInjector !== undefined}`);
-        this.logger.info(`InjectingBlood3Plugin dep3FromInjector: ${this.dep3FromInjector !== undefined}`);
-        this.logger.info('InjectingBlood3Plugin registered');
+        await this.logger.info(`InjectingBlood3Plugin logger: ${this.logger !== undefined}`);
+        await this.logger.info(`InjectingBlood3Plugin dep1FromInjector: ${this.dep1FromInjector !== undefined}`);
+        await this.logger.info(`InjectingBlood3Plugin dep3FromInjector: ${this.dep3FromInjector !== undefined}`);
+        await this.logger.info('InjectingBlood3Plugin registered');
     }
 }

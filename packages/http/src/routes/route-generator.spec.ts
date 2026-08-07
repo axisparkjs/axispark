@@ -46,7 +46,8 @@ describe('RouteGenerator', () => {
             container: {
                 resolve: jest.fn(),
                 bind: jest.fn(),
-                unbind: jest.fn()
+                unbind: jest.fn(),
+                createScopedContainer: jest.fn().mockReturnValue('child-container')
             }
         };
     });
@@ -144,7 +145,8 @@ describe('RouteGenerator', () => {
                 request: {},
                 response: {},
                 session: {},
-                transport: ExecutionTransport.Http
+                transport: ExecutionTransport.Http,
+                scope: 'child-container'
             },
             {
                 target: TestController,

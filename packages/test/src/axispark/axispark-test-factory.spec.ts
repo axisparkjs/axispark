@@ -1,6 +1,6 @@
 import { AxiSparkFactory, Pluggable, Plugin } from '@axisparkjs/core';
 import { AxiSparkTestFactory } from './axispark-test-factory';
-import { Injectable, InjectionToken } from '@axisparkjs/di';
+import { Injectable, InjectableScope, InjectionToken } from '@axisparkjs/di';
 import { AxiSparkCore } from '@axisparkjs/core';
 
 describe('AxiSparkTestFactory', () => {
@@ -14,7 +14,7 @@ describe('AxiSparkTestFactory', () => {
         @Injectable()
         class MockProvider {}
 
-        const axisparkCore = AxiSparkTestFactory.create({ providers: [{ token, useClass: MockProvider }] });
+        const axisparkCore = AxiSparkTestFactory.create({ providers: [{ token, useClass: MockProvider, scope: InjectableScope.Singleton }] });
         expect(axisparkCore).toBeInstanceOf(AxiSparkCore);
     });
 

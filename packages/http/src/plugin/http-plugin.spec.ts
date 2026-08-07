@@ -1,6 +1,6 @@
 import { PluginNotConfiguredError } from '@axisparkjs/core';
 import { Logger } from '@axisparkjs/logger';
-import { ClassRegistry } from '@axisparkjs/di';
+import { ClassRegistry, InjectableScope } from '@axisparkjs/di';
 import { HttpPlugin } from './http-plugin';
 import { RouteGenerator } from '../routes/route-generator';
 import { HTTP_ADAPTER, HTTP_LOGGER, HTTP_OPTIONS } from '../di/tokens';
@@ -87,7 +87,8 @@ describe('HttpPlugin', () => {
 
             expect(container.bind).toHaveBeenCalledWith({
                 token: HTTP_ADAPTER,
-                useClass: options.adapter
+                useClass: options.adapter,
+                scope: InjectableScope.Singleton
             });
 
             expect(container.bind).toHaveBeenCalledWith({

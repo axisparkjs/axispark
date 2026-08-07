@@ -9,14 +9,10 @@ describe('InjectableToken', () => {
         const token = Symbol('TEST_TOKEN') as InjectionToken;
 
         @InjectableToken(token)
-        class TestClass { }
+        class TestClass {}
 
         expect(defineSpy).toHaveBeenCalledTimes(1);
-        expect(defineSpy).toHaveBeenCalledWith(
-            MetadataKeys.INJECTABLE_TOKEN,
-            token,
-            TestClass
-        );
+        expect(defineSpy).toHaveBeenCalledWith(MetadataKeys.INJECTABLE_TOKEN, token, TestClass);
 
         defineSpy.mockRestore();
     });

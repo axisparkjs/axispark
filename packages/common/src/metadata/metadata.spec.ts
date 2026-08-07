@@ -34,7 +34,7 @@ describe('Metadata', () => {
 
             expect(spy).toHaveBeenCalledWith(testKey.value, value, TestClass);
         });
-        
+
         it('should call Reflect.defineMetadata with normalized target and method name', () => {
             const spy = jest.spyOn(Reflect, 'defineMetadata').mockImplementation();
 
@@ -102,7 +102,7 @@ describe('Metadata', () => {
 
             expect(result).toBe(false);
         });
-        
+
         it('should return true when metadata exists for method', () => {
             const spy = jest.spyOn(Reflect, 'hasMetadata').mockReturnValue(true);
 

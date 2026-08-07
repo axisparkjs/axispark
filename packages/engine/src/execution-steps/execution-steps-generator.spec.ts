@@ -7,7 +7,7 @@ import { ExecutionTransport } from '../execution';
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
         get: jest.fn(),
-        define: jest.fn(),
+        define: jest.fn()
     },
     MetadataKeys: {
         EXECUTION_STEP_TARGET: 'EXECUTION_STEP_TARGET',
@@ -167,7 +167,8 @@ describe('ExecutionStepsGenerator', () => {
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
                     targets: [Step1]
-                }).mockReturnValueOnce({
+                })
+                .mockReturnValueOnce({
                     targets: [Step2]
                 })
                 .mockReturnValueOnce(undefined)

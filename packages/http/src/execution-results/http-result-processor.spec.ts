@@ -10,7 +10,7 @@ jest.mock('@axisparkjs/common', () => {
         ...originalModule,
         Metadata: {
             define: jest.fn(),
-            get: jest.fn().mockReturnValue(undefined),
+            get: jest.fn().mockReturnValue(undefined)
         }
     };
 });
@@ -60,7 +60,8 @@ describe('HttpResultProcessor', () => {
     it('should use the HTTP_CODE metadata when present', async () => {
         const process = jest.fn();
 
-        Metadata.get = jest.fn()
+        Metadata.get = jest
+            .fn()
             .mockReturnValueOnce([{ method: HttpMethod.Get, propertyKey: 'index' }]) // For HTTP_METHOD
             .mockReturnValueOnce(HttpStatusCode.Created); // For HTTP_CODE
 
@@ -79,7 +80,8 @@ describe('HttpResultProcessor', () => {
     it('should use the default status code when HTTP_CODE is not defined', async () => {
         const process = jest.fn();
 
-        Metadata.get = jest.fn()
+        Metadata.get = jest
+            .fn()
             .mockReturnValueOnce([{ method: HttpMethod.Post, propertyKey: 'index' }]) // For HTTP_METHOD
             .mockReturnValueOnce(undefined); // For HTTP_CODE
 

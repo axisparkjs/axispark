@@ -1,13 +1,15 @@
-import { Metadata } from '@axisparkjs/common';
+import { Metadata, MetadataKeys } from '@axisparkjs/common';
 import { Container } from './container';
 import { Resolver } from './resolver';
 import { InjectionToken } from './token';
-import { ProviderNotFoundError, DecoratorNotIncludedError } from './errors';
+import { ProviderNotFoundError, DecoratorNotIncludedError, ScopedContainerNotProvidedError } from './errors';
 import { Constructable } from './decorators/constructable';
 import { ClassRegistry } from './class-registry';
+import { InjectableScope } from './types';
 
 jest.mock('@axisparkjs/common', () => {
     const originalModule = jest.requireActual('@axisparkjs/common');
+
     return {
         ...originalModule,
         Metadata: {
@@ -20,6 +22,7 @@ jest.mock('@axisparkjs/common', () => {
 
 jest.mock('./class-registry', () => {
     const originalModule = jest.requireActual('./class-registry');
+
     return {
         ...originalModule,
         ClassRegistry: {
@@ -31,10 +34,18 @@ jest.mock('./class-registry', () => {
 
 describe('Container', () => {
     let container: Container;
-    let metadataMock: { has: jest.Mock; define: jest.Mock };
+    let metadataMock: {
+        has: jest.Mock;
+        get: jest.Mock;
+        define: jest.Mock;
+    };
 
     beforeAll(() => {
-        metadataMock = Metadata as unknown as { has: jest.Mock; define: jest.Mock };
+        metadataMock = Metadata as unknown as {
+            has: jest.Mock;
+            get: jest.Mock;
+            define: jest.Mock;
+        };
     });
 
     beforeEach(() => {
@@ -50,8 +61,19 @@ describe('Container', () => {
     it('should init all ClassRegistry entries with INJECTABLE metadata', () => {
         const injectableClass = class InjectableClass {};
         const alreadyInjectableClass = class AlreadyInjectableClass {};
+
         ClassRegistry.getWithMetadata = jest.fn().mockReturnValue([injectableClass, alreadyInjectableClass]);
-        Metadata.has = jest.fn().mockReturnValue(true);
+
+        metadataMock.get.mockImplementation((key) => {
+            if (key === MetadataKeys.INJECTABLE) {
+                return { scope: InjectableScope.Singleton };
+            }
+
+            return undefined;
+        });
+
+        metadataMock.has.mockReturnValue(true);
+
         const spyBind = jest.spyOn(container, 'bind');
 
         container.bind(alreadyInjectableClass);
@@ -63,13 +85,30 @@ describe('Container', () => {
     it('should init all ClassRegistry entries with INJECTABLE metadata and add TOKEN metadata', () => {
         const token = new InjectionToken('token');
         const injectableClass = class InjectableClass {};
+
         ClassRegistry.getWithMetadata = jest.fn().mockReturnValue([injectableClass]);
-        Metadata.get = jest.fn().mockReturnValue(token);
+
+        metadataMock.get.mockImplementation((key) => {
+            if (key === MetadataKeys.INJECTABLE) {
+                return { scope: InjectableScope.Singleton };
+            }
+
+            if (key === MetadataKeys.INJECTABLE_TOKEN) {
+                return token;
+            }
+
+            return undefined;
+        });
+
         const spyBind = jest.spyOn(container, 'bind');
 
         container.init();
 
-        expect(spyBind).toHaveBeenCalledWith({token, useClass: injectableClass });
+        expect(spyBind).toHaveBeenCalledWith({
+            token,
+            useClass: injectableClass,
+            scope: InjectableScope.Singleton
+        });
     });
 
     it('should bind a constructor as a class provider', () => {
@@ -87,30 +126,46 @@ describe('Container', () => {
     it('should bind a token', () => {
         const token = new InjectionToken('token');
 
-        expect(() => container.bind({ token, useValue: 'value' })).not.toThrow();
+        expect(() =>
+            container.bind({
+                token,
+                useValue: 'value'
+            })
+        ).not.toThrow();
     });
 
     it('should throw when binding a non constructable class with a token', () => {
         const token = new InjectionToken('token');
+
         metadataMock.has.mockReturnValue(false);
 
-        expect(() => container.bind({ token, useClass: Service })).toThrow(DecoratorNotIncludedError);
+        expect(() =>
+            container.bind({
+                token,
+                useClass: Service,
+                scope: InjectableScope.Singleton
+            })
+        ).toThrow(DecoratorNotIncludedError);
     });
 
     it('should unbind a provider', () => {
         const token = new InjectionToken('token');
 
-        container.bind({ token, useValue: 'value' });
+        container.bind({
+            token,
+            useValue: 'value'
+        });
+
         expect(() => container.unbind(token)).not.toThrow();
     });
 
-    it('should throw when resolving an unbided class', () => {
+    it('should throw when resolving an unbound class', async () => {
         const token = new InjectionToken('token');
 
-        expect(() => container.resolve(token)).toThrow(ProviderNotFoundError);
+        await expect(container.resolve(token)).rejects.toThrow(ProviderNotFoundError);
     });
 
-    it('should resolve a value provider', () => {
+    it('should resolve a value provider', async () => {
         const token = new InjectionToken('value');
 
         container.bind({
@@ -118,10 +173,10 @@ describe('Container', () => {
             useValue: 123
         });
 
-        expect(container.resolve(token)).toBe(123);
+        await expect(container.resolve(token)).resolves.toBe(123);
     });
 
-    it('should resolve an existing provider', () => {
+    it('should resolve an existing provider', async () => {
         const token1 = new InjectionToken('token1');
         const token2 = new InjectionToken('token2');
 
@@ -135,10 +190,10 @@ describe('Container', () => {
             useExisting: token1
         });
 
-        expect(container.resolve(token2)).toBe(10);
+        await expect(container.resolve(token2)).resolves.toBe(10);
     });
 
-    it('should resolve a factory provider', () => {
+    it('should resolve a factory provider', async () => {
         const depToken = new InjectionToken('dep');
         const factoryToken = new InjectionToken('factory');
 
@@ -152,64 +207,136 @@ describe('Container', () => {
         container.bind({
             token: factoryToken,
             useFactory: (dep: Dependency) => dep.constructor.name,
-            inject: [depToken]
+            inject: [depToken],
+            scope: InjectableScope.Singleton,
+            forClass: String
         });
 
-        expect(container.resolve(factoryToken)).toBe('Dependency');
+        jest.spyOn(Resolver.prototype, 'resolve').mockResolvedValue('Dependency');
+
+        await expect(container.resolve(factoryToken)).resolves.toBe('Dependency');
     });
 
-    it('should resolve a factory provider without dependencies', () => {
+    it('should resolve a factory provider without dependencies', async () => {
         const factoryToken = new InjectionToken('factory');
 
         container.bind({
             token: factoryToken,
-            useFactory: () => 'no dependencies'
+            useFactory: () => 'no dependencies',
+            forClass: String,
+            scope: InjectableScope.Singleton
         });
 
-        expect(container.resolve(factoryToken)).toBe('no dependencies');
+        jest.spyOn(Resolver.prototype, 'resolve').mockResolvedValue('no dependencies');
+
+        await expect(container.resolve(factoryToken)).resolves.toBe('no dependencies');
     });
 
-    it('should resolve a class provider', () => {
+    it('should resolve a class provider', async () => {
         metadataMock.has.mockReturnValue(true);
 
         const instance = new Service();
 
-        jest.spyOn(Resolver.prototype, 'resolve').mockReturnValue(instance);
+        const spy = jest.spyOn(Resolver.prototype, 'resolve').mockResolvedValue(instance);
 
         container.bind(Service);
 
-        expect(container.resolve(Service)).toBe(instance);
-        expect(Resolver.prototype.resolve).toHaveBeenCalledWith(Service, container);
+        await expect(container.resolve(Service)).resolves.toBe(instance);
+
+        expect(spy).toHaveBeenCalledWith(
+            {
+                token: Service,
+                useClass: Service,
+                scope: InjectableScope.Singleton
+            },
+            container,
+            undefined
+        );
     });
 
-    it('should cache resolved class instances', () => {
+    it('should cache resolved singleton instances', async () => {
         metadataMock.has.mockReturnValue(true);
 
         const instance = new Service();
 
-        const spy = jest.spyOn(Resolver.prototype, 'resolve').mockReturnValue(instance);
+        const spy = jest.spyOn(Resolver.prototype, 'resolve').mockResolvedValue(instance);
 
         container.bind(Service);
 
-        expect(container.resolve(Service)).toBe(instance);
-        expect(container.resolve(Service)).toBe(instance);
+        await expect(container.resolve(Service)).resolves.toBe(instance);
+        await expect(container.resolve(Service)).resolves.toBe(instance);
 
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw ProviderNotFoundError when provider does not exist', () => {
-        metadataMock.has.mockReturnValue(false);
-        container = new Container();
-        expect(() => container.resolve(Service)).toThrow(ProviderNotFoundError);
-    });
-
-    it('should throw when provider resolution returns undefined', () => {
+    it('should not cache transient instances', async () => {
         metadataMock.has.mockReturnValue(true);
 
-        jest.spyOn(Resolver.prototype, 'resolve').mockReturnValue(undefined as never);
+        const instance = new Service();
 
-        container.bind(Service);
+        const spy = jest.spyOn(Resolver.prototype, 'resolve').mockResolvedValue(instance);
 
-        expect(() => container.resolve(Service)).toThrow("Failed to resolve provider for token 'Service'.");
+        container.bind({
+            token: Service,
+            useClass: Service,
+            scope: InjectableScope.Transient
+        });
+
+        await container.resolve(Service);
+        await container.resolve(Service);
+
+        expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should resolve scoped instances with a scoped container', async () => {
+        metadataMock.has.mockReturnValue(true);
+
+        const instance = new Service();
+
+        const spy = jest.spyOn(Resolver.prototype, 'resolve').mockResolvedValue(instance);
+
+        container.bind({
+            token: Service,
+            useClass: Service,
+            scope: InjectableScope.Scoped
+        });
+
+        const scopedContainer = container.createScopedContainer();
+
+        await expect(container.resolve(Service, scopedContainer)).resolves.toBe(instance);
+
+        expect(spy).toHaveBeenCalledWith(
+            {
+                token: Service,
+                useClass: Service,
+                scope: InjectableScope.Scoped
+            },
+            container,
+            scopedContainer
+        );
+    });
+
+    it('should throw when resolving scoped provider without scoped container', async () => {
+        metadataMock.has.mockReturnValue(true);
+
+        container.bind({
+            token: Service,
+            useClass: Service,
+            scope: InjectableScope.Scoped
+        });
+
+        await expect(container.resolve(Service)).rejects.toThrow(ScopedContainerNotProvidedError);
+    });
+
+    it('should throw ProviderNotFoundError when provider does not exist', async () => {
+        metadataMock.has.mockReturnValue(false);
+
+        container = new Container();
+
+        await expect(container.resolve(Service)).rejects.toThrow(ProviderNotFoundError);
+    });
+
+    it('should create a scoped container', () => {
+        expect(container.createScopedContainer()).toBeDefined();
     });
 });

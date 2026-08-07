@@ -1,5 +1,5 @@
-import { Injectable, InjectionToken } from "@axisparkjs/di";
-import { InjectableToken } from "@axisparkjs/di";
+import { Injectable, InjectionToken } from '@axisparkjs/di';
+import { InjectableToken } from '@axisparkjs/di';
 
 @Injectable()
 export class Dependecy1 {}

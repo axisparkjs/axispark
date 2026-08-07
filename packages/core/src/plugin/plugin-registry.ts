@@ -30,9 +30,9 @@ export class PluginRegistry implements Lifecycle {
         return this.plugins.map((p) => ({ type: p.type, options: p.options, instance: this.instances.get(p.type) }));
     }
 
-    private instantiate(context: AxiSparkContext): void {
+    private async instantiate(context: AxiSparkContext): Promise<void> {
         for (const plugin of this.plugins) {
-            this.instances.set(plugin.type, context.container.resolve(plugin.type));
+            this.instances.set(plugin.type, await context.container.resolve(plugin.type));
         }
     }
 
@@ -79,7 +79,7 @@ export class PluginRegistry implements Lifecycle {
     }
 
     async init(context: AxiSparkContext): Promise<void> {
-        this.instantiate(context);
+        await this.instantiate(context);
         this.resolveExecutionOrder();
         await this.executeLifecycleMethod(context, 'onRegister', PluginLifecycle.Registered);
     }

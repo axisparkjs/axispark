@@ -6,7 +6,7 @@ import { PipeStep } from '../pipe-step';
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
         get: jest.fn(),
-        define: jest.fn(),
+        define: jest.fn()
     },
     MetadataKeys: {
         PIPE: 'PIPE'

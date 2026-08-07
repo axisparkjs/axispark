@@ -181,12 +181,12 @@ describe('AxiSparkCore', () => {
     });
 
     describe('get', () => {
-        it('should resolve a dependency from the container', () => {
+        it('should resolve a dependency from the container', async () => {
             const token = new InjectionToken('TestToken');
             const instance = { foo: 'bar' };
             context.container.resolve = jest.fn().mockReturnValue(instance);
 
-            const result = core.get(token);
+            const result = await core.get(token);
 
             expect(context.container.resolve).toHaveBeenCalledWith(token);
             expect(result).toBe(instance);

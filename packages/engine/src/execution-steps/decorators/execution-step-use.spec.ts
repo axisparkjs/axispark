@@ -3,7 +3,7 @@ import { Use } from './execution-step-use';
 
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
-        define: jest.fn(),
+        define: jest.fn()
     },
     MetadataKeys: {
         EXECUTION_STEP_USE: 'EXECUTION_STEP_USE'

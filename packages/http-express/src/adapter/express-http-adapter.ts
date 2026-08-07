@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@axisparkjs/di';
-import { HTTP_OPTIONS, HttpAdapter, HttpContext, Route } from '@axisparkjs/http';
+import { HTTP_OPTIONS, HttpAdapter, Route } from '@axisparkjs/http';
 import express, { Request, Response } from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
@@ -43,7 +43,7 @@ export class ExpressHttpAdapter implements HttpAdapter {
         }
     }
 
-    private createContext(request: Request, response: Response): Omit<HttpContext, 'transport'> {
+    private createContext(request: Request, response: Response) {
         const req = new ExpressHttpRequest(request);
         const res = new ExpressHttpResponse(response);
         const ses = request.session ? new ExpressHttpSession(request.session) : undefined;

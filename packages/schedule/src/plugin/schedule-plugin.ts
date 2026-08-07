@@ -12,10 +12,10 @@ export class SchedulePlugin extends Pluggable {
     private jobsToStart: Job[] = [];
 
     async onRegister(context: AxiSparkContext): Promise<void> {
-        this.logger = context.container.resolve(Logger).child('SchedulePlugin');
+        this.logger = (await context.container.resolve(Logger)).child('SchedulePlugin');
 
         this.registerContainerBindings(context);
-        this.initializeScheduler(context);
+        await this.initializeScheduler(context);
 
         await this.logger.info(`Plugin registered`);
     }
@@ -24,9 +24,9 @@ export class SchedulePlugin extends Pluggable {
         context.container.bind({ token: SCHEDULE_LOGGER, useValue: this.logger });
     }
 
-    private initializeScheduler(context: AxiSparkContext): void {
-        this.scheduler = context.container.resolve(SchedulerService);
-        const jobs = JobGenerator.generate(context);
+    private async initializeScheduler(context: AxiSparkContext): Promise<void> {
+        this.scheduler = await context.container.resolve(SchedulerService);
+        const jobs = await JobGenerator.generate(context);
         this.jobsToStart = jobs.filter((job) => !job.disabled).map((job) => job.job);
         this.scheduler.registerJobs(jobs.map((job) => ({ job: job.job, start: false })));
     }

@@ -35,7 +35,7 @@ class RouteGeneratorStatic implements Generator<{ controller: Constructor; route
                 propertyKey: route.propertyKey,
                 handler: async (httpContext) => {
                     await context.engine.execute(
-                        { ...httpContext, transport: ExecutionTransport.Http },
+                        { ...httpContext, transport: ExecutionTransport.Http, scope: context.container.createScopedContainer() },
                         { target: controller, method: route.propertyKey },
                         { container: context.container, processor: HttpResultProcessor }
                     );

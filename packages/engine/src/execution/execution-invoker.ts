@@ -44,8 +44,8 @@ class ExecutionInvokerStatic {
     }
 
     private async invokeHandler(handler: ExecutionHandler, context: ExecutionContext, core: ExecutionCore): Promise<unknown> {
-        const instance = core.container.resolve<any>(handler.target);
-        const args = PipeExecutor.execute(
+        const instance = await core.container.resolve<any>(handler.target, context.scope);
+        const args = await PipeExecutor.execute(
             {
                 ...context,
                 args: ParametersResolver.resolve(context, handler)

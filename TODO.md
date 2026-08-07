@@ -1,6 +1,5 @@
 # AxiSpark.js - TODO List to implement
 ## Core Features
-- Dependency Injection Scoped
 - Health Checks mediante @HealthCheck para que añadan automaticamente al engine de Health
 
 ## HTTP Plugin

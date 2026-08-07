@@ -6,3 +6,4 @@ export * from './injector';
 export * from './class-registry';
 export * from './resolver';
 export * from './token';
+export * from './scoped-container';

@@ -53,12 +53,12 @@ describe('AxiSparkContext', () => {
             expect(context.config.logTransports?.[0]).toBeInstanceOf(ConsoleTransport);
         });
 
-        it('should register Logger in the container', () => {
-            expect(context.container.resolve(Logger)).toBe(context.logger);
+        it('should register Logger in the container', async () => {
+            expect(await context.container.resolve(Logger)).toBe(context.logger);
         });
 
-        it('should register Injector in the container', () => {
-            expect(context.container.resolve(Injector)).toBe(context.injector);
+        it('should register Injector in the container', async () => {
+            expect(await context.container.resolve(Injector)).toBe(context.injector);
         });
 
         it('should override default configuration', () => {

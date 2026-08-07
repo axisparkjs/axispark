@@ -71,7 +71,7 @@ export class AxiSparkCore implements Lifecycle {
         return this.axisparkContext.plugins.getAll().map((p) => ({ type: p.type, options: p.options }));
     }
 
-    public get<T>(token: Token<T>): T {
-        return this.axisparkContext.container.resolve(token);
+    public async get<T>(token: Token<T>): Promise<T> {
+        return await this.axisparkContext.container.resolve(token);
     }
 }

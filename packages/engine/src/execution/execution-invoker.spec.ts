@@ -17,6 +17,7 @@ jest.mock('../pipes', () => ({
 describe('ExecutionInvoker', () => {
     let context: any;
     let core: any;
+    let scope: any;
     let container: any;
 
     beforeEach(() => {
@@ -30,7 +31,13 @@ describe('ExecutionInvoker', () => {
             container
         };
 
-        context = {};
+        scope = {
+            'child-container': true
+        };
+
+        context = {
+            scope
+        };
     });
 
     function createHandler(method = 'execute') {
@@ -59,7 +66,7 @@ describe('ExecutionInvoker', () => {
 
         const result = await ExecutionInvoker.invoke(context, core, plan);
 
-        expect(container.resolve).toHaveBeenCalledWith(plan.handler.target);
+        expect(container.resolve).toHaveBeenCalledWith(plan.handler.target, scope);
         expect(ParametersResolver.resolve).toHaveBeenCalledWith(context, plan.handler);
         expect(PipeExecutor.execute).toHaveBeenCalled();
         expect(execute).toHaveBeenCalledWith('parsed');
