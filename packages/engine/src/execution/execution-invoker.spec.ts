@@ -4,14 +4,14 @@ import { ExecutionInvoker } from './execution-invoker';
 
 jest.mock('../parameters', () => ({
     ParametersResolver: {
-        resolve: jest.fn(),
-    },
+        resolve: jest.fn()
+    }
 }));
 
 jest.mock('../pipes', () => ({
     PipeExecutor: {
-        execute: jest.fn(),
-    },
+        execute: jest.fn()
+    }
 }));
 
 describe('ExecutionInvoker', () => {
@@ -24,20 +24,20 @@ describe('ExecutionInvoker', () => {
         jest.clearAllMocks();
 
         container = {
-            resolve: jest.fn(),
+            resolve: jest.fn()
         };
 
         core = {
             container,
-            timeoutProcessor: undefined,
+            timeoutProcessor: undefined
         };
 
         scope = {
-            'child-container': true,
+            'child-container': true
         };
 
         context = {
-            scope,
+            scope
         };
 
         (ParametersResolver.resolve as jest.Mock).mockReturnValue([]);
@@ -47,7 +47,7 @@ describe('ExecutionInvoker', () => {
     function createHandler(method = 'execute') {
         return {
             target: class Test {},
-            method,
+            method
         };
     }
 
@@ -57,7 +57,7 @@ describe('ExecutionInvoker', () => {
             after: [],
             filters: [],
             handler: createHandler(),
-            ...overrides,
+            ...overrides
         };
     }
 
@@ -68,35 +68,29 @@ describe('ExecutionInvoker', () => {
             const handler = createHandler();
 
             container.resolve.mockReturnValue({
-                execute,
+                execute
             });
 
             (ParametersResolver.resolve as jest.Mock).mockReturnValue(['value']);
             (PipeExecutor.execute as jest.Mock).mockReturnValue(['parsed']);
 
             const plan = createPlan({
-                handler,
+                handler
             });
 
             const result = await ExecutionInvoker.invoke(context, core, plan);
 
-            expect(container.resolve).toHaveBeenCalledWith(
-                handler.target,
-                scope,
-            );
+            expect(container.resolve).toHaveBeenCalledWith(handler.target, scope);
 
-            expect(ParametersResolver.resolve).toHaveBeenCalledWith(
-                context,
-                handler,
-            );
+            expect(ParametersResolver.resolve).toHaveBeenCalledWith(context, handler);
 
             expect(PipeExecutor.execute).toHaveBeenCalledWith(
                 {
                     ...context,
-                    args: ['value'],
+                    args: ['value']
                 },
                 handler,
-                core,
+                core
             );
 
             expect(execute).toHaveBeenCalledWith('parsed');
@@ -111,23 +105,23 @@ describe('ExecutionInvoker', () => {
 
             container.resolve
                 .mockReturnValueOnce({
-                    before: () => order.push('before'),
+                    before: () => order.push('before')
                 })
                 .mockReturnValueOnce({
-                    execute: () => order.push('main'),
+                    execute: () => order.push('main')
                 });
 
             const plan = createPlan({
                 before: [
                     {
                         target: Before,
-                        method: 'before',
-                    },
+                        method: 'before'
+                    }
                 ],
                 handler: {
                     target: Main,
-                    method: 'execute',
-                },
+                    method: 'execute'
+                }
             });
 
             await ExecutionInvoker.invoke(context, core, plan);
@@ -143,23 +137,23 @@ describe('ExecutionInvoker', () => {
 
             container.resolve
                 .mockReturnValueOnce({
-                    execute: () => order.push('main'),
+                    execute: () => order.push('main')
                 })
                 .mockReturnValueOnce({
-                    after: () => order.push('after'),
+                    after: () => order.push('after')
                 });
 
             const plan = createPlan({
                 after: [
                     {
                         target: After,
-                        method: 'after',
-                    },
+                        method: 'after'
+                    }
                 ],
                 handler: {
                     target: Main,
-                    method: 'execute',
-                },
+                    method: 'execute'
+                }
             });
 
             await ExecutionInvoker.invoke(context, core, plan);
@@ -177,23 +171,23 @@ describe('ExecutionInvoker', () => {
                 .mockReturnValueOnce({
                     execute: () => {
                         throw new Error('boom');
-                    },
+                    }
                 })
                 .mockReturnValueOnce({
-                    after,
+                    after
                 });
 
             const plan = createPlan({
                 after: [
                     {
                         target: After,
-                        method: 'after',
-                    },
+                        method: 'after'
+                    }
                 ],
                 handler: {
                     target: Main,
-                    method: 'execute',
-                },
+                    method: 'execute'
+                }
             });
 
             await ExecutionInvoker.invoke(context, core, plan);
@@ -212,44 +206,36 @@ describe('ExecutionInvoker', () => {
                 .mockReturnValueOnce({
                     execute() {
                         throw error;
-                    },
+                    }
                 })
                 .mockReturnValueOnce({
-                    catchError: () => 'handled',
+                    catchError: () => 'handled'
                 });
 
             const filterHandler = {
                 target: Filter,
-                method: 'catchError',
+                method: 'catchError'
             };
 
             const plan = createPlan({
                 handler: {
                     target: Main,
-                    method: 'execute',
+                    method: 'execute'
                 },
                 filters: [
                     {
                         executionHandler: filterHandler,
-                        acceptedErrors: [TypeError],
-                    },
-                ],
+                        acceptedErrors: [TypeError]
+                    }
+                ]
             });
 
-            const result = await ExecutionInvoker.invoke(
-                context,
-                core,
-                plan,
-            );
+            const result = await ExecutionInvoker.invoke(context, core, plan);
 
             expect(context.error).toBe(error);
             expect(result).toBe('handled');
 
-            expect(container.resolve).toHaveBeenNthCalledWith(
-                2,
-                Filter,
-                scope,
-            );
+            expect(container.resolve).toHaveBeenNthCalledWith(2, Filter, scope);
         });
 
         it('should ignore filters that do not accept the error', async () => {
@@ -263,32 +249,28 @@ describe('ExecutionInvoker', () => {
             });
 
             container.resolve.mockReturnValue({
-                execute,
+                execute
             });
 
             const filterHandler = {
                 target: Filter,
-                method: 'filter',
+                method: 'filter'
             };
 
             const plan = createPlan({
                 handler: {
                     target: Main,
-                    method: 'execute',
+                    method: 'execute'
                 },
                 filters: [
                     {
                         executionHandler: filterHandler,
-                        acceptedErrors: [ReferenceError],
-                    },
-                ],
+                        acceptedErrors: [ReferenceError]
+                    }
+                ]
             });
 
-            const result = await ExecutionInvoker.invoke(
-                context,
-                core,
-                plan,
-            );
+            const result = await ExecutionInvoker.invoke(context, core, plan);
 
             expect(result).toBeUndefined();
             expect(context.error).toBe(error);
@@ -304,43 +286,39 @@ describe('ExecutionInvoker', () => {
                 .mockReturnValueOnce({
                     execute() {
                         throw new TypeError();
-                    },
+                    }
                 })
                 .mockReturnValueOnce({
-                    filter: () => undefined,
+                    filter: () => undefined
                 })
                 .mockReturnValueOnce({
-                    filter: () => 'handled',
+                    filter: () => 'handled'
                 });
 
             const plan = createPlan({
                 handler: {
                     target: Main,
-                    method: 'execute',
+                    method: 'execute'
                 },
                 filters: [
                     {
                         executionHandler: {
                             target: Filter1,
-                            method: 'filter',
+                            method: 'filter'
                         },
-                        acceptedErrors: [TypeError],
+                        acceptedErrors: [TypeError]
                     },
                     {
                         executionHandler: {
                             target: Filter2,
-                            method: 'filter',
+                            method: 'filter'
                         },
-                        acceptedErrors: [TypeError],
-                    },
-                ],
+                        acceptedErrors: [TypeError]
+                    }
+                ]
             });
 
-            const result = await ExecutionInvoker.invoke(
-                context,
-                core,
-                plan,
-            );
+            const result = await ExecutionInvoker.invoke(context, core, plan);
 
             expect(result).toBe('handled');
             expect(container.resolve).toHaveBeenCalledTimes(3);
@@ -352,24 +330,14 @@ describe('ExecutionInvoker', () => {
             const handler = createHandler();
 
             container.resolve.mockReturnValue({
-                execute,
+                execute
             });
 
-            (ParametersResolver.resolve as jest.Mock).mockReturnValue([
-                'a',
-                'b',
-            ]);
+            (ParametersResolver.resolve as jest.Mock).mockReturnValue(['a', 'b']);
 
-            (PipeExecutor.execute as jest.Mock).mockReturnValue([
-                'x',
-                'y',
-            ]);
+            (PipeExecutor.execute as jest.Mock).mockReturnValue(['x', 'y']);
 
-            await ExecutionInvoker.invoke(
-                context,
-                core,
-                createPlan({ handler }),
-            );
+            await ExecutionInvoker.invoke(context, core, createPlan({ handler }));
 
             expect(execute).toHaveBeenCalledWith('x', 'y');
         });
@@ -388,14 +356,10 @@ describe('ExecutionInvoker', () => {
             const execute = jest.fn().mockReturnValue('result');
 
             container.resolve.mockReturnValue({
-                execute,
+                execute
             });
 
-            const result = await ExecutionInvoker.invoke(
-                context,
-                core,
-                createPlan(),
-            );
+            const result = await ExecutionInvoker.invoke(context, core, createPlan());
 
             expect(execute).toHaveBeenCalled();
             expect(result).toBe('result');
@@ -405,19 +369,15 @@ describe('ExecutionInvoker', () => {
             const execute = jest.fn().mockReturnValue('result');
 
             container.resolve.mockReturnValue({
-                execute,
+                execute
             });
 
             core.timeoutProcessor = {
                 time: 0,
-                process: jest.fn(),
+                process: jest.fn()
             };
 
-            const result = await ExecutionInvoker.invoke(
-                context,
-                core,
-                createPlan(),
-            );
+            const result = await ExecutionInvoker.invoke(context, core, createPlan());
 
             expect(result).toBe('result');
             expect(core.timeoutProcessor.process).not.toHaveBeenCalled();
@@ -427,19 +387,15 @@ describe('ExecutionInvoker', () => {
             const execute = jest.fn().mockReturnValue('result');
 
             container.resolve.mockReturnValue({
-                execute,
+                execute
             });
 
             core.timeoutProcessor = {
                 time: -1,
-                process: jest.fn(),
+                process: jest.fn()
             };
 
-            const result = await ExecutionInvoker.invoke(
-                context,
-                core,
-                createPlan(),
-            );
+            const result = await ExecutionInvoker.invoke(context, core, createPlan());
 
             expect(result).toBe('result');
             expect(core.timeoutProcessor.process).not.toHaveBeenCalled();
@@ -449,19 +405,15 @@ describe('ExecutionInvoker', () => {
             const execute = jest.fn().mockReturnValue('result');
 
             container.resolve.mockReturnValue({
-                execute,
+                execute
             });
 
             core.timeoutProcessor = {
                 time: 1000,
-                process: jest.fn().mockReturnValue('timeout'),
+                process: jest.fn().mockReturnValue('timeout')
             };
 
-            const promise = await ExecutionInvoker.invoke(
-                context,
-                core,
-                createPlan(),
-            );
+            const promise = await ExecutionInvoker.invoke(context, core, createPlan());
 
             expect(execute).toHaveBeenCalled();
             await expect(promise).toBe('result');
@@ -475,25 +427,21 @@ describe('ExecutionInvoker', () => {
                 () =>
                     new Promise<void>((resolve) => {
                         resolveExecution = resolve;
-                    }),
+                    })
             );
 
             container.resolve.mockReturnValue({
-                execute,
+                execute
             });
 
             const process = jest.fn().mockReturnValue('timeout');
 
             core.timeoutProcessor = {
                 time: 1000,
-                process,
+                process
             };
 
-            const promise = ExecutionInvoker.invoke(
-                context,
-                core,
-                createPlan(),
-            );
+            const promise = ExecutionInvoker.invoke(context, core, createPlan());
 
             await Promise.resolve();
 
@@ -511,15 +459,15 @@ describe('ExecutionInvoker', () => {
 
             container.resolve
                 .mockReturnValueOnce({
-                    execute: () => new Promise(() => undefined),
+                    execute: () => new Promise(() => undefined)
                 })
                 .mockReturnValueOnce({
-                    after,
+                    after
                 });
 
             core.timeoutProcessor = {
                 time: 1000,
-                process: jest.fn().mockReturnValue('timeout'),
+                process: jest.fn().mockReturnValue('timeout')
             };
 
             const promise = ExecutionInvoker.invoke(
@@ -529,10 +477,10 @@ describe('ExecutionInvoker', () => {
                     after: [
                         {
                             target: class After {},
-                            method: 'after',
-                        },
-                    ],
-                }),
+                            method: 'after'
+                        }
+                    ]
+                })
             );
 
             jest.advanceTimersByTime(1000);
@@ -547,15 +495,15 @@ describe('ExecutionInvoker', () => {
 
             container.resolve
                 .mockReturnValueOnce({
-                    execute: () => new Promise(() => undefined),
+                    execute: () => new Promise(() => undefined)
                 })
                 .mockReturnValueOnce({
-                    after,
+                    after
                 });
 
             core.timeoutProcessor = {
                 time: 1000,
-                process: jest.fn().mockRejectedValue(timeoutError),
+                process: jest.fn().mockRejectedValue(timeoutError)
             };
 
             const promise = ExecutionInvoker.invoke(
@@ -565,10 +513,10 @@ describe('ExecutionInvoker', () => {
                     after: [
                         {
                             target: class After {},
-                            method: 'after',
-                        },
-                    ],
-                }),
+                            method: 'after'
+                        }
+                    ]
+                })
             );
 
             jest.advanceTimersByTime(1000);
@@ -587,7 +535,7 @@ describe('ExecutionInvoker', () => {
             container.resolve.mockReturnValue({
                 execute() {
                     throw new Error('boom');
-                },
+                }
             });
 
             const result = await ExecutionInvoker.invoke(
@@ -596,9 +544,9 @@ describe('ExecutionInvoker', () => {
                 createPlan({
                     handler: {
                         target: Main,
-                        method: 'execute',
-                    },
-                }),
+                        method: 'execute'
+                    }
+                })
             );
 
             expect(result).toBeUndefined();
@@ -617,10 +565,10 @@ describe('ExecutionInvoker', () => {
                 .mockReturnValueOnce({
                     execute() {
                         throw new TypeError('boom');
-                    },
+                    }
                 })
                 .mockReturnValueOnce({
-                    filter: correctFilter,
+                    filter: correctFilter
                 });
 
             const result = await ExecutionInvoker.invoke(
@@ -629,25 +577,25 @@ describe('ExecutionInvoker', () => {
                 createPlan({
                     handler: {
                         target: Main,
-                        method: 'execute',
+                        method: 'execute'
                     },
                     filters: [
                         {
                             executionHandler: {
                                 target: WrongFilter,
-                                method: 'filter',
+                                method: 'filter'
                             },
-                            acceptedErrors: [ReferenceError],
+                            acceptedErrors: [ReferenceError]
                         },
                         {
                             executionHandler: {
                                 target: CorrectFilter,
-                                method: 'filter',
+                                method: 'filter'
                             },
-                            acceptedErrors: [TypeError],
-                        },
-                    ],
-                }),
+                            acceptedErrors: [TypeError]
+                        }
+                    ]
+                })
             );
 
             expect(result).toBe('handled');

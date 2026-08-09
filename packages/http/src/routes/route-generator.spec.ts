@@ -139,7 +139,6 @@ describe('RouteGenerator', () => {
 
         const routes = RouteGenerator.generate(options, context);
 
-
         await routes[0].routes[0].handler({
             request: {} as unknown as HttpRequest,
             response: {} as unknown as HttpResponse,

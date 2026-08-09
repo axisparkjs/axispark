@@ -17,10 +17,7 @@ class ExecutionInvokerStatic {
             };
 
             if (core.timeoutProcessor && core.timeoutProcessor.time > 0) {
-                return await Promise.race([
-                    execution(),
-                    this.createTimeout(core.timeoutProcessor.time, core),
-                ]);
+                return await Promise.race([execution(), this.createTimeout(core.timeoutProcessor.time, core)]);
             }
 
             return await execution();
@@ -32,10 +29,7 @@ class ExecutionInvokerStatic {
         }
     }
 
-    private async createTimeout(
-        time: number,
-        core: ExecutionCore,
-    ) {
+    private async createTimeout(time: number, core: ExecutionCore) {
         await new Promise<void>((resolve) => {
             setTimeout(resolve, time);
         });

@@ -12,12 +12,7 @@ describe('Timeout', () => {
 
             Timeout(timeout)(target, propertyKey, {});
 
-            expect(defineSpy).toHaveBeenCalledWith(
-                MetadataKeys.EXECUTION_TIMEOUT,
-                timeout,
-                target,
-                propertyKey,
-            );
+            expect(defineSpy).toHaveBeenCalledWith(MetadataKeys.EXECUTION_TIMEOUT, timeout, target, propertyKey);
 
             defineSpy.mockRestore();
         });
@@ -32,11 +27,7 @@ describe('Timeout', () => {
 
             Timeout(timeout)(TestClass);
 
-            expect(defineSpy).toHaveBeenCalledWith(
-                MetadataKeys.EXECUTION_TIMEOUT,
-                timeout,
-                TestClass,
-            );
+            expect(defineSpy).toHaveBeenCalledWith(MetadataKeys.EXECUTION_TIMEOUT, timeout, TestClass);
 
             defineSpy.mockRestore();
         });
@@ -52,12 +43,7 @@ describe('NoTimeout', () => {
 
         NoTimeout()(target, propertyKey, {});
 
-        expect(defineSpy).toHaveBeenCalledWith(
-            MetadataKeys.EXECUTION_TIMEOUT,
-            -1,
-            target,
-            propertyKey,
-        );
+        expect(defineSpy).toHaveBeenCalledWith(MetadataKeys.EXECUTION_TIMEOUT, -1, target, propertyKey);
 
         defineSpy.mockRestore();
     });

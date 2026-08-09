@@ -14,7 +14,7 @@ describe('ExecutionTimeoutProcessor', () => {
 
         handler = {
             target: class TestTarget {},
-            method: 'testMethod',
+            method: 'testMethod'
         } as ExecutionHandler;
 
         getSpy = jest.spyOn(Metadata, 'get');
@@ -38,18 +38,9 @@ describe('ExecutionTimeoutProcessor', () => {
 
             expect(processor.time).toBe(2000);
 
-            expect(getSpy).toHaveBeenNthCalledWith(
-                1,
-                MetadataKeys.EXECUTION_TIMEOUT,
-                handler.target,
-            );
+            expect(getSpy).toHaveBeenNthCalledWith(1, MetadataKeys.EXECUTION_TIMEOUT, handler.target);
 
-            expect(getSpy).toHaveBeenNthCalledWith(
-                2,
-                MetadataKeys.EXECUTION_TIMEOUT,
-                handler.target,
-                handler.method,
-            );
+            expect(getSpy).toHaveBeenNthCalledWith(2, MetadataKeys.EXECUTION_TIMEOUT, handler.target, handler.method);
         });
 
         it('should return the class metadata when method metadata is not defined', () => {
@@ -61,9 +52,7 @@ describe('ExecutionTimeoutProcessor', () => {
         });
 
         it('should return the baseTime when no metadata is defined', () => {
-            getSpy
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce(undefined);
+            getSpy.mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             processor = new (class extends ExecutionTimeoutProcessor {
                 process(): Promise<unknown> {
@@ -75,17 +64,13 @@ describe('ExecutionTimeoutProcessor', () => {
         });
 
         it('should return 5000 when no metadata or baseTime is defined', () => {
-            getSpy
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce(undefined);
+            getSpy.mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             expect(processor.time).toBe(5000);
         });
 
         it('should use method metadata over class metadata and baseTime', () => {
-            getSpy
-                .mockReturnValueOnce(1000)
-                .mockReturnValueOnce(2000);
+            getSpy.mockReturnValueOnce(1000).mockReturnValueOnce(2000);
 
             processor = new (class extends ExecutionTimeoutProcessor {
                 process(): Promise<unknown> {
@@ -97,9 +82,7 @@ describe('ExecutionTimeoutProcessor', () => {
         });
 
         it('should use class metadata over baseTime', () => {
-            getSpy
-                .mockReturnValueOnce(1000)
-                .mockReturnValueOnce(undefined);
+            getSpy.mockReturnValueOnce(1000).mockReturnValueOnce(undefined);
 
             processor = new (class extends ExecutionTimeoutProcessor {
                 process(): Promise<unknown> {
@@ -111,9 +94,7 @@ describe('ExecutionTimeoutProcessor', () => {
         });
 
         it('should support a baseTime of 0', () => {
-            getSpy
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce(undefined);
+            getSpy.mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             processor = new (class extends ExecutionTimeoutProcessor {
                 process(): Promise<unknown> {
