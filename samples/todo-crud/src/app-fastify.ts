@@ -1,6 +1,6 @@
 import { AxiSparkFactory } from '@axisparkjs/core';
 import { HttpPlugin } from '@axisparkjs/http';
-import { HttpPluginOptionsFactory } from '@axisparkjs/http-express';
+import { HttpPluginOptionsFactory } from '@axisparkjs/http-fastify';
 import { ConsoleTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
 
 export const app = AxiSparkFactory.create({
@@ -16,12 +16,6 @@ export const app = AxiSparkFactory.create({
 app.use(
     HttpPlugin,
     HttpPluginOptionsFactory.create({
-        session: true,
-        sessionOptions: {
-            secret: 'secret',
-            resave: false,
-            saveUninitialized: true
-        },
-        cookies: true
+        basePath: '/api'
     })
 );

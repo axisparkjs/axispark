@@ -1,23 +1,24 @@
 import { Factory } from '@axisparkjs/common';
 import { HttpPlugin } from '@axisparkjs/http';
-import { ExpressHttpAdapter } from '../adapter/express-http-adapter';
-import { ExpressHttpPluginOptions } from './express-http-plugin-options';
+import { FastifyHttpAdapter } from '../adapter/fastify-http-adapter';
+import { FastifyHttpPluginOptions } from './fastify-http-plugin-options';
 
-class HttpPluginOptionsFactoryStatic implements Factory<ExpressHttpPluginOptions> {
-    create(options?: Partial<Omit<ExpressHttpPluginOptions, 'plugin'>>): ExpressHttpPluginOptions {
+class HttpPluginOptionsFactoryStatic implements Factory<FastifyHttpPluginOptions> {
+    create(options?: Partial<Omit<FastifyHttpPluginOptions, 'plugin'>>): FastifyHttpPluginOptions {
         return {
             plugin: HttpPlugin,
             port: 3000,
             basePath: undefined,
-            adapter: ExpressHttpAdapter,
-            bodyParser: true,
-            bodyParserOptions: undefined,
+            adapter: FastifyHttpAdapter,
+            bodyParser: false,
             urlEncoded: true,
             urlEncodedOptions: undefined,
             cors: false,
             corsOptions: undefined,
             session: false,
-            sessionOptions: undefined,
+            sessionOptions: {
+                secret: 'secret'
+            },
             cookies: true,
             cookiesOptions: undefined,
             compression: false,

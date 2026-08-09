@@ -1,4 +1,4 @@
-import { app } from './app';
+import { app } from './app-express';
 
 const bootstrap = async () => {
     try {

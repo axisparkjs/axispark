@@ -18,6 +18,8 @@ export const config = {
         '^@axisparkjs/http/(.*)$': '<rootDir>/packages/http/src/$1',
         '^@axisparkjs/http-express$': '<rootDir>/packages/http-express/src',
         '^@axisparkjs/http-express/(.*)$': '<rootDir>/packages/http-express/src/$1',
+        '^@axisparkjs/http-fastify$': '<rootDir>/packages/http-fastify/src',
+        '^@axisparkjs/http-fastify/(.*)$': '<rootDir>/packages/http-fastify/src/$1',
         '^@axisparkjs/logger$': '<rootDir>/packages/logger/src',
         '^@axisparkjs/logger/(.*)$': '<rootDir>/packages/logger/src/$1',
         '^@axisparkjs/openapi$': '<rootDir>/packages/openapi/src',

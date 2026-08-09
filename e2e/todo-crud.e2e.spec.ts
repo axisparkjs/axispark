@@ -1,10 +1,15 @@
 import { AxiSparkTestFactory } from '@axisparkjs/test';
 import { AxiSparkCore } from '@axisparkjs/core';
 import { HttpPlugin } from '@axisparkjs/http';
-import { app } from '@axisparkjs/samples/todo-crud/src/app';
+import { app as appExpress } from '@axisparkjs/samples/todo-crud/src/app-express';
+import { app as appFasitfy } from '@axisparkjs/samples/todo-crud/src/app-fastify';
 import { ExpressHttpAdapter } from '@axisparkjs/http-express';
+import { FastifyHttpAdapter } from '@axisparkjs/http-fastify';
 
-describe('TODO Crud App', () => {
+describe.each([
+    { name: 'Express', app: appExpress },
+    { name: 'Fastify', app: appFasitfy }
+])('TODO Crud App ($name)', ({ app, name }) => {
     let axiSparkCore: AxiSparkCore;
 
     beforeAll(async () => {
@@ -26,8 +31,8 @@ describe('TODO Crud App', () => {
             {
                 type: HttpPlugin,
                 options: expect.objectContaining({
-                    adapter: ExpressHttpAdapter,
-                    bodyParser: true,
+                    basePath: '/api',
+                    adapter: name === 'Express' ? ExpressHttpAdapter : FastifyHttpAdapter,
                     plugin: HttpPlugin,
                     port: 3000
                 })
@@ -37,10 +42,7 @@ describe('TODO Crud App', () => {
 
     it('should handle GET requests to /todos', async () => {
         const response = await fetch('http://localhost:3000/api/todos', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response.status).toBe(200);
         expect(await response.json()).toEqual([]);
@@ -48,10 +50,7 @@ describe('TODO Crud App', () => {
 
     it('should handle GET requests to /todos/:index when the index is not found', async () => {
         const response = await fetch('http://localhost:3000/api/todos/999', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response.status).toBe(404);
     });
@@ -86,10 +85,7 @@ describe('TODO Crud App', () => {
 
     it('should handle GET requests to /todos/:index when the index is found', async () => {
         const response = await fetch('http://localhost:3000/api/todos/0', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response.status).toBe(200);
         const todo = await response.json();
@@ -98,10 +94,7 @@ describe('TODO Crud App', () => {
 
     it('should handle DELETE requests to /todos/:index', async () => {
         const response = await fetch('http://localhost:3000/api/todos/0', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'DELETE'
         });
         expect(response.status).toBe(204);
     });

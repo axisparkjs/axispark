@@ -1,10 +1,15 @@
 import { AxiSparkTestFactory } from '@axisparkjs/test';
 import { AxiSparkCore } from '@axisparkjs/core';
 import { HttpPlugin } from '@axisparkjs/http';
-import { app } from '@axisparkjs/samples/sessions-and-cookies/src/app';
+import { app as appExpress } from '@axisparkjs/samples/sessions-and-cookies/src/app-express';
+import { app as appFasitfy } from '@axisparkjs/samples/sessions-and-cookies/src/app-fastify';
 import { ExpressHttpAdapter } from '@axisparkjs/http-express';
+import { FastifyHttpAdapter } from '@axisparkjs/http-fastify';
 
-describe('Sessions and Cookies App', () => {
+describe.each([
+    { name: 'Express', app: appExpress },
+    { name: 'Fastify', app: appFasitfy }
+])('Sessions and Cookies App ($name)', ({ app, name }) => {
     let axiSparkCore: AxiSparkCore;
 
     beforeAll(async () => {
@@ -26,8 +31,7 @@ describe('Sessions and Cookies App', () => {
             {
                 type: HttpPlugin,
                 options: expect.objectContaining({
-                    adapter: ExpressHttpAdapter,
-                    bodyParser: true,
+                    adapter: name === 'Express' ? ExpressHttpAdapter : FastifyHttpAdapter,
                     plugin: HttpPlugin,
                     port: 3000,
                     cookies: true,
@@ -39,10 +43,7 @@ describe('Sessions and Cookies App', () => {
 
     it('should handle GET requests to /sessions and sessionId to be defined', async () => {
         const response = await fetch('http://localhost:3000/sessions', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response.status).toBe(200);
         expect(await response.text()).toBeDefined();
@@ -50,10 +51,7 @@ describe('Sessions and Cookies App', () => {
 
     it('should handle 2 GET requests to /sessions and sessionId to be the same', async () => {
         const response1 = await fetch('http://localhost:3000/sessions', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response1.status).toBe(200);
         const sessionId1 = await response1.text();
@@ -62,7 +60,6 @@ describe('Sessions and Cookies App', () => {
         const response2 = await fetch('http://localhost:3000/sessions', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 Cookie: response1.headers.get('set-cookie') ?? ''
             }
         });
@@ -88,7 +85,6 @@ describe('Sessions and Cookies App', () => {
         const response2 = await fetch('http://localhost:3000/sessions/data', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 Cookie: response1.headers.get('set-cookie') ?? ''
             }
         });
@@ -112,7 +108,6 @@ describe('Sessions and Cookies App', () => {
         const response2 = await fetch('http://localhost:3000/sessions/data', {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json',
                 Cookie: response1.headers.get('set-cookie') ?? ''
             }
         });
@@ -121,10 +116,7 @@ describe('Sessions and Cookies App', () => {
 
     it('should handle GET requests to /sessions/data and return undefined if no session data', async () => {
         const response = await fetch('http://localhost:3000/sessions/data', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response.status).toBe(200);
         const sessionData = await response.bytes();
@@ -133,10 +125,7 @@ describe('Sessions and Cookies App', () => {
 
     it('should handle GET requests to /cookies and return cookies', async () => {
         const response = await fetch('http://localhost:3000/cookies', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response.status).toBe(200);
         const cookies = await response.json();
@@ -156,7 +145,6 @@ describe('Sessions and Cookies App', () => {
         const response2 = await fetch('http://localhost:3000/cookies', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 Cookie: response1.headers.get('set-cookie') ?? ''
             }
         });
@@ -178,7 +166,6 @@ describe('Sessions and Cookies App', () => {
         const response2 = await fetch('http://localhost:3000/cookies/testCookie', {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json',
                 Cookie: response1.headers.get('set-cookie') ?? ''
             }
         });
@@ -187,7 +174,6 @@ describe('Sessions and Cookies App', () => {
         const response3 = await fetch('http://localhost:3000/cookies', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 Cookie: response2.headers.get('set-cookie') ?? ''
             }
         });

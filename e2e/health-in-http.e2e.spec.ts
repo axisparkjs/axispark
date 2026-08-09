@@ -1,10 +1,15 @@
 import { AxiSparkTestFactory } from '@axisparkjs/test';
 import { AxiSparkCore } from '@axisparkjs/core';
 import { HttpPlugin } from '@axisparkjs/http';
-import { app } from '@axisparkjs/samples/health-in-http/src/app';
+import { app as appExpress } from '@axisparkjs/samples/health-in-http/src/app-express';
+import { app as appFasitfy } from '@axisparkjs/samples/health-in-http/src/app-fastify';
 import { ExpressHttpAdapter } from '@axisparkjs/http-express';
+import { FastifyHttpAdapter } from '@axisparkjs/http-fastify';
 
-describe('Health in HTTP App', () => {
+describe.each([
+    { name: 'Express', app: appExpress },
+    { name: 'Fastify', app: appFasitfy }
+])('Health in HTTP App ($name)', ({ app, name }) => {
     let axiSparkCore: AxiSparkCore;
 
     beforeAll(async () => {
@@ -27,7 +32,7 @@ describe('Health in HTTP App', () => {
                 type: HttpPlugin,
                 options: expect.objectContaining({
                     basePath: '/api',
-                    adapter: ExpressHttpAdapter,
+                    adapter: name === 'Express' ? ExpressHttpAdapter : FastifyHttpAdapter,
                     healthChecks: true,
                     plugin: HttpPlugin,
                     port: 3000
@@ -38,10 +43,7 @@ describe('Health in HTTP App', () => {
 
     it('should handle GET requests to /health', async () => {
         const response = await fetch('http://localhost:3000/api/health', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response.status).toBe(200);
         const data = await response.json();
@@ -56,10 +58,7 @@ describe('Health in HTTP App', () => {
 
     it('should handle GET requests to /health/liveness', async () => {
         const response = await fetch('http://localhost:3000/api/health/liveness', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response.status).toBe(200);
         const data = await response.json();
@@ -73,10 +72,7 @@ describe('Health in HTTP App', () => {
 
     it('should handle GET requests to /health/readiness', async () => {
         const response = await fetch('http://localhost:3000/api/health/readiness', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
         expect(response.status).toBe(200);
         const data = await response.json();

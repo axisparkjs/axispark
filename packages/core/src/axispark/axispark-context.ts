@@ -1,7 +1,7 @@
 import { ConsoleTransport, Logger, LogLevel, SimpleFormatter, LogTransport } from '@axisparkjs/logger';
 import { PluginRegistry } from '../plugin';
 import { Container, Injector } from '@axisparkjs/di';
-import { AxiSparkConfig } from './axispark-config';
+import { AxiSparkConfig, AXISPARK_CONFIG } from './axispark-config';
 import { ExecutionEngine } from '@axisparkjs/engine';
 import { Scanner, FileSystemScanner, NullScanner } from '../scanner';
 import { HealthEngine } from '../health';
@@ -39,6 +39,10 @@ export class AxiSparkContext {
         this.scanner = this.privateConfig.scanner === 'null' ? new NullScanner() : new FileSystemScanner(this.config.basePath);
         this.health = new HealthEngine(this.config, this.plugins);
 
+        this.container.bind({
+            token: AXISPARK_CONFIG,
+            useValue: this.config
+        });
         this.container.bind({
             token: Logger,
             useValue: this.logger

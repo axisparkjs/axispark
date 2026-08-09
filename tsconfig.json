@@ -36,6 +36,8 @@
             "@axisparkjs/http/*": ["./packages/http/src/*"],
             "@axisparkjs/http-express": ["./packages/http-express/src"],
             "@axisparkjs/http-express/*": ["./packages/http-express/src/*"],
+            "@axisparkjs/http-fastify": ["./packages/http-fastify/src"],
+            "@axisparkjs/http-fastify/*": ["./packages/http-fastify/src/*"],
             "@axisparkjs/logger": ["./packages/logger/src"],
             "@axisparkjs/logger/*": ["./packages/logger/src/*"],
             "@axisparkjs/openapi": ["./packages/openapi/src"],

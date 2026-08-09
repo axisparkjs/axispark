@@ -29,7 +29,8 @@ describe('HttpPlugin', () => {
     const adapter = {
         registerRoutes: jest.fn().mockResolvedValue(undefined),
         start: jest.fn().mockResolvedValue(undefined),
-        stop: jest.fn().mockResolvedValue(undefined)
+        stop: jest.fn().mockResolvedValue(undefined),
+        initialize: jest.fn().mockResolvedValue(undefined)
     };
 
     const container = {
@@ -150,9 +151,28 @@ describe('HttpPlugin', () => {
             expect(logger.info).toHaveBeenCalledWith('Registered controller UsersController');
         });
 
-        it('should log plugin registration', async () => {
+        it('should initialize and log plugin registration', async () => {
             await plugin.onRegister(context, options);
 
+            expect(adapter.initialize).toHaveBeenCalled();
+            expect(logger.info).toHaveBeenCalledWith('Plugin registered');
+        });
+
+        it('should handle adapters without an initialize method', async () => {
+            const adapterWithoutInitialize = {
+                registerRoutes: jest.fn().mockResolvedValue(undefined),
+                start: jest.fn().mockResolvedValue(undefined),
+                stop: jest.fn().mockResolvedValue(undefined)
+            };
+
+            container.resolve.mockImplementation((token) => {
+                if (token === Logger) return logger;
+                if (token === HTTP_ADAPTER) return adapterWithoutInitialize;
+            });
+
+            await plugin.onRegister(context, options);
+
+            expect(adapterWithoutInitialize.registerRoutes).toHaveBeenCalled();
             expect(logger.info).toHaveBeenCalledWith('Plugin registered');
         });
     });

@@ -1,31 +1,31 @@
-import { Session, SessionData } from 'express-session';
-import { ExpressHttpSession } from './express-http-session';
+import { FastifySessionObject } from '@fastify/session';
+import { FastifyHttpSession } from './fastify-http-session';
 
 interface TestSession {
     userId: string;
     role: string;
 }
 
-describe('ExpressHttpSession', () => {
-    let session: Session & Partial<SessionData>;
-    let httpSession: ExpressHttpSession<TestSession>;
+describe('FastifyHttpSession', () => {
+    let session: FastifySessionObject & Partial<{ data: TestSession }>;
+    let httpSession: FastifyHttpSession<TestSession>;
 
     beforeEach(() => {
         session = {
-            id: 'session-id',
+            sessionId: 'session-id',
+            encryptedSessionId: 'encrypted-session-id',
             cookie: {},
             data: {
                 userId: '1',
                 role: 'admin'
             },
-            save: jest.fn(),
-            reload: jest.fn(),
-            regenerate: jest.fn(),
-            destroy: jest.fn(),
+            save: jest.fn().mockResolvedValue(undefined),
+            regenerate: jest.fn().mockResolvedValue(undefined),
+            destroy: jest.fn().mockResolvedValue(undefined),
             touch: jest.fn()
-        } as unknown as Session & Partial<SessionData>;
+        } as unknown as FastifySessionObject & Partial<{ data: TestSession }>;
 
-        httpSession = new ExpressHttpSession<TestSession>(session);
+        httpSession = new FastifyHttpSession<TestSession>(session);
     });
 
     describe('properties', () => {
@@ -84,10 +84,10 @@ describe('ExpressHttpSession', () => {
 
             expect((session as any).data).toEqual({});
 
-            expect(session.id).toBe('session-id');
+            expect(session.sessionId).toBe('session-id');
+            expect(session.encryptedSessionId).toBe('encrypted-session-id');
             expect(session.cookie).toBeDefined();
             expect(session.save).toBeDefined();
-            expect(session.reload).toBeDefined();
             expect(session.regenerate).toBeDefined();
             expect(session.destroy).toBeDefined();
             expect(session.touch).toBeDefined();
@@ -96,31 +96,31 @@ describe('ExpressHttpSession', () => {
 
     describe('save', () => {
         it('should resolve when save succeeds', async () => {
-            (session.save as jest.Mock).mockImplementation((cb) => cb());
-
             await expect(httpSession.save()).resolves.toBeUndefined();
+
+            expect(session.save).toHaveBeenCalled();
         });
 
         it('should reject when save fails', async () => {
             const error = new Error('save');
 
-            (session.save as jest.Mock).mockImplementation((cb) => cb(error));
+            (session.save as jest.Mock).mockRejectedValue(error);
 
             await expect(httpSession.save()).rejects.toThrow(error);
         });
     });
 
     describe('reload', () => {
-        it('should resolve when reload succeeds', async () => {
-            (session.reload as jest.Mock).mockImplementation((cb) => cb());
-
+        it('should resolve when regenerate succeeds', async () => {
             await expect(httpSession.reload()).resolves.toBeUndefined();
+
+            expect(session.regenerate).toHaveBeenCalled();
         });
 
-        it('should reject when reload fails', async () => {
+        it('should reject when regenerate fails', async () => {
             const error = new Error('reload');
 
-            (session.reload as jest.Mock).mockImplementation((cb) => cb(error));
+            (session.regenerate as jest.Mock).mockRejectedValue(error);
 
             await expect(httpSession.reload()).rejects.toThrow(error);
         });
@@ -128,15 +128,15 @@ describe('ExpressHttpSession', () => {
 
     describe('regenerate', () => {
         it('should resolve when regenerate succeeds', async () => {
-            (session.regenerate as jest.Mock).mockImplementation((cb) => cb());
-
             await expect(httpSession.regenerate()).resolves.toBeUndefined();
+
+            expect(session.regenerate).toHaveBeenCalled();
         });
 
         it('should reject when regenerate fails', async () => {
             const error = new Error('regenerate');
 
-            (session.regenerate as jest.Mock).mockImplementation((cb) => cb(error));
+            (session.regenerate as jest.Mock).mockRejectedValue(error);
 
             await expect(httpSession.regenerate()).rejects.toThrow(error);
         });
@@ -144,15 +144,15 @@ describe('ExpressHttpSession', () => {
 
     describe('destroy', () => {
         it('should resolve when destroy succeeds', async () => {
-            (session.destroy as jest.Mock).mockImplementation((cb) => cb());
-
             await expect(httpSession.destroy()).resolves.toBeUndefined();
+
+            expect(session.destroy).toHaveBeenCalled();
         });
 
         it('should reject when destroy fails', async () => {
             const error = new Error('destroy');
 
-            (session.destroy as jest.Mock).mockImplementation((cb) => cb(error));
+            (session.destroy as jest.Mock).mockRejectedValue(error);
 
             await expect(httpSession.destroy()).rejects.toThrow(error);
         });
@@ -169,16 +169,16 @@ describe('ExpressHttpSession', () => {
     describe('constructor', () => {
         it('should initialize data when it does not exist', () => {
             const sessionWithoutData = {
-                id: 'session-id',
+                sessionId: 'session-id',
+                encryptedSessionId: 'encrypted-session-id',
                 cookie: {},
-                save: jest.fn(),
-                reload: jest.fn(),
-                regenerate: jest.fn(),
-                destroy: jest.fn(),
+                save: jest.fn().mockResolvedValue(undefined),
+                regenerate: jest.fn().mockResolvedValue(undefined),
+                destroy: jest.fn().mockResolvedValue(undefined),
                 touch: jest.fn()
-            } as unknown as Session & Partial<SessionData>;
+            } as unknown as FastifySessionObject;
 
-            const wrapper = new ExpressHttpSession<TestSession>(sessionWithoutData);
+            const wrapper = new FastifyHttpSession<TestSession>(sessionWithoutData);
 
             expect(wrapper.data).toEqual({});
         });

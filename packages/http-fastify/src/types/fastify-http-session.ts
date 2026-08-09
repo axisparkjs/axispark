@@ -1,19 +1,19 @@
 import { HttpSession } from '@axisparkjs/http';
-import { Session, SessionData } from 'express-session';
+import { FastifySessionObject } from '@fastify/session';
 
-export class ExpressHttpSession<T extends object = Record<string, unknown>> implements HttpSession<T> {
-    constructor(private readonly session: Session & Partial<SessionData>) {
+export class FastifyHttpSession<T extends object = Record<string, unknown>> implements HttpSession<T> {
+    constructor(private readonly session: FastifySessionObject) {
         if (!(this.session as any).data) {
             (this.session as any).data = {};
         }
     }
 
-    get id() {
-        return this.session.id;
+    get id(): string {
+        return this.session.sessionId;
     }
 
     get data(): Readonly<T> {
-        return (this.session as any)['data'] as unknown as T;
+        return (this.session as any)['data'] as unknown as Readonly<T>;
     }
 
     get<K extends keyof T>(key: K): T[K] | undefined {
@@ -39,19 +39,19 @@ export class ExpressHttpSession<T extends object = Record<string, unknown>> impl
     }
 
     save(): Promise<void> {
-        return new Promise((resolve, reject) => this.session.save((err) => (err ? reject(err) : resolve())));
+        return this.session.save();
     }
 
     reload(): Promise<void> {
-        return new Promise((resolve, reject) => this.session.reload((err) => (err ? reject(err) : resolve())));
+        return this.session.regenerate().then(() => undefined);
     }
 
     regenerate(): Promise<void> {
-        return new Promise((resolve, reject) => this.session.regenerate((err) => (err ? reject(err) : resolve())));
+        return this.session.regenerate();
     }
 
     destroy(): Promise<void> {
-        return new Promise((resolve, reject) => this.session.destroy((err) => (err ? reject(err) : resolve())));
+        return this.session.destroy();
     }
 
     async touch(): Promise<void> {

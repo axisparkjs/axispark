@@ -1,2 +1,2 @@
 export * from './http-plugin-options-factory';
-export * from './express-http-plugin-options';
+export * from './fastify-http-plugin-options';

@@ -7,6 +7,7 @@ export class HttpError extends Error {
         public readonly options?: { cause?: unknown; description?: string }
     ) {
         super(response);
+        this.name = this.constructor.name;
     }
 }
 

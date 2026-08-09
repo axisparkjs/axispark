@@ -1,7 +1,7 @@
 {
-    "name": "@axisparkjs/http",
-    "version": "0.0.2",
-    "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/http",
+    "name": "@axisparkjs/http-fastify",
+    "version": "0.0.1",
+    "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/http-fastify",
     "author": "Pablo Gálvez Ortuño",
     "license": "Apache-2.0",
     "main": "lib/index.js",
@@ -11,7 +11,7 @@
         "prettier": "prettier --config ../../.prettierrc.json --ignore-path ../../.prettierignore '**/*.{ts,js,mjs,json,md,html,css,scss}' --check",
         "lint": "eslint --config ../../eslint.config.mjs .",
         "test:unit": "export NODE_ENV=test && jest --config jest.config.ts",
-        "sonar": "sonar-scanner -Dsonar.projectKey=axisparkjs-http"
+        "sonar": "sonar-scanner -Dsonar.projectKey=axisparkjs-http-fastify"
     },
     "engines": {
         "node": ">= 20"
@@ -20,7 +20,14 @@
         "@axisparkjs/common": "0.0.2",
         "@axisparkjs/core": "0.0.2",
         "@axisparkjs/di": "0.0.2",
-        "@axisparkjs/engine": "0.0.2",
-        "@axisparkjs/logger": "0.0.2"
+        "@axisparkjs/http": "0.0.2",
+        "@axisparkjs/logger": "0.0.2",
+        "@fastify/compress": "^9.1.1",
+        "@fastify/cookie": "^11.1.2",
+        "@fastify/cors": "^11.3.0",
+        "@fastify/formbody": "^8.0.2",
+        "@fastify/session": "^11.1.2",
+        "@fastify/static": "^10.1.3",
+        "fastify": "^5.11.2"
     }
 }

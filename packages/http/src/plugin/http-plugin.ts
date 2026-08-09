@@ -26,6 +26,7 @@ export class HttpPlugin extends Pluggable {
         const routes = await this.generateRoutes(context);
 
         this.adapter = await context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
+        await this.adapter.initialize?.();
         await this.adapter.registerRoutes(routes);
         await this.logger.info(`Plugin registered`);
     }
