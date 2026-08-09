@@ -26,6 +26,10 @@ describe('HttpPluginOptionsFactory', () => {
                 compression: false,
                 compressionOptions: undefined,
                 healthChecks: false,
+                timeout: true,
+                timeoutOptions: {
+                    time: 5000
+                },
                 logHttpErrors: false,
                 logErrors: true,
                 logHttpRequests: false,
@@ -56,6 +60,8 @@ describe('HttpPluginOptionsFactory', () => {
                 compression: true,
                 compressionOptions,
                 healthChecks: true,
+                timeout: false,
+                timeoutOptions: undefined,
                 logHttpErrors: true,
                 logErrors: false,
                 logHttpRequests: true,
@@ -79,6 +85,8 @@ describe('HttpPluginOptionsFactory', () => {
                 compression: true,
                 compressionOptions,
                 healthChecks: true,
+                timeout: false,
+                timeoutOptions: undefined,
                 logHttpErrors: true,
                 logErrors: false,
                 logHttpRequests: true,

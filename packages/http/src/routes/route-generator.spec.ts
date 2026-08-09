@@ -33,7 +33,12 @@ describe('RouteGenerator', () => {
         logHttpResponses: true,
         logHttpErrors: true,
         logErrors: true,
-        basePath: '/api'
+        basePath: '/api',
+        timeout: true,
+        timeoutOptions: {
+            time: 5000,
+            message: 'Request timed out'
+        }
     } as unknown as HttpPluginOptions;
 
     beforeEach(() => {
@@ -134,6 +139,7 @@ describe('RouteGenerator', () => {
 
         const routes = RouteGenerator.generate(options, context);
 
+
         await routes[0].routes[0].handler({
             request: {} as unknown as HttpRequest,
             response: {} as unknown as HttpResponse,
@@ -154,7 +160,61 @@ describe('RouteGenerator', () => {
             },
             {
                 container: context.container,
-                processor: HttpResultProcessor
+                resultProcessor: HttpResultProcessor,
+                timeoutProcessor: expect.anything()
+            }
+        );
+
+        options.timeout = true;
+        options.timeoutOptions = undefined;
+        await routes[0].routes[0].handler({
+            request: {} as unknown as HttpRequest,
+            response: {} as unknown as HttpResponse,
+            session: {} as unknown as HttpSession
+        });
+
+        expect(context.engine.execute).toHaveBeenCalledWith(
+            {
+                request: {},
+                response: {},
+                session: {},
+                transport: ExecutionTransport.Http,
+                scope: 'child-container'
+            },
+            {
+                target: TestController,
+                method: 'list'
+            },
+            {
+                container: context.container,
+                resultProcessor: HttpResultProcessor,
+                timeoutProcessor: expect.anything()
+            }
+        );
+
+        options.timeout = false;
+        await routes[0].routes[0].handler({
+            request: {} as unknown as HttpRequest,
+            response: {} as unknown as HttpResponse,
+            session: {} as unknown as HttpSession
+        });
+
+        expect(context.engine.execute).toHaveBeenCalledWith(
+            {
+                request: {},
+                response: {},
+                session: {},
+                transport: ExecutionTransport.Http,
+                scope: 'child-container'
+            },
+            {
+                target: TestController,
+                method: 'list'
+            },
+            {
+                container: context.container,
+                resultProcessor: HttpResultProcessor,
+                timeoutProcessor: undefined
             }
         );
     });

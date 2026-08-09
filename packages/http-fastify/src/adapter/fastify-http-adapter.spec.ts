@@ -57,6 +57,8 @@ describe('FastifyHttpAdapter', () => {
         compression: false,
         compressionOptions: {},
         healthChecks: false,
+        timeout: false,
+        timeoutOptions: undefined,
         logErrors: false,
         logHttpErrors: false,
         logHttpRequests: false,

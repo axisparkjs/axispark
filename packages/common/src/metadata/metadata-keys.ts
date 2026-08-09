@@ -21,6 +21,7 @@ export const MetadataKeys = {
     EXECUTION_STEP_USE: new MetadataKey('execution-step-use'),
     EXECUTION_STEP_TARGET: new MetadataKey('execution-step-target'),
     EXECUTION_STEP_METHOD: new MetadataKey('execution-step-method'),
+    EXECUTION_TIMEOUT: new MetadataKey('execution-timeout'),
 
     /* Http */
     CONTROLLER: new MetadataKey('controller'),

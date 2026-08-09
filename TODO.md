@@ -8,7 +8,6 @@
 - Content negotiation (application/json, text/html, etc.)
 - Response mapping (e.g., transforming data before sending it to the client)
 - File uploads
-- Timeout handling for requests
 - Rate limiting (to prevent abuse)
 
 ## OpenAPI/Swagger Plugin (IN PROGRESS)

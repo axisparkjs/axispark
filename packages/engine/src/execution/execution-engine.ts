@@ -27,7 +27,7 @@ export class ExecutionEngine implements Executable, Initializable {
         }
 
         const executionResult = await ExecutionInvoker.invoke(context, core, plan);
-        await core.processor.process(context, handler, executionResult);
+        await core.resultProcessor.process(context, handler, executionResult);
     }
 
     private stepToExecutionHandler(step: ExecutionStep): ExecutionHandler {

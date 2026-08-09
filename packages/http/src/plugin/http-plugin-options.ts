@@ -17,6 +17,11 @@ export interface HttpPluginOptions extends PluginOptions {
     cookiesOptions?: any;
     compression: boolean;
     compressionOptions?: any;
+    timeout: boolean;
+    timeoutOptions?: {
+        time: number;
+        message?: string | ((time: number) => string);
+    };
     healthChecks?: boolean;
     logHttpRequests?: boolean;
     logHttpResponses?: boolean;

@@ -8,6 +8,7 @@ import { Controller } from '../decorators';
 import { HttpResultProcessor } from '../execution-results/http-result-processor';
 import { ExecutionTransport } from '@axisparkjs/engine';
 import { HttpPluginOptions } from '../plugin/http-plugin-options';
+import { HttpTimeoutProcessor } from '../execution-timeout';
 
 class RouteGeneratorStatic implements Generator<{ controller: Constructor; routes: Route[] }[]> {
     generate(options: HttpPluginOptions, context: AxiSparkContext): { controller: Constructor; routes: Route[] }[] {
@@ -28,6 +29,8 @@ class RouteGeneratorStatic implements Generator<{ controller: Constructor; route
 
         const routes = Metadata.get<RouteMetadata[]>(MetadataKeys.ROUTE, controller) ?? [];
         return routes.map((route) => {
+            const handler = { target: controller, method: route.propertyKey }
+            const executionContext = { transport: ExecutionTransport.Http, scope: context.container.createScopedContainer() }
             return {
                 method: route.method,
                 path: this.joinPath(controllerMetadata.prefix, route.path, options.basePath),
@@ -35,9 +38,16 @@ class RouteGeneratorStatic implements Generator<{ controller: Constructor; route
                 propertyKey: route.propertyKey,
                 handler: async (httpContext) => {
                     await context.engine.execute(
-                        { ...httpContext, transport: ExecutionTransport.Http, scope: context.container.createScopedContainer() },
-                        { target: controller, method: route.propertyKey },
-                        { container: context.container, processor: HttpResultProcessor }
+                        { ...httpContext, ...executionContext },
+                        handler,
+                        { 
+                            container: context.container,
+                            resultProcessor: HttpResultProcessor,
+                            timeoutProcessor: options.timeout ? 
+                                new HttpTimeoutProcessor({ ...executionContext, ...httpContext }, handler, options.timeoutOptions?.time, options.timeoutOptions?.message)
+                                :
+                                undefined
+                        }
                     );
                 }
             };

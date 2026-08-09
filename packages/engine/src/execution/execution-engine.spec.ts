@@ -31,7 +31,7 @@ describe('ExecutionEngine', () => {
     };
 
     const core: any = {
-        processor: {
+        resultProcessor: {
             process: jest.fn()
         }
     };
@@ -80,7 +80,7 @@ describe('ExecutionEngine', () => {
 
             await engine.execute(context, handler, core);
 
-            expect(core.processor.process).toHaveBeenCalledWith(context, handler, result);
+            expect(core.resultProcessor.process).toHaveBeenCalledWith(context, handler, result);
         });
 
         it('should only include steps matching current transport', async () => {
