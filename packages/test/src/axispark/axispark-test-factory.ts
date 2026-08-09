@@ -1,7 +1,7 @@
 import { Factory } from '@axisparkjs/common';
 import { AxiSparkTestConfig } from './axispark-test-config';
 import { AxiSparkContext, AxiSparkCore } from '@axisparkjs/core';
-import { ConsoleTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
+import { NullTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
 
 class AxiSparkTestFactoryStatic implements Factory<AxiSparkCore> {
     public create(config?: AxiSparkTestConfig): AxiSparkCore {
@@ -12,7 +12,7 @@ class AxiSparkTestFactoryStatic implements Factory<AxiSparkCore> {
                 banner: false,
                 environment: 'test',
                 name: 'Test',
-                logTransports: [new ConsoleTransport({ formatter: new SimpleFormatter(), minLevel: LogLevel.Error })]
+                logTransports: [new NullTransport({ formatter: new SimpleFormatter(), minLevel: LogLevel.Error })]
             },
             {
                 scanner: 'file-system',

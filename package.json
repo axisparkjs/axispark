@@ -15,7 +15,7 @@
         "ci:lint": "turbo run lint --affected",
         "ci:build": "turbo run build --affected",
         "ci:test:unit": "turbo run test:unit --affected",
-        "ci:test:e2e": "export NODE_ENV=test && jest --config jest.e2e.config.ts",
+        "ci:test:e2e": "export NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules && jest --config jest.e2e.config.ts",
         "ci:sonar": "turbo run sonar --affected",
         "cd:changeset": "changeset",
         "cd:version": "changeset version",
