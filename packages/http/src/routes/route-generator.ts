@@ -9,6 +9,8 @@ import { HttpResultProcessor } from '../execution-results/http-result-processor'
 import { ExecutionTransport } from '@axisparkjs/engine';
 import { HttpPluginOptions } from '../plugin/http-plugin-options';
 import { HttpTimeoutProcessor } from '../execution-timeout';
+import { VersioningUtils, VersioningType } from '../versioning';
+import { VersionGuard } from '../guards/version-guard';
 
 class RouteGeneratorStatic implements Generator<{ controller: Constructor; routes: Route[] }[]> {
     generate(options: HttpPluginOptions, context: AxiSparkContext): { controller: Constructor; routes: Route[] }[] {
@@ -30,18 +32,20 @@ class RouteGeneratorStatic implements Generator<{ controller: Constructor; route
         const routes = Metadata.get<RouteMetadata[]>(MetadataKeys.ROUTE, controller) ?? [];
         return routes.map((route) => {
             const handler = { target: controller, method: route.propertyKey };
-            const executionContext = { transport: ExecutionTransport.Http, scope: context.container.createScopedContainer() };
             return {
                 method: route.method,
-                path: this.joinPath(controllerMetadata.prefix, route.path, options.basePath),
+                path: this.joinPath(options, controllerMetadata.prefix, route.path, options.basePath),
                 controller,
                 propertyKey: route.propertyKey,
                 handler: async (httpContext) => {
-                    await context.engine.execute({ ...httpContext, ...executionContext }, handler, {
+                    const version = VersioningUtils.isVersionValid(httpContext.request, options.versioning, controllerMetadata, route);
+                    const executionContext = { transport: ExecutionTransport.Http, scope: context.container.createScopedContainer(), version, ...httpContext };
+                    const finalHandler = !version ? { target: VersionGuard, method: 'failedCheckVersion' } : handler;
+                    await context.engine.execute(executionContext, finalHandler, {
                         container: context.container,
                         resultProcessor: HttpResultProcessor,
                         timeoutProcessor: options.timeout
-                            ? new HttpTimeoutProcessor({ ...executionContext, ...httpContext }, handler, options.timeoutOptions?.time, options.timeoutOptions?.message)
+                            ? new HttpTimeoutProcessor(executionContext, finalHandler, options.timeoutOptions?.time, options.timeoutOptions?.message)
                             : undefined
                     });
                 }
@@ -49,8 +53,13 @@ class RouteGeneratorStatic implements Generator<{ controller: Constructor; route
         });
     }
 
-    private joinPath(prefix: string, path: string, basePath = ''): string {
+    private joinPath(options: HttpPluginOptions, prefix: string, path: string, basePath = ''): string {
         basePath = basePath.startsWith('/') ? basePath : `/${basePath}`;
+
+        if (options.versioning && options.versioning.type === VersioningType.Uri) {
+            basePath = `${basePath}/v:version`;
+        }
+
         prefix = prefix.startsWith('/') ? prefix : `/${prefix}`;
         path = path.startsWith('/') ? path : `/${path}`;
         return `${basePath}${prefix}${path}`.replace(/\/+/g, '/').replace(/\/$/, '') || '/';

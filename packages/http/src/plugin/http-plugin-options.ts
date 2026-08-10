@@ -1,5 +1,6 @@
 import { PluginOptions } from '@axisparkjs/core';
 import { HttpAdapterClass } from '../adapter/http-adapter';
+import { VersioningOptions } from '../versioning';
 
 export interface HttpPluginOptions extends PluginOptions {
     port: number;
@@ -22,6 +23,7 @@ export interface HttpPluginOptions extends PluginOptions {
         time: number;
         message?: string | ((time: number) => string);
     };
+    versioning?: VersioningOptions
     healthChecks?: boolean;
     logHttpRequests?: boolean;
     logHttpResponses?: boolean;

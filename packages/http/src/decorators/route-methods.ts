@@ -3,15 +3,12 @@ import { Metadata, MetadataKeys } from '@axisparkjs/common';
 import { RouteMetadata } from '../metadata/route-metadata';
 
 function Method(method: HttpMethod) {
-    return (path = ''): MethodDecorator => {
+    return (path: string | Pick<RouteMetadata, 'path' | 'version'> = ''): MethodDecorator => {
         return (target, propertyKey) => {
             const routes = Metadata.get<RouteMetadata[]>(MetadataKeys.ROUTE, target) ?? [];
 
-            routes.push({
-                method,
-                path,
-                propertyKey
-            });
+            const metadata: RouteMetadata = typeof path === 'string' ? { method, path, propertyKey } : { method, ...path, propertyKey };
+            routes.push(metadata);
 
             Metadata.define(MetadataKeys.ROUTE, routes, target);
         };

@@ -101,7 +101,9 @@ export class ErrorHttpResult extends HttpResult<HttpError> {
         context.response.status(this.rc);
         context.response.json({
             error: this.value.message,
-            status: this.rc
+            status: this.rc,
+            cause: this.value.options?.cause,
+            description: this.value.options?.description,
         });
     }
 }

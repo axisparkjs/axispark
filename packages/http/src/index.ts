@@ -7,3 +7,4 @@ export * from './parameters';
 export * from './plugin';
 export * from './routes';
 export * from './types';
+export * from './versioning';

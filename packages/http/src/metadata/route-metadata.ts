@@ -4,4 +4,5 @@ export interface RouteMetadata {
     method: HttpMethod;
     path: string;
     propertyKey: string | symbol;
+    version?: string | string[];
 }
