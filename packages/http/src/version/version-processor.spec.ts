@@ -20,9 +20,7 @@ describe('VersionProcessor', () => {
         error: undefined
     });
 
-    const createProcessor = (
-        versionOptions?: HttpPluginOptions['versionOptions']
-    ) => {
+    const createProcessor = (versionOptions?: HttpPluginOptions['versionOptions']) => {
         return new VersionProcessor({
             adapter: class TestAdapter {},
             port: 3000,
@@ -42,10 +40,7 @@ describe('VersionProcessor', () => {
                 resolve: jest.fn()
             };
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                resolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, resolver);
 
             const processor = createProcessor({
                 type: VersionType.Header
@@ -75,15 +70,9 @@ describe('VersionProcessor', () => {
                 resolve: jest.fn().mockReturnValue('2')
             };
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                firstResolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, firstResolver);
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                secondResolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, secondResolver);
 
             const processor = createProcessor({
                 type: VersionType.Header
@@ -130,10 +119,7 @@ describe('VersionProcessor', () => {
                 resolve: jest.fn()
             };
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                resolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, resolver);
 
             const processor = createProcessor({
                 type: VersionType.Header
@@ -152,10 +138,7 @@ describe('VersionProcessor', () => {
                 resolve: jest.fn().mockReturnValue('2')
             };
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                resolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, resolver);
 
             const options = {
                 type: VersionType.Header
@@ -169,10 +152,7 @@ describe('VersionProcessor', () => {
             processor.process(version, context);
 
             expect(resolver.resolve).toHaveBeenCalledTimes(1);
-            expect(resolver.resolve).toHaveBeenCalledWith(
-                request,
-                options
-            );
+            expect(resolver.resolve).toHaveBeenCalledWith(request, options);
         });
 
         it('should set the resolved version on the version definition', () => {
@@ -180,10 +160,7 @@ describe('VersionProcessor', () => {
                 resolve: jest.fn().mockReturnValue('2')
             };
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                resolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, resolver);
 
             const processor = createProcessor({
                 type: VersionType.Header
@@ -202,10 +179,7 @@ describe('VersionProcessor', () => {
                 resolve: jest.fn().mockReturnValue('2')
             };
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                resolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, resolver);
 
             const processor = createProcessor({
                 type: VersionType.Header
@@ -224,10 +198,7 @@ describe('VersionProcessor', () => {
                 resolve: jest.fn().mockReturnValue(undefined)
             };
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                resolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, resolver);
 
             const processor = createProcessor({
                 type: VersionType.Header
@@ -263,10 +234,7 @@ describe('VersionProcessor', () => {
                 resolve: jest.fn().mockReturnValue('1')
             };
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                resolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, resolver);
 
             const processor = createProcessor({
                 type: VersionType.Header
@@ -274,15 +242,9 @@ describe('VersionProcessor', () => {
 
             const context = createContext();
 
-            processor.process(
-                new VersionDefinition(['1']),
-                context
-            );
+            processor.process(new VersionDefinition(['1']), context);
 
-            expect(resolver.resolve).toHaveBeenCalledWith(
-                context.request,
-                expect.anything()
-            );
+            expect(resolver.resolve).toHaveBeenCalledWith(context.request, expect.anything());
         });
 
         it('should support different registered version types', () => {
@@ -294,15 +256,9 @@ describe('VersionProcessor', () => {
                 resolve: jest.fn().mockReturnValue('2')
             };
 
-            VersionProcessor.registerVersion(
-                VersionType.Header,
-                headerResolver
-            );
+            VersionProcessor.registerVersion(VersionType.Header, headerResolver);
 
-            VersionProcessor.registerVersion(
-                VersionType.Uri,
-                uriResolver
-            );
+            VersionProcessor.registerVersion(VersionType.Uri, uriResolver);
 
             const processor = createProcessor({
                 type: VersionType.Uri

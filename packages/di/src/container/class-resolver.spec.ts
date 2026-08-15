@@ -165,10 +165,12 @@ describe('Resolver', () => {
             }
 
             if (key === MetadataKeys.INJECT) {
-                return { params: new Map([
-                    [0, token],
-                    [1, token2]
-                ]) };
+                return {
+                    params: new Map([
+                        [0, token],
+                        [1, token2]
+                    ])
+                };
             }
 
             return undefined;

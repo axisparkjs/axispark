@@ -22,9 +22,7 @@ describe('VersionGenerator', () => {
         propertyKey: 'index'
     } as unknown as HttpContext;
 
-    const createGenerator = (
-        versionOptions?: HttpPluginOptions['versionOptions']
-    ) => {
+    const createGenerator = (versionOptions?: HttpPluginOptions['versionOptions']) => {
         return new VersionGenerator({
             adapter: class TestAdapter {},
             port: 3000,
@@ -85,11 +83,9 @@ describe('VersionGenerator', () => {
                 type: VersionType.Header
             } as any);
 
-            (Metadata.get as jest.Mock)
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce({
-                    version: '2'
-                });
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce({
+                version: '2'
+            });
 
             const result = generator.generate(context);
 
@@ -111,10 +107,7 @@ describe('VersionGenerator', () => {
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual([
-                '1',
-                '2'
-            ]);
+            expect(result?.acceptedVersions).toEqual(['1', '2']);
         });
 
         it('should support multiple controller versions', () => {
@@ -130,10 +123,7 @@ describe('VersionGenerator', () => {
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual([
-                '1',
-                '2'
-            ]);
+            expect(result?.acceptedVersions).toEqual(['1', '2']);
         });
 
         it('should support multiple route versions', () => {
@@ -141,18 +131,13 @@ describe('VersionGenerator', () => {
                 type: VersionType.Header
             } as any);
 
-            (Metadata.get as jest.Mock)
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce({
-                    version: ['2', '3']
-                });
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce({
+                version: ['2', '3']
+            });
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual([
-                '2',
-                '3'
-            ]);
+            expect(result?.acceptedVersions).toEqual(['2', '3']);
         });
 
         it('should combine multiple controller and route versions', () => {
@@ -170,12 +155,7 @@ describe('VersionGenerator', () => {
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual([
-                '1',
-                '2',
-                '3',
-                '4'
-            ]);
+            expect(result?.acceptedVersions).toEqual(['1', '2', '3', '4']);
         });
 
         it('should use the default version when URI versioning is enabled', () => {
@@ -184,9 +164,7 @@ describe('VersionGenerator', () => {
                 defaultVersion: '1'
             } as any);
 
-            (Metadata.get as jest.Mock)
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce(undefined);
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             const result = generator.generate(context);
 
@@ -209,12 +187,7 @@ describe('VersionGenerator', () => {
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual([
-                '1',
-                '2',
-                '4',
-                '3'
-            ]);
+            expect(result?.acceptedVersions).toEqual(['1', '2', '4', '3']);
         });
 
         it('should not add the default version for header versioning', () => {
@@ -256,9 +229,7 @@ describe('VersionGenerator', () => {
                 type: VersionType.Uri
             } as any);
 
-            (Metadata.get as jest.Mock)
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce(undefined);
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             const result = generator.generate(context);
 
@@ -270,9 +241,7 @@ describe('VersionGenerator', () => {
                 type: VersionType.Header
             } as any);
 
-            (Metadata.get as jest.Mock)
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce(undefined);
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             const result = generator.generate(context);
 
@@ -285,17 +254,11 @@ describe('VersionGenerator', () => {
                 type: VersionType.Header
             } as any);
 
-            (Metadata.get as jest.Mock)
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce(undefined);
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             generator.generate(context);
 
-            expect(Metadata.get).toHaveBeenNthCalledWith(
-                1,
-                MetadataKeys.CONTROLLER,
-                context.target
-            );
+            expect(Metadata.get).toHaveBeenNthCalledWith(1, MetadataKeys.CONTROLLER, context.target);
         });
 
         it('should query route metadata using target and property key', () => {
@@ -303,18 +266,11 @@ describe('VersionGenerator', () => {
                 type: VersionType.Header
             } as any);
 
-            (Metadata.get as jest.Mock)
-                .mockReturnValueOnce(undefined)
-                .mockReturnValueOnce(undefined);
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             generator.generate(context);
 
-            expect(Metadata.get).toHaveBeenNthCalledWith(
-                2,
-                MetadataKeys.ROUTE,
-                context.target,
-                context.propertyKey
-            );
+            expect(Metadata.get).toHaveBeenNthCalledWith(2, MetadataKeys.ROUTE, context.target, context.propertyKey);
         });
     });
 });

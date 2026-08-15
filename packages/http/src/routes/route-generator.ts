@@ -15,7 +15,7 @@ export class RouteGenerator implements Generator<RouteDefinition[]> {
     constructor(
         private readonly httpEngine: HttpEngine,
         private readonly scopedContainerManager: ScopedContainerManager,
-        @Inject(HTTP_OPTIONS) private readonly httpPluginOptions: HttpPluginOptions,
+        @Inject(HTTP_OPTIONS) private readonly httpPluginOptions: HttpPluginOptions
     ) {}
 
     async generate(): Promise<RouteDefinition[]> {
@@ -31,7 +31,12 @@ export class RouteGenerator implements Generator<RouteDefinition[]> {
                     routeMetadata.target,
                     routeMetadata.propertyKey,
                     routeMetadata.method,
-                    this.pathCreator(this.httpPluginOptions.basePath, controllerMetadata.prefix, routeMetadata.path, this.httpPluginOptions.versionOptions?.type === VersionType.Uri),
+                    this.pathCreator(
+                        this.httpPluginOptions.basePath,
+                        controllerMetadata.prefix,
+                        routeMetadata.path,
+                        this.httpPluginOptions.versionOptions?.type === VersionType.Uri
+                    ),
                     async (context) => await this.httpEngine.execute(this.fillContext(context, routeMetadata))
                 );
                 routes.push(routeDefinition);
@@ -48,7 +53,7 @@ export class RouteGenerator implements Generator<RouteDefinition[]> {
             scopedContainer: this.scopedContainerManager.create(),
             transport: ExecutionTransport.Http,
             version: undefined,
-            error: undefined,
+            error: undefined
         };
     }
 

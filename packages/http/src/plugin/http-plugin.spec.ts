@@ -1,40 +1,14 @@
 import { PluginNotConfiguredError } from '@axisparkjs/core';
-import {
-    ClassRegistry,
-    InjectableScopes,
-    Injector
-} from '@axisparkjs/di';
+import { ClassRegistry, InjectableScopes, Injector } from '@axisparkjs/di';
 import { HttpPlugin } from './http-plugin';
 import { RouteGenerator } from '../routes/route-generator';
-import {
-    HTTP_ADAPTER,
-    HTTP_LOGGER,
-    HTTP_OPTIONS
-} from '../di/tokens';
+import { HTTP_ADAPTER, HTTP_LOGGER, HTTP_OPTIONS } from '../di/tokens';
 import { HttpPluginOptions } from './http-plugin-options';
-import {
-    HealthController,
-    VersionGuard
-} from '../implementations';
-import {
-    LogErrorFilter,
-    LogHttpErrorFilter
-} from '../implementations/filters';
-import {
-    LogHttpRequestInterceptor,
-    LogHttpResponseInterceptor
-} from '../implementations';
-import {
-    HttpResultResolver,
-    HttpTimeoutProcessor,
-} from '../implementations';
-import {
-    ExecutionTransport,
-    ParameterGenerator,
-    ResultProcessor,
-    TimeoutGenerator,
-    TimeoutProcessor
-} from '@axisparkjs/engine';
+import { HealthController, VersionGuard } from '../implementations';
+import { LogErrorFilter, LogHttpErrorFilter } from '../implementations/filters';
+import { LogHttpRequestInterceptor, LogHttpResponseInterceptor } from '../implementations';
+import { HttpResultResolver, HttpTimeoutProcessor } from '../implementations';
+import { ExecutionTransport, ParameterGenerator, ResultProcessor, TimeoutGenerator, TimeoutProcessor } from '@axisparkjs/engine';
 import { HttpParameter } from '../types';
 import { VersionProcessor, VersionType } from '../version';
 
@@ -159,9 +133,7 @@ describe('HttpPlugin', () => {
 
     describe('onRegister', () => {
         it('should throw when options are not provided', async () => {
-            await expect(
-                plugin.onRegister(context)
-            ).rejects.toBeInstanceOf(PluginNotConfiguredError);
+            await expect(plugin.onRegister(context)).rejects.toBeInstanceOf(PluginNotConfiguredError);
         });
 
         it('should register container bindings', async () => {
@@ -248,13 +220,9 @@ describe('HttpPlugin', () => {
 
             await plugin.onRegister(context, options);
 
-            expect(logger.debug).toHaveBeenCalledWith(
-                'Registered route GET /users for controller UsersController'
-            );
+            expect(logger.debug).toHaveBeenCalledWith('Registered route GET /users for controller UsersController');
 
-            expect(logger.debug).toHaveBeenCalledWith(
-                'Registered route POST /users for controller UsersController'
-            );
+            expect(logger.debug).toHaveBeenCalledWith('Registered route POST /users for controller UsersController');
         });
 
         it('should log each controller only once', async () => {
@@ -285,24 +253,15 @@ describe('HttpPlugin', () => {
 
             await plugin.onRegister(context, options);
 
-            expect(logger.info).toHaveBeenCalledWith(
-                'Registered controller UsersController'
-            );
+            expect(logger.info).toHaveBeenCalledWith('Registered controller UsersController');
 
-            expect(
-                logger.info.mock.calls.filter(
-                    ([message]: [string]) =>
-                        message === 'Registered controller UsersController'
-                )
-            ).toHaveLength(1);
+            expect(logger.info.mock.calls.filter(([message]: [string]) => message === 'Registered controller UsersController')).toHaveLength(1);
         });
 
         it('should log plugin registration', async () => {
             await plugin.onRegister(context, options);
 
-            expect(logger.info).toHaveBeenCalledWith(
-                'Plugin registered'
-            );
+            expect(logger.info).toHaveBeenCalledWith('Plugin registered');
         });
 
         it('should support adapters without initialize', async () => {
@@ -312,19 +271,13 @@ describe('HttpPlugin', () => {
                 stop: jest.fn().mockResolvedValue(undefined)
             };
 
-            container.resolve.mockReturnValue(
-                adapterWithoutInitialize
-            );
+            container.resolve.mockReturnValue(adapterWithoutInitialize);
 
             await plugin.onRegister(context, options);
 
-            expect(
-                adapterWithoutInitialize.registerRoutes
-            ).toHaveBeenCalled();
+            expect(adapterWithoutInitialize.registerRoutes).toHaveBeenCalled();
 
-            expect(logger.info).toHaveBeenCalledWith(
-                'Plugin registered'
-            );
+            expect(logger.info).toHaveBeenCalledWith('Plugin registered');
         });
     });
 
@@ -343,23 +296,13 @@ describe('HttpPlugin', () => {
             ['logHttpErrors', LogHttpErrorFilter],
             ['logErrors', LogErrorFilter],
             ['version', VersionGuard]
-        ])(
-            'should disable %s when it is not enabled',
-            async (_option, target) => {
-                await plugin.onRegister(
-                    context,
-                    optionsWithoutComponents
-                );
+        ])('should disable %s when it is not enabled', async (_option, target) => {
+            await plugin.onRegister(context, optionsWithoutComponents);
 
-                expect(ClassRegistry.remove).toHaveBeenCalledWith(
-                    target
-                );
+            expect(ClassRegistry.remove).toHaveBeenCalledWith(target);
 
-                expect(container.unbind).toHaveBeenCalledWith(
-                    target
-                );
-            }
-        );
+            expect(container.unbind).toHaveBeenCalledWith(target);
+        });
     });
 
     describe('registerImplementations', () => {
@@ -384,16 +327,9 @@ describe('HttpPlugin', () => {
 
             await plugin.onRegister(context, options);
 
-            expect(injector.get).toHaveBeenCalledWith(
-                HttpResultResolver
-            );
+            expect(injector.get).toHaveBeenCalledWith(HttpResultResolver);
 
-            expect(
-                ResultProcessor.registerResult
-            ).toHaveBeenCalledWith(
-                ExecutionTransport.Http,
-                resolver
-            );
+            expect(ResultProcessor.registerResult).toHaveBeenCalledWith(ExecutionTransport.Http, resolver);
         });
 
         it('should register timeout processing when timeout is enabled', async () => {
@@ -411,23 +347,11 @@ describe('HttpPlugin', () => {
 
             await plugin.onRegister(context, options);
 
-            expect(injector.get).toHaveBeenCalledWith(
-                HttpTimeoutProcessor
-            );
+            expect(injector.get).toHaveBeenCalledWith(HttpTimeoutProcessor);
 
-            expect(
-                TimeoutProcessor.registerTimeout
-            ).toHaveBeenCalledWith(
-                ExecutionTransport.Http,
-                timeoutProcessor
-            );
+            expect(TimeoutProcessor.registerTimeout).toHaveBeenCalledWith(ExecutionTransport.Http, timeoutProcessor);
 
-            expect(
-                TimeoutGenerator.registerTimeout
-            ).toHaveBeenCalledWith(
-                ExecutionTransport.Http,
-                5000
-            );
+            expect(TimeoutGenerator.registerTimeout).toHaveBeenCalledWith(ExecutionTransport.Http, 5000);
         });
 
         it('should register timeout processing without time', async () => {
@@ -448,23 +372,11 @@ describe('HttpPlugin', () => {
                 timeoutOptions: undefined
             });
 
-            expect(injector.get).toHaveBeenCalledWith(
-                HttpTimeoutProcessor
-            );
+            expect(injector.get).toHaveBeenCalledWith(HttpTimeoutProcessor);
 
-            expect(
-                TimeoutProcessor.registerTimeout
-            ).toHaveBeenCalledWith(
-                ExecutionTransport.Http,
-                timeoutProcessor
-            );
+            expect(TimeoutProcessor.registerTimeout).toHaveBeenCalledWith(ExecutionTransport.Http, timeoutProcessor);
 
-            expect(
-                TimeoutGenerator.registerTimeout
-            ).toHaveBeenCalledWith(
-                ExecutionTransport.Http,
-                undefined
-            );
+            expect(TimeoutGenerator.registerTimeout).toHaveBeenCalledWith(ExecutionTransport.Http, undefined);
         });
 
         it('should not register timeout when timeout is disabled', async () => {
@@ -472,21 +384,14 @@ describe('HttpPlugin', () => {
                 generate: jest.fn().mockResolvedValue([])
             });
 
-            await plugin.onRegister(
-                context,
-                {
-                    ...options,
-                    timeout: false
-                }
-            );
+            await plugin.onRegister(context, {
+                ...options,
+                timeout: false
+            });
 
-            expect(
-                TimeoutProcessor.registerTimeout
-            ).not.toHaveBeenCalled();
+            expect(TimeoutProcessor.registerTimeout).not.toHaveBeenCalled();
 
-            expect(
-                TimeoutGenerator.registerTimeout
-            ).not.toHaveBeenCalled();
+            expect(TimeoutGenerator.registerTimeout).not.toHaveBeenCalled();
         });
 
         it('should register all HTTP parameter resolvers', async () => {
@@ -496,72 +401,25 @@ describe('HttpPlugin', () => {
 
             await plugin.onRegister(context, options);
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledWith(
-                HttpParameter.Request,
-                expect.anything()
-            );
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Request, expect.anything());
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledWith(
-                HttpParameter.Response,
-                expect.anything()
-            );
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Response, expect.anything());
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledWith(
-                HttpParameter.Body,
-                expect.anything()
-            );
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Body, expect.anything());
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledWith(
-                HttpParameter.Param,
-                expect.anything()
-            );
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Param, expect.anything());
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledWith(
-                HttpParameter.Query,
-                expect.anything()
-            );
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Query, expect.anything());
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledWith(
-                HttpParameter.Header,
-                expect.anything()
-            );
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Header, expect.anything());
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledWith(
-                HttpParameter.Ip,
-                expect.anything()
-            );
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Ip, expect.anything());
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledWith(
-                HttpParameter.Session,
-                expect.anything()
-            );
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Session, expect.anything());
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledWith(
-                HttpParameter.Cookie,
-                expect.anything()
-            );
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Cookie, expect.anything());
 
-            expect(
-                ParameterGenerator.registerParameter
-            ).toHaveBeenCalledTimes(9);
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledTimes(9);
         });
 
         it('should register version resolvers when version is enabled', async () => {
@@ -571,45 +429,26 @@ describe('HttpPlugin', () => {
 
             await plugin.onRegister(context, options);
 
-            expect(
-                VersionProcessor.registerVersion
-            ).toHaveBeenCalledWith(
-                VersionType.Header,
-                expect.anything()
-            );
+            expect(VersionProcessor.registerVersion).toHaveBeenCalledWith(VersionType.Header, expect.anything());
 
-            expect(
-                VersionProcessor.registerVersion
-            ).toHaveBeenCalledWith(
-                VersionType.MediaType,
-                expect.anything()
-            );
+            expect(VersionProcessor.registerVersion).toHaveBeenCalledWith(VersionType.MediaType, expect.anything());
 
-            expect(
-                VersionProcessor.registerVersion
-            ).toHaveBeenCalledWith(
-                VersionType.Uri,
-                expect.anything()
-            );
+            expect(VersionProcessor.registerVersion).toHaveBeenCalledWith(VersionType.Uri, expect.anything());
 
-            expect(
-                VersionProcessor.registerVersion
-            ).toHaveBeenCalledTimes(3);
+            expect(VersionProcessor.registerVersion).toHaveBeenCalledTimes(3);
         });
 
         it('should not register version resolvers when version is disabled', async () => {
             injector.get.mockResolvedValue({
                 generate: jest.fn().mockResolvedValue([])
             });
-            
+
             await plugin.onRegister(context, {
                 ...options,
                 version: false
             });
 
-            expect(
-                VersionProcessor.registerVersion
-            ).not.toHaveBeenCalled();
+            expect(VersionProcessor.registerVersion).not.toHaveBeenCalled();
         });
     });
 
@@ -627,9 +466,7 @@ describe('HttpPlugin', () => {
         it('should log the start message', async () => {
             await plugin.onStart();
 
-            expect(logger.info).toHaveBeenCalledWith(
-                'Plugin started. Listening on port 3000'
-            );
+            expect(logger.info).toHaveBeenCalledWith('Plugin started. Listening on port 3000');
         });
     });
 
@@ -647,9 +484,7 @@ describe('HttpPlugin', () => {
         it('should log the stop message', async () => {
             await plugin.onStop();
 
-            expect(logger.info).toHaveBeenCalledWith(
-                'Plugin stopped'
-            );
+            expect(logger.info).toHaveBeenCalledWith('Plugin stopped');
         });
     });
 });

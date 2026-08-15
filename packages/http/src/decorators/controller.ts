@@ -8,7 +8,7 @@ export function Controller(prefix: string | Omit<ControllerMetadata, 'target'> =
             target: Metadata.normalizeTarget(target),
             prefix: typeof prefix === 'string' ? prefix : prefix.prefix,
             version: typeof prefix === 'string' ? undefined : prefix.version
-        }
+        };
         Constructable(MetadataKeys.INJECTABLE)(target);
         Metadata.define(MetadataKeys.CONTROLLER, metadata, target);
     };

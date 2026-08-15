@@ -19,9 +19,7 @@ describe('HttpCode', () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        (Metadata.normalizeTarget as jest.Mock).mockImplementation(
-            (target) => target
-        );
+        (Metadata.normalizeTarget as jest.Mock).mockImplementation((target) => target);
     });
 
     it('should define the HTTP status code metadata on the method', () => {
@@ -29,16 +27,9 @@ describe('HttpCode', () => {
             test() {}
         }
 
-        const descriptor = Object.getOwnPropertyDescriptor(
-            TestController.prototype,
-            'test'
-        ) as PropertyDescriptor;
+        const descriptor = Object.getOwnPropertyDescriptor(TestController.prototype, 'test') as PropertyDescriptor;
 
-        HttpCode(HttpStatusCode.Ok)(
-            TestController.prototype,
-            'test',
-            descriptor
-        );
+        HttpCode(HttpStatusCode.Ok)(TestController.prototype, 'test', descriptor);
 
         expect(Metadata.define).toHaveBeenCalledTimes(1);
         expect(Metadata.define).toHaveBeenCalledWith(
@@ -60,24 +51,13 @@ describe('HttpCode', () => {
 
         const normalizedTarget = {};
 
-        (Metadata.normalizeTarget as jest.Mock).mockReturnValue(
-            normalizedTarget
-        );
+        (Metadata.normalizeTarget as jest.Mock).mockReturnValue(normalizedTarget);
 
-        const descriptor = Object.getOwnPropertyDescriptor(
-            TestController.prototype,
-            'test'
-        ) as PropertyDescriptor;
+        const descriptor = Object.getOwnPropertyDescriptor(TestController.prototype, 'test') as PropertyDescriptor;
 
-        HttpCode(HttpStatusCode.Ok)(
-            TestController.prototype,
-            'test',
-            descriptor
-        );
+        HttpCode(HttpStatusCode.Ok)(TestController.prototype, 'test', descriptor);
 
-        expect(Metadata.normalizeTarget).toHaveBeenCalledWith(
-            TestController.prototype
-        );
+        expect(Metadata.normalizeTarget).toHaveBeenCalledWith(TestController.prototype);
 
         expect(Metadata.define).toHaveBeenCalledWith(
             MetadataKeys.HTTP_CODE,

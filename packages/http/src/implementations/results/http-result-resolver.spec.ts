@@ -1,11 +1,7 @@
 import { Metadata, MetadataKeys } from '@axisparkjs/common';
 import { HttpResultResolver } from './http-result-resolver';
 import { BodyHttpResult } from './http-result';
-import {
-    defaultStatusCode,
-    HttpStatusCode,
-    HttpMethod
-} from '../../types';
+import { defaultStatusCode, HttpStatusCode, HttpMethod } from '../../types';
 import { HttpContext } from '../../types/http-context';
 import { RouteMetadata } from '../../metadata/route-metadata';
 
@@ -65,9 +61,7 @@ describe('HttpResultResolver', () => {
             propertyKey: route.propertyKey
         } as HttpContext;
 
-        (Metadata.get as jest.Mock)
-            .mockReturnValueOnce(route)
-            .mockReturnValueOnce({statusCode: HttpStatusCode.Created});
+        (Metadata.get as jest.Mock).mockReturnValueOnce(route).mockReturnValueOnce({ statusCode: HttpStatusCode.Created });
 
         const bodyResult = {} as BodyHttpResult;
 
@@ -75,26 +69,13 @@ describe('HttpResultResolver', () => {
 
         const resolved = resolver.resolve(result, context);
 
-        expect(Metadata.get).toHaveBeenNthCalledWith(
-            1,
-            MetadataKeys.ROUTE,
-            context.target,
-            context.propertyKey
-        );
+        expect(Metadata.get).toHaveBeenNthCalledWith(1, MetadataKeys.ROUTE, context.target, context.propertyKey);
 
-        expect(Metadata.get).toHaveBeenNthCalledWith(
-            2,
-            MetadataKeys.HTTP_CODE,
-            context.target,
-            context.propertyKey
-        );
+        expect(Metadata.get).toHaveBeenNthCalledWith(2, MetadataKeys.HTTP_CODE, context.target, context.propertyKey);
 
         expect(defaultStatusCode).not.toHaveBeenCalled();
 
-        expect(BodyHttpResult).toHaveBeenCalledWith(
-            result,
-            HttpStatusCode.Created
-        );
+        expect(BodyHttpResult).toHaveBeenCalledWith(result, HttpStatusCode.Created);
 
         expect(resolved).toBe(bodyResult);
     });
@@ -114,13 +95,9 @@ describe('HttpResultResolver', () => {
             propertyKey: route.propertyKey
         } as HttpContext;
 
-        (Metadata.get as jest.Mock)
-            .mockReturnValueOnce(route)
-            .mockReturnValueOnce(undefined);
+        (Metadata.get as jest.Mock).mockReturnValueOnce(route).mockReturnValueOnce(undefined);
 
-        (defaultStatusCode as jest.Mock).mockReturnValue(
-            HttpStatusCode.Created
-        );
+        (defaultStatusCode as jest.Mock).mockReturnValue(HttpStatusCode.Created);
 
         const bodyResult = {} as BodyHttpResult;
 
@@ -128,28 +105,13 @@ describe('HttpResultResolver', () => {
 
         const resolved = resolver.resolve(result, context);
 
-        expect(Metadata.get).toHaveBeenNthCalledWith(
-            1,
-            MetadataKeys.ROUTE,
-            context.target,
-            context.propertyKey
-        );
+        expect(Metadata.get).toHaveBeenNthCalledWith(1, MetadataKeys.ROUTE, context.target, context.propertyKey);
 
-        expect(Metadata.get).toHaveBeenNthCalledWith(
-            2,
-            MetadataKeys.HTTP_CODE,
-            context.target,
-            context.propertyKey
-        );
+        expect(Metadata.get).toHaveBeenNthCalledWith(2, MetadataKeys.HTTP_CODE, context.target, context.propertyKey);
 
-        expect(defaultStatusCode).toHaveBeenCalledWith(
-            HttpMethod.Post
-        );
+        expect(defaultStatusCode).toHaveBeenCalledWith(HttpMethod.Post);
 
-        expect(BodyHttpResult).toHaveBeenCalledWith(
-            result,
-            HttpStatusCode.Created
-        );
+        expect(BodyHttpResult).toHaveBeenCalledWith(result, HttpStatusCode.Created);
 
         expect(resolved).toBe(bodyResult);
     });
@@ -170,25 +132,16 @@ describe('HttpResultResolver', () => {
             propertyKey: route.propertyKey
         } as HttpContext;
 
-        (Metadata.get as jest.Mock)
-            .mockReturnValueOnce(route)
-            .mockReturnValueOnce(undefined);
+        (Metadata.get as jest.Mock).mockReturnValueOnce(route).mockReturnValueOnce(undefined);
 
-        (defaultStatusCode as jest.Mock).mockReturnValue(
-            HttpStatusCode.Ok
-        );
+        (defaultStatusCode as jest.Mock).mockReturnValue(HttpStatusCode.Ok);
 
         const bodyResult = {} as BodyHttpResult;
 
         (BodyHttpResult as jest.Mock).mockReturnValue(bodyResult);
 
-        expect(
-            resolver.resolve(result, context)
-        ).toBe(bodyResult);
+        expect(resolver.resolve(result, context)).toBe(bodyResult);
 
-        expect(BodyHttpResult).toHaveBeenCalledWith(
-            result,
-            HttpStatusCode.Ok
-        );
+        expect(BodyHttpResult).toHaveBeenCalledWith(result, HttpStatusCode.Ok);
     });
 });

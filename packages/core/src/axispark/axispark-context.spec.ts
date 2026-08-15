@@ -53,13 +53,11 @@ describe('AxiSparkContext', () => {
         });
 
         it('should register configuration in the container', async () => {
-            expect(await context.container.resolve(AXISPARK_CONFIG))
-                .toBe(context.config);
+            expect(await context.container.resolve(AXISPARK_CONFIG)).toBe(context.config);
         });
 
         it('should register Logger in the container', async () => {
-            expect(await context.container.resolve(Logger))
-                .toBe(context.logger);
+            expect(await context.container.resolve(Logger)).toBe(context.logger);
         });
 
         it('should register Injector in the container', async () => {
@@ -116,20 +114,15 @@ describe('AxiSparkContext', () => {
             expect(context.container).toBeInstanceOf(Container);
             expect(context.scanner).toBeInstanceOf(NullScanner);
 
-            expect(await context.container.resolve(AXISPARK_CONFIG))
-                .toBe(context.config);
+            expect(await context.container.resolve(AXISPARK_CONFIG)).toBe(context.config);
 
-            expect(await context.container.resolve(Logger))
-                .toBe(context.logger);
+            expect(await context.container.resolve(Logger)).toBe(context.logger);
 
-            expect(await context.container.resolve(Injector))
-                .toBeInstanceOf(Injector);
+            expect(await context.container.resolve(Injector)).toBeInstanceOf(Injector);
 
-            expect(await context.container.resolve(ScopedContainerManager))
-                .toBeInstanceOf(ScopedContainerManager);
+            expect(await context.container.resolve(ScopedContainerManager)).toBeInstanceOf(ScopedContainerManager);
 
-            expect(await context.container.resolve(HealthEngine))
-                .toBeInstanceOf(HealthEngine);
+            expect(await context.container.resolve(HealthEngine)).toBeInstanceOf(HealthEngine);
         });
     });
 });

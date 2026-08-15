@@ -18,9 +18,7 @@ describe('VersionGuard', () => {
             }
         } as HttpContext;
 
-        await expect(
-            guard.failedCheckVersion(context)
-        ).resolves.toBeUndefined();
+        await expect(guard.failedCheckVersion(context)).resolves.toBeUndefined();
     });
 
     it('should not throw when the requested version is accepted', async () => {
@@ -34,9 +32,7 @@ describe('VersionGuard', () => {
             }
         } as any as HttpContext;
 
-        await expect(
-            guard.failedCheckVersion(context)
-        ).resolves.toBeUndefined();
+        await expect(guard.failedCheckVersion(context)).resolves.toBeUndefined();
     });
 
     it('should throw BadRequestError when the requested version is not accepted', async () => {
@@ -50,9 +46,7 @@ describe('VersionGuard', () => {
             }
         } as any as HttpContext;
 
-        await expect(
-            guard.failedCheckVersion(context)
-        ).rejects.toBeInstanceOf(BadRequestError);
+        await expect(guard.failedCheckVersion(context)).rejects.toBeInstanceOf(BadRequestError);
     });
 
     it('should include the request method and path in the error message', async () => {
@@ -66,11 +60,7 @@ describe('VersionGuard', () => {
             }
         } as any as HttpContext;
 
-        await expect(
-            guard.failedCheckVersion(context)
-        ).rejects.toThrow(
-            'Invalid version requested for POST /users/123'
-        );
+        await expect(guard.failedCheckVersion(context)).rejects.toThrow('Invalid version requested for POST /users/123');
     });
 
     it('should not throw when version exists but isVersionAccepted is truthy', async () => {
@@ -84,8 +74,6 @@ describe('VersionGuard', () => {
             }
         } as any as HttpContext;
 
-        await expect(
-            guard.failedCheckVersion(context)
-        ).resolves.toBeUndefined();
+        await expect(guard.failedCheckVersion(context)).resolves.toBeUndefined();
     });
 });

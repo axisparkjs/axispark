@@ -149,5 +149,5 @@ describe('ErrorHttpResult', () => {
             cause: 'Missing field',
             description: 'The "name" field is required.'
         });
-    })
+    });
 });

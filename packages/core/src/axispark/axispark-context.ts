@@ -47,7 +47,7 @@ export class AxiSparkContext {
             token: Injector,
             useValue: injector
         });
-        
+
         const scopedContainerManager = new ScopedContainerManager(this.container);
         this.container.bind({
             token: ScopedContainerManager,

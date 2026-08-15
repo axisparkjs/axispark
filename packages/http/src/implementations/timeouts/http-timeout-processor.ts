@@ -8,10 +8,14 @@ import { Inject, Injectable } from '@axisparkjs/di';
 export class HttpTimeoutProcessor implements TimeoutResolver {
     private readonly options: TimeoutOptions | undefined;
     constructor(@Inject(HTTP_OPTIONS) options: HttpPluginOptions) {
-        this.options = options.timeoutOptions
+        this.options = options.timeoutOptions;
     }
 
     public async resolve(timeout: TimeoutDefinition): Promise<void> {
-        throw new RequestTimeoutError(typeof this.options?.message === 'function' ? this.options.message(timeout.time) : this.options?.message || 'Request timed out after ' + timeout.time + 'ms');
+        throw new RequestTimeoutError(
+            typeof this.options?.message === 'function'
+                ? this.options.message(timeout.time)
+                : this.options?.message || 'Request timed out after ' + timeout.time + 'ms'
+        );
     }
 }

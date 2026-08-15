@@ -13,23 +13,18 @@ describe('ScopedContainerManager', () => {
             createScopedContainer: jest.fn()
         };
 
-        manager = new ScopedContainerManager(
-            container as unknown as Container
-        );
+        manager = new ScopedContainerManager(container as unknown as Container);
     });
 
     describe('create', () => {
         it('should create a scoped container using the container', () => {
             const scopedContainer = {} as ScopedContainer;
 
-            container.createScopedContainer.mockReturnValue(
-                scopedContainer
-            );
+            container.createScopedContainer.mockReturnValue(scopedContainer);
 
             const result = manager.create();
 
-            expect(container.createScopedContainer)
-                .toHaveBeenCalledTimes(1);
+            expect(container.createScopedContainer).toHaveBeenCalledTimes(1);
 
             expect(result).toBe(scopedContainer);
         });
@@ -39,9 +34,7 @@ describe('ScopedContainerManager', () => {
                 resolve: jest.fn()
             } as unknown as ScopedContainer;
 
-            container.createScopedContainer.mockReturnValue(
-                scopedContainer
-            );
+            container.createScopedContainer.mockReturnValue(scopedContainer);
 
             expect(manager.create()).toBe(scopedContainer);
         });

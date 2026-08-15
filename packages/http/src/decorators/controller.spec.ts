@@ -23,9 +23,7 @@ describe('Controller decorator', () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        (Metadata.normalizeTarget as jest.Mock).mockImplementation(
-            (target) => target
-        );
+        (Metadata.normalizeTarget as jest.Mock).mockImplementation((target) => target);
     });
 
     it('should mark the class as injectable', () => {
@@ -98,7 +96,7 @@ describe('Controller decorator', () => {
 
         @Controller({
             prefix: '/users',
-            version: '1',
+            version: '1'
         })
         class TestController {}
 
@@ -115,9 +113,7 @@ describe('Controller decorator', () => {
 
     it('should use the normalized target in controller metadata', () => {
         const normalizedTarget = {};
-        (Metadata.normalizeTarget as jest.Mock).mockReturnValue(
-            normalizedTarget
-        );
+        (Metadata.normalizeTarget as jest.Mock).mockReturnValue(normalizedTarget);
 
         const injectableDecorator = jest.fn();
         (Constructable as jest.Mock).mockReturnValue(injectableDecorator);

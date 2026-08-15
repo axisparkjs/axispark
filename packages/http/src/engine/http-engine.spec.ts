@@ -23,18 +23,12 @@ describe('HttpEngine', () => {
             process: jest.fn()
         } as unknown as jest.Mocked<VersionProcessor>;
 
-        httpEngine = new HttpEngine(
-            executionEngine,
-            versionGenerator,
-            versionProcessor
-        );
+        httpEngine = new HttpEngine(executionEngine, versionGenerator, versionProcessor);
     });
 
     it('should generate and process the version before executing the engine', async () => {
         const context = {} as HttpContext;
-        const versionDefinition = {} as ReturnType<
-            VersionGenerator['generate']
-        >;
+        const versionDefinition = {} as ReturnType<VersionGenerator['generate']>;
 
         versionGenerator.generate.mockReturnValue(versionDefinition);
 
@@ -44,10 +38,7 @@ describe('HttpEngine', () => {
         expect(versionGenerator.generate).toHaveBeenCalledWith(context);
 
         expect(versionProcessor.process).toHaveBeenCalledTimes(1);
-        expect(versionProcessor.process).toHaveBeenCalledWith(
-            versionDefinition,
-            context
-        );
+        expect(versionProcessor.process).toHaveBeenCalledWith(versionDefinition, context);
 
         expect(executionEngine.execute).toHaveBeenCalledTimes(1);
         expect(executionEngine.execute).toHaveBeenCalledWith(context);
@@ -55,9 +46,7 @@ describe('HttpEngine', () => {
 
     it('should execute the execution engine after processing the version', async () => {
         const context = {} as HttpContext;
-        const versionDefinition = {} as ReturnType<
-            VersionGenerator['generate']
-        >;
+        const versionDefinition = {} as ReturnType<VersionGenerator['generate']>;
 
         versionGenerator.generate.mockReturnValue(versionDefinition);
 
@@ -78,11 +67,7 @@ describe('HttpEngine', () => {
 
         await httpEngine.execute(context);
 
-        expect(calls).toEqual([
-            'generate',
-            'process',
-            'execute'
-        ]);
+        expect(calls).toEqual(['generate', 'process', 'execute']);
     });
 
     it('should propagate an error when version generation fails', async () => {
@@ -101,9 +86,7 @@ describe('HttpEngine', () => {
 
     it('should propagate an error when version processing fails', async () => {
         const context = {} as HttpContext;
-        const versionDefinition = {} as ReturnType<
-            VersionGenerator['generate']
-        >;
+        const versionDefinition = {} as ReturnType<VersionGenerator['generate']>;
         const error = new Error('Version processing failed');
 
         versionGenerator.generate.mockReturnValue(versionDefinition);
@@ -119,9 +102,7 @@ describe('HttpEngine', () => {
 
     it('should propagate an error when execution fails', async () => {
         const context = {} as HttpContext;
-        const versionDefinition = {} as ReturnType<
-            VersionGenerator['generate']
-        >;
+        const versionDefinition = {} as ReturnType<VersionGenerator['generate']>;
         const error = new Error('Execution failed');
 
         versionGenerator.generate.mockReturnValue(versionDefinition);
@@ -130,10 +111,7 @@ describe('HttpEngine', () => {
         await expect(httpEngine.execute(context)).rejects.toThrow(error);
 
         expect(versionGenerator.generate).toHaveBeenCalledWith(context);
-        expect(versionProcessor.process).toHaveBeenCalledWith(
-            versionDefinition,
-            context
-        );
+        expect(versionProcessor.process).toHaveBeenCalledWith(versionDefinition, context);
     });
 
     it('should implement Executable', () => {

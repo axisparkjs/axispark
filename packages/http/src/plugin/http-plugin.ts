@@ -9,7 +9,28 @@ import { ClassType } from '@axisparkjs/common';
 import { HttpParameter } from '../types';
 import { VersionProcessor, VersionType } from '../version';
 import { ResultProcessor, TimeoutProcessor, ParameterGenerator, ExecutionTransport, TimeoutGenerator } from '@axisparkjs/engine';
-import { LogHttpRequestInterceptor, LogHttpResponseInterceptor, LogHttpErrorFilter, LogErrorFilter, HealthController, VersionGuard, RequestResolver, ResponseResolver, IpResolver, BodyResolver, ParamResolver, QueryResolver, CookieResolver, HeaderResolver, SessionResolver, HttpResultResolver, HttpTimeoutProcessor, UriVersionResolver, HeaderVersionResolver, MediaTypeVersionResolver,  } from '../implementations';
+import {
+    LogHttpRequestInterceptor,
+    LogHttpResponseInterceptor,
+    LogHttpErrorFilter,
+    LogErrorFilter,
+    HealthController,
+    VersionGuard,
+    RequestResolver,
+    ResponseResolver,
+    IpResolver,
+    BodyResolver,
+    ParamResolver,
+    QueryResolver,
+    CookieResolver,
+    HeaderResolver,
+    SessionResolver,
+    HttpResultResolver,
+    HttpTimeoutProcessor,
+    UriVersionResolver,
+    HeaderVersionResolver,
+    MediaTypeVersionResolver
+} from '../implementations';
 
 @Injectable()
 export class HttpPlugin extends Plugin {
@@ -19,7 +40,7 @@ export class HttpPlugin extends Plugin {
 
     constructor(
         private logger: Logger,
-        private readonly injector: Injector,
+        private readonly injector: Injector
     ) {
         super();
     }

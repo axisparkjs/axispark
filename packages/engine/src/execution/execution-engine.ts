@@ -28,23 +28,23 @@ export class ExecutionEngine implements Executable {
                 let finished = false;
                 const timeout = async () => {
                     await new Promise<void>((resolve) => {
-                        setTimeout(() => {
-                            if (finished) {
-                                resolve();
-                                return;
-                            }
+                        setTimeout(
+                            () => {
+                                if (finished) {
+                                    resolve();
+                                    return;
+                                }
 
-                            this.timeoutProcessor.process(plan.timeout as TimeoutDefinition, context);
-                            resolve();
-                        }, (plan.timeout as TimeoutDefinition).time);
+                                this.timeoutProcessor.process(plan.timeout as TimeoutDefinition, context);
+                                resolve();
+                            },
+                            (plan.timeout as TimeoutDefinition).time
+                        );
                     });
                 };
 
                 try {
-                    result = await Promise.race([
-                        execution(),
-                        timeout(),
-                    ]);
+                    result = await Promise.race([execution(), timeout()]);
                 } finally {
                     finished = true;
                 }

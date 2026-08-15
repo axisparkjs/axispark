@@ -63,17 +63,12 @@ describe('RouteGenerator', () => {
             basePath: '/api'
         } as HttpPluginOptions;
 
-        generator = new RouteGenerator(
-            httpEngine as unknown as HttpEngine,
-            scopedContainerManager as unknown as ScopedContainerManager,
-            options
-        );
+        generator = new RouteGenerator(httpEngine as unknown as HttpEngine, scopedContainerManager as unknown as ScopedContainerManager, options);
     });
 
     describe('generate', () => {
         it('should return an empty array when there are no controllers', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([]);
 
             const routes = await generator.generate();
 
@@ -82,8 +77,7 @@ describe('RouteGenerator', () => {
         });
 
         it('should generate a route definition', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -115,21 +109,15 @@ describe('RouteGenerator', () => {
         });
 
         it('should get controllers using controller metadata', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([]);
 
             await generator.generate();
 
-            expect(
-                ClassRegistry.getWithMetadata
-            ).toHaveBeenCalledWith(
-                MetadataKeys.CONTROLLER
-            );
+            expect(ClassRegistry.getWithMetadata).toHaveBeenCalledWith(MetadataKeys.CONTROLLER);
         });
 
         it('should get controller metadata for each controller', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -140,22 +128,13 @@ describe('RouteGenerator', () => {
 
             await generator.generate();
 
-            expect(Metadata.get).toHaveBeenNthCalledWith(
-                1,
-                MetadataKeys.CONTROLLER,
-                TestController
-            );
+            expect(Metadata.get).toHaveBeenNthCalledWith(1, MetadataKeys.CONTROLLER, TestController);
 
-            expect(Metadata.get).toHaveBeenNthCalledWith(
-                2,
-                MetadataKeys.ROUTE,
-                TestController
-            );
+            expect(Metadata.get).toHaveBeenNthCalledWith(2, MetadataKeys.ROUTE, TestController);
         });
 
         it('should return no routes when the controller has no route metadata', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -170,8 +149,7 @@ describe('RouteGenerator', () => {
         });
 
         it('should generate multiple routes for a controller', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -228,11 +206,7 @@ describe('RouteGenerator', () => {
         it('should generate routes for multiple controllers', async () => {
             class AdminController {}
 
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([
-                    TestController,
-                    AdminController
-                ]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController, AdminController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -273,19 +247,10 @@ describe('RouteGenerator', () => {
     });
 
     describe('path generation', () => {
-        const generateRoute = async ({
-            basePath,
-            prefix,
-            path
-        }: {
-            basePath?: string;
-            prefix: string;
-            path: string;
-        }) => {
+        const generateRoute = async ({ basePath, prefix, path }: { basePath?: string; prefix: string; path: string }) => {
             options.basePath = basePath;
 
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -384,8 +349,7 @@ describe('RouteGenerator', () => {
                 type: VersionType.Uri
             } as any;
 
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -403,9 +367,7 @@ describe('RouteGenerator', () => {
 
             const routes = await generator.generate();
 
-            expect(routes[0].path).toBe(
-                '/api/v:version/users/list'
-            );
+            expect(routes[0].path).toBe('/api/v:version/users/list');
         });
 
         it('should not add the version parameter for header versioning', async () => {
@@ -414,8 +376,7 @@ describe('RouteGenerator', () => {
                 type: VersionType.Header
             } as any;
 
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -433,9 +394,7 @@ describe('RouteGenerator', () => {
 
             const routes = await generator.generate();
 
-            expect(routes[0].path).toBe(
-                '/api/users/list'
-            );
+            expect(routes[0].path).toBe('/api/users/list');
         });
 
         it('should not add the version parameter for media type versioning', async () => {
@@ -444,8 +403,7 @@ describe('RouteGenerator', () => {
                 type: VersionType.MediaType
             } as any;
 
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -463,16 +421,13 @@ describe('RouteGenerator', () => {
 
             const routes = await generator.generate();
 
-            expect(routes[0].path).toBe(
-                '/api/users/list'
-            );
+            expect(routes[0].path).toBe('/api/users/list');
         });
     });
 
     describe('route handler', () => {
         it('should create a scoped container when the handler is called', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -496,14 +451,11 @@ describe('RouteGenerator', () => {
                 session: {} as any
             });
 
-            expect(
-                scopedContainerManager.create
-            ).toHaveBeenCalledTimes(1);
+            expect(scopedContainerManager.create).toHaveBeenCalledTimes(1);
         });
 
         it('should execute HttpEngine with the filled HTTP context', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             const routeMetadata = {
                 target: TestController,
@@ -517,9 +469,7 @@ describe('RouteGenerator', () => {
                     target: TestController,
                     prefix: '/users'
                 })
-                .mockReturnValueOnce([
-                    routeMetadata
-                ]);
+                .mockReturnValueOnce([routeMetadata]);
 
             const routes = await generator.generate();
 
@@ -549,8 +499,7 @@ describe('RouteGenerator', () => {
         });
 
         it('should preserve request, response and session in the generated context', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -588,8 +537,7 @@ describe('RouteGenerator', () => {
         });
 
         it('should set the route target and property key in the context', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -622,8 +570,7 @@ describe('RouteGenerator', () => {
         });
 
         it('should set HTTP transport in the context', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -655,8 +602,7 @@ describe('RouteGenerator', () => {
         });
 
         it('should initialize version and error as undefined in the context', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -691,8 +637,7 @@ describe('RouteGenerator', () => {
 
     describe('metadata', () => {
         it('should preserve the route metadata target', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             const target = TestController;
 
@@ -716,8 +661,7 @@ describe('RouteGenerator', () => {
         });
 
         it('should preserve the route metadata property key', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({
@@ -739,8 +683,7 @@ describe('RouteGenerator', () => {
         });
 
         it('should preserve the route HTTP method', async () => {
-            (ClassRegistry.getWithMetadata as jest.Mock)
-                .mockReturnValue([TestController]);
+            (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([TestController]);
 
             (Metadata.get as jest.Mock)
                 .mockReturnValueOnce({

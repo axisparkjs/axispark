@@ -10,7 +10,9 @@ import { Injectable } from '@axisparkjs/di';
 export class HttpResultResolver implements ResultResolver {
     public resolve(result: unknown, context: HttpContext): ResultDefinition {
         const route = Metadata.get<RouteMetadata>(MetadataKeys.ROUTE, context.target, context.propertyKey) as RouteMetadata;
-        const statusCode = Metadata.get<HttpCodeMetadata>(MetadataKeys.HTTP_CODE, context.target, context.propertyKey)?.statusCode ?? defaultStatusCode(route.method as string);
+        const statusCode =
+            Metadata.get<HttpCodeMetadata>(MetadataKeys.HTTP_CODE, context.target, context.propertyKey)?.statusCode ??
+            defaultStatusCode(route.method as string);
 
         return new BodyHttpResult(result, statusCode);
     }

@@ -1,13 +1,5 @@
 import { Metadata, MetadataKeys } from '@axisparkjs/common';
-import {
-    Get,
-    Post,
-    Delete,
-    Put,
-    Patch,
-    Head,
-    Options
-} from './route-methods';
+import { Get, Post, Delete, Put, Patch, Head, Options } from './route-methods';
 import { HttpMethod } from '../types/http-method';
 
 jest.mock('@axisparkjs/common', () => {
@@ -28,9 +20,7 @@ describe('Method decorators', () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        (Metadata.normalizeTarget as jest.Mock).mockImplementation(
-            (target) => target
-        );
+        (Metadata.normalizeTarget as jest.Mock).mockImplementation((target) => target);
     });
 
     it('should define a new GET route when no routes exist', () => {
@@ -40,14 +30,7 @@ describe('Method decorators', () => {
             index() {}
         }
 
-        Get('/users')(
-            TestController.prototype,
-            'index',
-            Object.getOwnPropertyDescriptor(
-                TestController.prototype,
-                'index'
-            ) as PropertyDescriptor
-        );
+        Get('/users')(TestController.prototype, 'index', Object.getOwnPropertyDescriptor(TestController.prototype, 'index') as PropertyDescriptor);
 
         const expectedRoute = {
             target: TestController.prototype,
@@ -57,25 +40,11 @@ describe('Method decorators', () => {
             version: undefined
         };
 
-        expect(Metadata.get).toHaveBeenCalledWith(
-            MetadataKeys.ROUTE,
-            TestController.prototype
-        );
+        expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.ROUTE, TestController.prototype);
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            1,
-            MetadataKeys.ROUTE,
-            [expectedRoute],
-            TestController.prototype
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(1, MetadataKeys.ROUTE, [expectedRoute], TestController.prototype);
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            2,
-            MetadataKeys.ROUTE,
-            expectedRoute,
-            TestController.prototype,
-            'index'
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(2, MetadataKeys.ROUTE, expectedRoute, TestController.prototype, 'index');
 
         expect(Metadata.define).toHaveBeenCalledTimes(2);
     });
@@ -96,14 +65,7 @@ describe('Method decorators', () => {
             update() {}
         }
 
-        Put('/:id')(
-            TestController.prototype,
-            'update',
-            Object.getOwnPropertyDescriptor(
-                TestController.prototype,
-                'update'
-            ) as PropertyDescriptor
-        );
+        Put('/:id')(TestController.prototype, 'update', Object.getOwnPropertyDescriptor(TestController.prototype, 'update') as PropertyDescriptor);
 
         const expectedRoute = {
             target: TestController.prototype,
@@ -113,23 +75,9 @@ describe('Method decorators', () => {
             version: undefined
         };
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            1,
-            MetadataKeys.ROUTE,
-            [
-                existingRoute,
-                expectedRoute
-            ],
-            TestController.prototype
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(1, MetadataKeys.ROUTE, [existingRoute, expectedRoute], TestController.prototype);
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            2,
-            MetadataKeys.ROUTE,
-            expectedRoute,
-            TestController.prototype,
-            'update'
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(2, MetadataKeys.ROUTE, expectedRoute, TestController.prototype, 'update');
 
         expect(Metadata.define).toHaveBeenCalledTimes(2);
     });
@@ -149,14 +97,7 @@ describe('Method decorators', () => {
             handler() {}
         }
 
-        decorator()(
-            TestController.prototype,
-            'handler',
-            Object.getOwnPropertyDescriptor(
-                TestController.prototype,
-                'handler'
-            ) as PropertyDescriptor
-        );
+        decorator()(TestController.prototype, 'handler', Object.getOwnPropertyDescriptor(TestController.prototype, 'handler') as PropertyDescriptor);
 
         const expectedRoute = {
             target: TestController.prototype,
@@ -166,20 +107,9 @@ describe('Method decorators', () => {
             version: undefined
         };
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            1,
-            MetadataKeys.ROUTE,
-            [expectedRoute],
-            TestController.prototype
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(1, MetadataKeys.ROUTE, [expectedRoute], TestController.prototype);
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            2,
-            MetadataKeys.ROUTE,
-            expectedRoute,
-            TestController.prototype,
-            'handler'
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(2, MetadataKeys.ROUTE, expectedRoute, TestController.prototype, 'handler');
     });
 
     it('should define the route with a version', () => {
@@ -192,14 +122,7 @@ describe('Method decorators', () => {
         Get({
             path: '/users',
             version: '1'
-        })(
-            TestController.prototype,
-            'index',
-            Object.getOwnPropertyDescriptor(
-                TestController.prototype,
-                'index'
-            ) as PropertyDescriptor
-        );
+        })(TestController.prototype, 'index', Object.getOwnPropertyDescriptor(TestController.prototype, 'index') as PropertyDescriptor);
 
         const expectedRoute = {
             target: TestController.prototype,
@@ -209,20 +132,9 @@ describe('Method decorators', () => {
             version: '1'
         };
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            1,
-            MetadataKeys.ROUTE,
-            [expectedRoute],
-            TestController.prototype
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(1, MetadataKeys.ROUTE, [expectedRoute], TestController.prototype);
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            2,
-            MetadataKeys.ROUTE,
-            expectedRoute,
-            TestController.prototype,
-            'index'
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(2, MetadataKeys.ROUTE, expectedRoute, TestController.prototype, 'index');
     });
 
     it('should use the normalized target in the route metadata', () => {
@@ -230,22 +142,13 @@ describe('Method decorators', () => {
 
         const normalizedTarget = {};
 
-        (Metadata.normalizeTarget as jest.Mock).mockReturnValue(
-            normalizedTarget
-        );
+        (Metadata.normalizeTarget as jest.Mock).mockReturnValue(normalizedTarget);
 
         class TestController {
             index() {}
         }
 
-        Get('/users')(
-            TestController.prototype,
-            'index',
-            Object.getOwnPropertyDescriptor(
-                TestController.prototype,
-                'index'
-            ) as PropertyDescriptor
-        );
+        Get('/users')(TestController.prototype, 'index', Object.getOwnPropertyDescriptor(TestController.prototype, 'index') as PropertyDescriptor);
 
         const expectedRoute = {
             target: normalizedTarget,
@@ -255,23 +158,10 @@ describe('Method decorators', () => {
             version: undefined
         };
 
-        expect(Metadata.normalizeTarget).toHaveBeenCalledWith(
-            TestController.prototype
-        );
+        expect(Metadata.normalizeTarget).toHaveBeenCalledWith(TestController.prototype);
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            1,
-            MetadataKeys.ROUTE,
-            [expectedRoute],
-            TestController.prototype
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(1, MetadataKeys.ROUTE, [expectedRoute], TestController.prototype);
 
-        expect(Metadata.define).toHaveBeenNthCalledWith(
-            2,
-            MetadataKeys.ROUTE,
-            expectedRoute,
-            TestController.prototype,
-            'index'
-        );
+        expect(Metadata.define).toHaveBeenNthCalledWith(2, MetadataKeys.ROUTE, expectedRoute, TestController.prototype, 'index');
     });
 });

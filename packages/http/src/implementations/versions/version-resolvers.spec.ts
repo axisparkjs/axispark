@@ -1,14 +1,6 @@
-import {
-    HeaderVersionResolver,
-    MediaTypeVersionResolver,
-    UriVersionResolver
-} from './version-resolvers';
+import { HeaderVersionResolver, MediaTypeVersionResolver, UriVersionResolver } from './version-resolvers';
 import { HttpRequest } from '../../types';
-import {
-    HeaderVersionOptions,
-    MediaTypeVersionOptions,
-    UriVersionOptions
-} from '../../plugin/http-plugin-options';
+import { HeaderVersionOptions, MediaTypeVersionOptions, UriVersionOptions } from '../../plugin/http-plugin-options';
 
 describe('HeaderVersionResolver', () => {
     let resolver: HeaderVersionResolver;
@@ -67,9 +59,7 @@ describe('MediaTypeVersionResolver', () => {
 
     it('should resolve the version from the content type', () => {
         const request = {
-            getHeader: jest.fn().mockReturnValue(
-                'application/json+version=1'
-            )
+            getHeader: jest.fn().mockReturnValue('application/json+version=1')
         } as unknown as HttpRequest;
 
         const options = {
@@ -82,9 +72,7 @@ describe('MediaTypeVersionResolver', () => {
 
     it('should resolve the version when content type contains parameters', () => {
         const request = {
-            getHeader: jest.fn().mockReturnValue(
-                'application/json+version=2; charset=utf-8'
-            )
+            getHeader: jest.fn().mockReturnValue('application/json+version=2; charset=utf-8')
         } as unknown as HttpRequest;
 
         const options = {
@@ -96,9 +84,7 @@ describe('MediaTypeVersionResolver', () => {
 
     it('should resolve a custom version key', () => {
         const request = {
-            getHeader: jest.fn().mockReturnValue(
-                'application/json+apiVersion=3'
-            )
+            getHeader: jest.fn().mockReturnValue('application/json+apiVersion=3')
         } as unknown as HttpRequest;
 
         const options = {
@@ -134,9 +120,7 @@ describe('MediaTypeVersionResolver', () => {
 
     it('should return undefined when the media type does not contain a version', () => {
         const request = {
-            getHeader: jest.fn().mockReturnValue(
-                'application/json'
-            )
+            getHeader: jest.fn().mockReturnValue('application/json')
         } as unknown as HttpRequest;
 
         const options = {
@@ -148,9 +132,7 @@ describe('MediaTypeVersionResolver', () => {
 
     it('should return undefined when the configured key does not exist', () => {
         const request = {
-            getHeader: jest.fn().mockReturnValue(
-                'application/json+version=1'
-            )
+            getHeader: jest.fn().mockReturnValue('application/json+version=1')
         } as unknown as HttpRequest;
 
         const options = {

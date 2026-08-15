@@ -12,7 +12,7 @@ function Method(method: HttpMethod, value: string | Pick<RouteMetadata, 'path' |
             method,
             path: typeof value === 'string' ? value : value.path,
             version: typeof value === 'string' ? undefined : value.version
-        }
+        };
         routes.push(metadata);
 
         Metadata.define(MetadataKeys.ROUTE, routes, target);

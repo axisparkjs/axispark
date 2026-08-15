@@ -8,6 +8,6 @@ export class RouteDefinition {
         public readonly propertyKey: string | symbol,
         public readonly httpMethod: HttpMethod,
         public readonly path: string,
-        public readonly handler: RouteHandler,
+        public readonly handler: RouteHandler
     ) {}
 }
