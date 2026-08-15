@@ -10,6 +10,7 @@ export const MetadataKeys = {
     CONSTRUCTABLE: new MetadataKey('constructable'),
     INJECTABLE: new MetadataKey('injectable'),
     INJECTABLE_TOKEN: new MetadataKey('injectable-token'),
+    INJECTABLE_SCOPE: new MetadataKey('injectable-scope'),
     INJECT: new MetadataKey('inject'),
 
     /* Core */
@@ -18,10 +19,10 @@ export const MetadataKeys = {
     /* Engine */
     PARAMETER: new MetadataKey('parameter'),
     PIPE: new MetadataKey('pipe'),
-    EXECUTION_STEP_USE: new MetadataKey('execution-step-use'),
-    EXECUTION_STEP_TARGET: new MetadataKey('execution-step-target'),
-    EXECUTION_STEP_METHOD: new MetadataKey('execution-step-method'),
-    EXECUTION_TIMEOUT: new MetadataKey('execution-timeout'),
+    USE: new MetadataKey('use'),
+    STEP_TARGET: new MetadataKey('step-target'),
+    STEP_METHOD: new MetadataKey('step-method'),
+    TIMEOUT: new MetadataKey('timeout'),
 
     /* Http */
     CONTROLLER: new MetadataKey('controller'),

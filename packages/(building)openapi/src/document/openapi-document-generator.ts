@@ -4,15 +4,15 @@ import { OpenApiPluginOptions } from '../plugin/openapi-plugin-options';
 import { Route } from '@axisparkjs/http';
 import { OpenApiResponseMetadata } from '../metadata/openapi-response-metadata';
 import { OpenApiPlugin } from '../plugin';
-import { Constructor } from '@axisparkjs/di';
+import { ClassType } from '@axisparkjs/di';
 import { OpenApiSchemaMetadata } from '../metadata/openapi-schema-metadata';
 import { OpenApiPropertyMetadata } from '../metadata/openapi-property-metadata';
 import { ParameterMetadata } from '@axisparkjs/engine';
 import { extractTypeFromMetadata } from '../metadata/extract-property-type-from-metadata';
 
 class OpenApiDocumentGeneratorStatic implements Generator<OpenApiDocument> {
-    private readonly schemasToGenerate = new Set<Constructor>();
-    private readonly shcemasAlreadyGenerated = new Set<Constructor>();
+    private readonly schemasToGenerate = new Set<ClassType>();
+    private readonly shcemasAlreadyGenerated = new Set<ClassType>();
 
     generate(options: OpenApiPluginOptions, routes: readonly Route[]): OpenApiDocument {
         const paths = this.generatePaths(routes);
@@ -75,7 +75,22 @@ class OpenApiDocumentGeneratorStatic implements Generator<OpenApiDocument> {
         if (openApiPropertyMetadata.length === 0) return undefined;
 
         return openApiPropertyMetadata.reduce((acc, metadata) => {
-            const { name, type, description, isArray, nullable, default: defaultValue, enum: enumValues, example, format, maxLength, maximum, minLength, minimum, pattern } = metadata;
+            const {
+                name,
+                type,
+                description,
+                isArray,
+                nullable,
+                default: defaultValue,
+                enum: enumValues,
+                example,
+                format,
+                maxLength,
+                maximum,
+                minLength,
+                minimum,
+                pattern
+            } = metadata;
 
             const isBasicType = type === 'boolean' || type === 'string' || type === 'number' || type === 'integer' || type === 'null';
             const primitiveType = isBasicType ? type : 'object';
@@ -249,7 +264,7 @@ class OpenApiDocumentGeneratorStatic implements Generator<OpenApiDocument> {
         return `${controllerName.toLocaleLowerCase().replace(/controller/i, '')}-${propertyKey.toString().toLocaleLowerCase()}`;
     }
 
-    private generateNameForSchema(schema: Constructor, prefix = false): string {
+    private generateNameForSchema(schema: ClassType, prefix = false): string {
         const openApiSchemaMetadata = Metadata.get<OpenApiSchemaMetadata>(MetadataKeys.OPENAPI_SCHEMA, schema) as OpenApiSchemaMetadata;
         const schemaName = openApiSchemaMetadata?.name || schema.name;
         if (prefix) return `#/components/schemas/${schemaName}`;

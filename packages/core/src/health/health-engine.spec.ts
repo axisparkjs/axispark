@@ -1,6 +1,6 @@
 import { HealthEngine } from './health-engine';
 import { HealthStatus } from './health-status';
-import { PluginLifecycle } from '../plugin/pluggable';
+import { PluginLifecycle } from '../plugin/plugin';
 
 describe('HealthEngine', () => {
     const createPlugin = (name: string, state?: PluginLifecycle, error?: Error) => ({

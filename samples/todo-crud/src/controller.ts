@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, NotFoundError, Param, Post, Put } from '
 import { TodoService } from './service';
 import { NotEmpty, ParseInt, Pipe } from '@axisparkjs/engine';
 
-@Controller({ prefix: 'todos', version: '1' })
+@Controller('todos')
 export class TodoController {
     constructor(private readonly todoService: TodoService) {}
 

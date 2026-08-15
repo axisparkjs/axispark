@@ -1,7 +1,7 @@
 import { CronTime, validateCronExpression } from 'cron';
 import { JobError } from '../errors/job-error';
 import { CronJobTrigger, DateJobTrigger, IntervalJobTrigger, TimeoutJobTrigger } from './job-trigger';
-import { CronExpression } from '../types';
+import { CronExpression } from '../implementations';
 
 jest.mock('cron', () => ({
     CronTime: jest.fn(),

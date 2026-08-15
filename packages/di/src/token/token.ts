@@ -1,4 +1,4 @@
-import { Constructor } from '../types/constructor';
+import { ClassType } from '@axisparkjs/common';
 
 export class InjectionToken {
     constructor(public readonly description: string) {}
@@ -8,7 +8,7 @@ export class InjectionToken {
     }
 }
 
-export type Token<T = unknown> = Constructor<T> | InjectionToken;
+export type Token<T = unknown> = ClassType<T> | InjectionToken;
 
 class TokenUtilsStatic {
     getName(token: Token): string {

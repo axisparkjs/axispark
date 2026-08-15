@@ -1,8 +1,8 @@
-import { Route } from '../routes/route';
+import { RouteDefinition } from '../routes/route-definition';
 
 export interface HttpAdapter {
-    registerRoutes(routes: readonly Route[]): void | Promise<void>;
-    getRegisteredRoutes(): readonly Route[];
+    registerRoutes(routes: readonly RouteDefinition[]): void | Promise<void>;
+    getRegisteredRoutes(): readonly RouteDefinition[];
     initialize?(): void | Promise<void>;
     start(): void | Promise<void>;
     stop(): void | Promise<void>;

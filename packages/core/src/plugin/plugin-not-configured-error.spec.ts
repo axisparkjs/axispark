@@ -9,6 +9,8 @@ describe('PluginNotConfiguredError', () => {
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(PluginNotConfiguredError);
         expect(error.name).toBe('PluginNotConfiguredError');
-        expect(error.message).toBe('LoggerPlugin added without configuration when it was required. Please provide a configuration object when adding the plugin.');
+        expect(error.message).toBe(
+            'LoggerPlugin added without configuration when it was required. Please provide a configuration object when adding the plugin.'
+        );
     });
 });

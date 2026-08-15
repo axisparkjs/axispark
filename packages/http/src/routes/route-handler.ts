@@ -1,3 +1,3 @@
 import { HttpContext } from '../types/http-context';
 
-export type RouteHandler = (context: Omit<HttpContext, 'transport' | 'scope'>) => void | Promise<void>;
+export type RouteHandler = (context: Pick<HttpContext, 'request' | 'response' | 'session'>) => void | Promise<void>;

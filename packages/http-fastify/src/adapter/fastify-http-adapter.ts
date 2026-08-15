@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@axisparkjs/di';
-import { HTTP_OPTIONS, HttpAdapter, Route } from '@axisparkjs/http';
+import { HTTP_OPTIONS, HttpAdapter, RouteDefinition } from '@axisparkjs/http';
 import { AxiSparkConfig, AXISPARK_CONFIG } from '@axisparkjs/core';
 import { FastifyHttpRequest } from '../types/fastify-http-request';
 import { FastifyHttpResponse } from '../types/fastify-http-response';
@@ -17,7 +17,7 @@ import path from 'node:path';
 @Injectable()
 export class FastifyHttpAdapter implements HttpAdapter {
     private readonly app = fastify();
-    private readonly registeredRoutes: Route[] = [];
+    private readonly registeredRoutes: RouteDefinition[] = [];
 
     constructor(
         @Inject(HTTP_OPTIONS)
@@ -37,16 +37,16 @@ export class FastifyHttpAdapter implements HttpAdapter {
         if (this.options.urlEncoded) await this.app.register(formbody, this.options.urlEncodedOptions ?? {});
     }
 
-    getRegisteredRoutes(): readonly Route[] {
+    getRegisteredRoutes(): readonly RouteDefinition[] {
         return this.registeredRoutes;
     }
 
-    registerRoutes(routes: readonly Route[]): void {
+    registerRoutes(routes: readonly RouteDefinition[]): void {
         this.registeredRoutes.push(...routes);
         for (const route of routes) {
-            const { path, method } = route;
+            const { path, httpMethod } = route;
             this.app.route({
-                method: method.toUpperCase(),
+                method: httpMethod.toUpperCase(),
                 url: path,
                 handler: async (request, reply) => {
                     await route.handler(this.createContext(request, reply));

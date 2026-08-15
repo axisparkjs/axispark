@@ -52,7 +52,8 @@ describe('ExpressHttpAdapter', () => {
         logErrors: false,
         logHttpErrors: false,
         logHttpRequests: false,
-        logHttpResponses: false
+        logHttpResponses: false,
+        version: true
     };
 
     beforeEach(() => {
@@ -119,8 +120,8 @@ describe('ExpressHttpAdapter', () => {
 
             adapter.registerRoutes([
                 {
-                    controller: class TestController {},
-                    method: HttpMethod.Get,
+                    target: class TestController {},
+                    httpMethod: HttpMethod.Get,
                     path: '/users',
                     handler,
                     propertyKey: 'getUsers'
@@ -137,8 +138,8 @@ describe('ExpressHttpAdapter', () => {
 
             adapter.registerRoutes([
                 {
-                    controller: class TestController {},
-                    method: HttpMethod.Get,
+                    target: class TestController {},
+                    httpMethod: HttpMethod.Get,
                     path: '/',
                     handler,
                     propertyKey: 'test'
@@ -170,8 +171,8 @@ describe('ExpressHttpAdapter', () => {
 
             adapter.registerRoutes([
                 {
-                    controller: class TestController {},
-                    method: HttpMethod.Get,
+                    target: class TestController {},
+                    httpMethod: HttpMethod.Get,
                     path: '/',
                     handler,
                     propertyKey: 'test'
@@ -198,8 +199,8 @@ describe('ExpressHttpAdapter', () => {
 
             const routes = [
                 {
-                    controller: class TestController {},
-                    method: HttpMethod.Get,
+                    target: class TestController {},
+                    httpMethod: HttpMethod.Get,
                     path: '/users',
                     handler,
                     propertyKey: 'getUsers'

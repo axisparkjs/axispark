@@ -30,6 +30,8 @@ describe('HttpPluginOptionsFactory', () => {
                 timeoutOptions: {
                     time: 5000
                 },
+                version: false,
+                versionOptions: undefined,
                 logHttpErrors: false,
                 logErrors: true,
                 logHttpRequests: false,
@@ -62,6 +64,8 @@ describe('HttpPluginOptionsFactory', () => {
                 healthChecks: true,
                 timeout: false,
                 timeoutOptions: undefined,
+                version: false,
+                versionOptions: undefined,
                 logHttpErrors: true,
                 logErrors: false,
                 logHttpRequests: true,
@@ -87,6 +91,8 @@ describe('HttpPluginOptionsFactory', () => {
                 healthChecks: true,
                 timeout: false,
                 timeoutOptions: undefined,
+                version: false,
+                versionOptions: undefined,
                 logHttpErrors: true,
                 logErrors: false,
                 logHttpRequests: true,

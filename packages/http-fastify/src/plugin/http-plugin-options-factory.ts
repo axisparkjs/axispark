@@ -28,6 +28,8 @@ class HttpPluginOptionsFactoryStatic implements Factory<FastifyHttpPluginOptions
             timeoutOptions: {
                 time: 5000
             },
+            version: false,
+            versionOptions: undefined,
             logHttpErrors: false,
             logErrors: true,
             logHttpRequests: false,

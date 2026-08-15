@@ -1,6 +1,6 @@
-import { AxiSparkFactory, Pluggable, Plugin } from '@axisparkjs/core';
+import { AxiSparkFactory, Plugin } from '@axisparkjs/core';
 import { AxiSparkTestFactory } from './axispark-test-factory';
-import { Injectable, InjectableScope, InjectionToken } from '@axisparkjs/di';
+import { Injectable, InjectableScopes, InjectionToken } from '@axisparkjs/di';
 import { AxiSparkCore } from '@axisparkjs/core';
 
 describe('AxiSparkTestFactory', () => {
@@ -14,13 +14,13 @@ describe('AxiSparkTestFactory', () => {
         @Injectable()
         class MockProvider {}
 
-        const axisparkCore = AxiSparkTestFactory.create({ providers: [{ token, useClass: MockProvider, scope: InjectableScope.Singleton }] });
+        const axisparkCore = AxiSparkTestFactory.create({ providers: [{ token, useClass: MockProvider, scope: InjectableScopes.Singleton }] });
         expect(axisparkCore).toBeInstanceOf(AxiSparkCore);
     });
 
     it('should accept override from a created AxisparkCore instance', () => {
-        @Plugin()
-        class TestPlugin extends Pluggable {
+        @Injectable()
+        class TestPlugin extends Plugin {
             public onRegister() {}
             public onStart() {}
             public onStop() {}

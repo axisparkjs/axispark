@@ -1,6 +1,5 @@
-import { DecoratorNotIncludedError } from '@axisparkjs/di';
-import { Plugin } from '../decorators';
-import { PluginOptions, Pluggable, PluginLifecycle } from './pluggable';
+import { DecoratorNotIncludedError, Injectable } from '@axisparkjs/di';
+import { PluginOptions, Plugin, PluginLifecycle } from './plugin';
 import { PluginRegistry } from './plugin-registry';
 import { AxiSparkContext } from '../axispark';
 import { PluginAlreadyRegisteredError } from './plugin-already-registered-error';
@@ -12,8 +11,8 @@ const onRegisterMock = jest.fn();
 const onStartMock = jest.fn();
 const onStopMock = jest.fn();
 
-@Plugin()
-class MockPlugin extends Pluggable {
+@Injectable()
+class MockPlugin extends Plugin {
     async onRegister() {
         onRegisterMock();
     }
@@ -24,8 +23,8 @@ class MockPlugin extends Pluggable {
         onStopMock();
     }
 }
-@Plugin()
-class ErrorPlugin extends Pluggable {
+@Injectable()
+class ErrorPlugin extends Plugin {
     async onRegister() {
         throw new Error('Error in onRegister');
     }
@@ -36,9 +35,9 @@ class ErrorPlugin extends Pluggable {
         throw new Error('Error in onStop');
     }
 }
-@Plugin()
-class TestPlugin extends Pluggable {}
-class BrokenPlugin extends Pluggable {
+@Injectable()
+class TestPlugin extends Plugin {}
+class BrokenPlugin extends Plugin {
     async onRegister() {
         onRegisterMock();
     }
@@ -46,15 +45,15 @@ class BrokenPlugin extends Pluggable {
 
 const executionOrder: string[] = [];
 
-@Plugin()
-class DependencyPlugin extends Pluggable {
+@Injectable()
+class DependencyPlugin extends Plugin {
     async onRegister() {
         executionOrder.push('dependency');
     }
 }
 
-@Plugin()
-class MainPlugin extends Pluggable {
+@Injectable()
+class MainPlugin extends Plugin {
     static override dependencies = [DependencyPlugin];
 
     async onRegister() {
@@ -62,23 +61,23 @@ class MainPlugin extends Pluggable {
     }
 }
 
-@Plugin()
-class MissingDependencyPlugin extends Pluggable {
+@Injectable()
+class MissingDependencyPlugin extends Plugin {
     static override dependencies = [DependencyPlugin];
 }
 
-@Plugin()
-class ExtraMissingDependencyPlugin extends Pluggable {
+@Injectable()
+class ExtraMissingDependencyPlugin extends Plugin {
     static override dependencies = [DependencyPlugin, MissingDependencyPlugin];
 }
 
-@Plugin()
-class CircularA extends Pluggable {
+@Injectable()
+class CircularA extends Plugin {
     static override dependencies = [] as any;
 }
 
-@Plugin()
-class CircularB extends Pluggable {
+@Injectable()
+class CircularB extends Plugin {
     static override dependencies = [CircularA];
 }
 

@@ -1,40 +1,46 @@
-import { AxiSparkContext, Plugin, Pluggable } from '@axisparkjs/core';
+import { AxiSparkContext, Plugin } from '@axisparkjs/core';
+import { Injectable } from '@axisparkjs/di';
 import { SCHEDULE_LOGGER } from '../di/tokens';
 import { Logger } from '@axisparkjs/logger';
 import { SchedulerService } from '../scheduler';
 import { JobGenerator } from '../jobs/job-generator';
-import { Job } from '../jobs';
 
-@Plugin()
-export class SchedulePlugin extends Pluggable {
-    private logger!: Logger;
-    private scheduler: SchedulerService;
-    private jobsToStart: Job[] = [];
+@Injectable()
+export class SchedulePlugin extends Plugin {
+    private context: AxiSparkContext;
+
+    constructor(
+        private logger: Logger,
+        private readonly jobGenerator: JobGenerator,
+        private readonly scheduler: SchedulerService
+    ) {
+        super();
+    }
 
     async onRegister(context: AxiSparkContext): Promise<void> {
-        this.logger = (await context.container.resolve(Logger)).child('SchedulePlugin');
+        this.context = context;
+        this.logger = this.logger.child('SchedulePlugin');
 
-        this.registerContainerBindings(context);
-        await this.initializeScheduler(context);
+        this.registerContainerBindings();
+        await this.initializeScheduler();
 
         await this.logger.info(`Plugin registered`);
     }
 
-    private registerContainerBindings(context: AxiSparkContext): void {
-        context.container.bind({ token: SCHEDULE_LOGGER, useValue: this.logger });
+    private registerContainerBindings(): void {
+        this.context.container.bind({ token: SCHEDULE_LOGGER, useValue: this.logger });
     }
 
-    private async initializeScheduler(context: AxiSparkContext): Promise<void> {
-        this.scheduler = await context.container.resolve(SchedulerService);
-        const jobs = await JobGenerator.generate(context);
-        this.jobsToStart = jobs.filter((job) => !job.disabled).map((job) => job.job);
-        this.scheduler.registerJobs(jobs.map((job) => ({ job: job.job, start: false })));
+    private async initializeScheduler(): Promise<void> {
+        const jobs = await this.jobGenerator.generate(this.context);
+        jobs.forEach((job) => {
+            this.logger.debug(`Registered job ${job.name} of type ${job.type} ${job.initiallyDisabled ? '(initially disabled)' : ''}`);
+        });
+        this.scheduler.registerJobs(jobs);
     }
 
     async onStart(): Promise<void> {
-        for (const job of this.jobsToStart) {
-            this.scheduler.startJob(job);
-        }
+        this.scheduler.startAllJobs(true);
         await this.logger.info(`Plugin started. Scheduler is running`);
     }
 

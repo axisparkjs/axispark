@@ -1,8 +1,10 @@
 import { ConsoleTransport, Logger, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
-import { Container, Injector } from '@axisparkjs/di';
+import { Container, Injector, ScopedContainerManager } from '@axisparkjs/di';
 import { AxiSparkContext } from './axispark-context';
 import { PluginRegistry } from '../plugin';
 import { NullScanner } from '../scanner';
+import { HealthEngine } from '../health';
+import { AXISPARK_CONFIG } from './axispark-config';
 
 describe('AxiSparkContext', () => {
     describe('constructor', () => {
@@ -25,11 +27,7 @@ describe('AxiSparkContext', () => {
         });
 
         it('should create an injector', () => {
-            expect(context.injector).toBeInstanceOf(Injector);
-        });
-
-        it('should create an engine', () => {
-            expect(context.engine).toBeDefined();
+            expect(context.container.resolve(Injector)).resolves.toBeInstanceOf(Injector);
         });
 
         it('should create a scanner', () => {
@@ -37,8 +35,9 @@ describe('AxiSparkContext', () => {
         });
 
         it('should create the default private configuration', () => {
-            expect(context.privateConfig).toMatchObject({
-                scanner: 'file-system'
+            expect(context.privateConfig).toEqual({
+                scanner: 'file-system',
+                wait: true
             });
         });
 
@@ -53,15 +52,35 @@ describe('AxiSparkContext', () => {
             expect(context.config.logTransports?.[0]).toBeInstanceOf(ConsoleTransport);
         });
 
+        it('should register configuration in the container', async () => {
+            expect(await context.container.resolve(AXISPARK_CONFIG))
+                .toBe(context.config);
+        });
+
         it('should register Logger in the container', async () => {
-            expect(await context.container.resolve(Logger)).toBe(context.logger);
+            expect(await context.container.resolve(Logger))
+                .toBe(context.logger);
         });
 
         it('should register Injector in the container', async () => {
-            expect(await context.container.resolve(Injector)).toBe(context.injector);
+            const injector = await context.container.resolve(Injector);
+
+            expect(injector).toBeInstanceOf(Injector);
         });
 
-        it('should override default configuration', () => {
+        it('should register ScopedContainerManager in the container', async () => {
+            const manager = await context.container.resolve(ScopedContainerManager);
+
+            expect(manager).toBeInstanceOf(ScopedContainerManager);
+        });
+
+        it('should register HealthEngine in the container', async () => {
+            const healthEngine = await context.container.resolve(HealthEngine);
+
+            expect(healthEngine).toBeInstanceOf(HealthEngine);
+        });
+
+        it('should override default configuration', async () => {
             const transport = new ConsoleTransport({
                 formatter: new SimpleFormatter(),
                 minLevel: LogLevel.Error
@@ -74,7 +93,10 @@ describe('AxiSparkContext', () => {
                     banner: false,
                     logTransports: [transport]
                 },
-                { wait: true, scanner: 'null' }
+                {
+                    wait: true,
+                    scanner: 'null'
+                }
             );
 
             expect(context.config).toEqual({
@@ -92,9 +114,22 @@ describe('AxiSparkContext', () => {
             expect(context.logger).toBeInstanceOf(Logger);
             expect(context.plugins).toBeInstanceOf(PluginRegistry);
             expect(context.container).toBeInstanceOf(Container);
-            expect(context.injector).toBeInstanceOf(Injector);
-            expect(context.engine).toBeDefined();
             expect(context.scanner).toBeInstanceOf(NullScanner);
+
+            expect(await context.container.resolve(AXISPARK_CONFIG))
+                .toBe(context.config);
+
+            expect(await context.container.resolve(Logger))
+                .toBe(context.logger);
+
+            expect(await context.container.resolve(Injector))
+                .toBeInstanceOf(Injector);
+
+            expect(await context.container.resolve(ScopedContainerManager))
+                .toBeInstanceOf(ScopedContainerManager);
+
+            expect(await context.container.resolve(HealthEngine))
+                .toBeInstanceOf(HealthEngine);
         });
     });
 });

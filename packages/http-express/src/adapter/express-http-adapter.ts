@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@axisparkjs/di';
-import { HTTP_OPTIONS, HttpAdapter, Route } from '@axisparkjs/http';
+import { HTTP_OPTIONS, HttpAdapter, RouteDefinition } from '@axisparkjs/http';
 import express, { Request, Response } from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
@@ -15,7 +15,7 @@ import { ExpressHttpSession } from '../types/express-http-session';
 export class ExpressHttpAdapter implements HttpAdapter {
     private readonly app = express();
     private server?: Server;
-    private readonly registeredRoutes: Route[] = [];
+    private readonly registeredRoutes: RouteDefinition[] = [];
 
     constructor(
         @Inject(HTTP_OPTIONS)
@@ -29,15 +29,15 @@ export class ExpressHttpAdapter implements HttpAdapter {
         if (this.options.cors) this.app.use(cors(this.options.corsOptions));
     }
 
-    getRegisteredRoutes(): readonly Route[] {
+    getRegisteredRoutes(): readonly RouteDefinition[] {
         return this.registeredRoutes;
     }
 
-    registerRoutes(routes: readonly Route[]): void {
+    registerRoutes(routes: readonly RouteDefinition[]): void {
         this.registeredRoutes.push(...routes);
         for (const route of routes) {
-            const { path, method } = route;
-            this.app[method](path, async (req, res) => {
+            const { path, httpMethod } = route;
+            this.app[httpMethod](path, async (req, res) => {
                 await route.handler(this.createContext(req, res));
             });
         }

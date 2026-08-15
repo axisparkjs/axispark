@@ -59,6 +59,8 @@ describe('FastifyHttpAdapter', () => {
         healthChecks: false,
         timeout: false,
         timeoutOptions: undefined,
+        version: false,
+        versionOptions: undefined,
         logErrors: false,
         logHttpErrors: false,
         logHttpRequests: false,
@@ -159,8 +161,8 @@ describe('FastifyHttpAdapter', () => {
 
             adapter.registerRoutes([
                 {
-                    controller: class {},
-                    method: HttpMethod.Get,
+                    target: class {},
+                    httpMethod: HttpMethod.Get,
                     path: '/users',
                     handler,
                     propertyKey: 'getUsers'
@@ -183,8 +185,8 @@ describe('FastifyHttpAdapter', () => {
 
             adapter.registerRoutes([
                 {
-                    controller: class {},
-                    method: HttpMethod.Get,
+                    target: class {},
+                    httpMethod: HttpMethod.Get,
                     path: '/',
                     handler,
                     propertyKey: 'test'
@@ -215,8 +217,8 @@ describe('FastifyHttpAdapter', () => {
 
             adapter.registerRoutes([
                 {
-                    controller: class {},
-                    method: HttpMethod.Get,
+                    target: class {},
+                    httpMethod: HttpMethod.Get,
                     path: '/',
                     handler,
                     propertyKey: 'test'
@@ -248,8 +250,8 @@ describe('FastifyHttpAdapter', () => {
 
             const routes = [
                 {
-                    controller: class {},
-                    method: HttpMethod.Get,
+                    target: class {},
+                    httpMethod: HttpMethod.Get,
                     path: '/users',
                     handler,
                     propertyKey: 'getUsers'

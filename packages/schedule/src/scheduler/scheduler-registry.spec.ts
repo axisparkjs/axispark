@@ -1,25 +1,19 @@
 import { SchedulerRegistry } from './scheduler-registry';
 import { SchedulerError } from '../errors/scheduler-error';
-import { Job, JobType } from '../jobs/job';
+import { JobDefinition, JobType } from '../jobs/job-definition';
 
 describe('SchedulerRegistry', () => {
     let registry: SchedulerRegistry;
-    let logger: any;
 
     beforeEach(() => {
-        logger = {
-            info: jest.fn(),
-            debug: jest.fn()
-        };
-
-        registry = new SchedulerRegistry(logger);
+        registry = new SchedulerRegistry();
     });
 
-    const createJob = (name: string, type: JobType = JobType.Interval): Job =>
+    const createJob = (name: string, type: JobType = JobType.Interval): JobDefinition =>
         ({
             name,
             type
-        }) as Job;
+        }) as JobDefinition;
 
     describe('registerJob', () => {
         it('should register a job', () => {
@@ -28,7 +22,6 @@ describe('SchedulerRegistry', () => {
             registry.registerJob(job);
 
             expect(registry.getJob('job')).toBe(job);
-            expect(logger.info).toHaveBeenCalledWith('Registered job job');
         });
 
         it('should throw when the job already exists', () => {
@@ -98,7 +91,6 @@ describe('SchedulerRegistry', () => {
             registry.removeJob('job');
 
             expect(registry.existsJob('job')).toBe(false);
-            expect(logger.debug).toHaveBeenCalledWith('Removed job job');
         });
 
         it('should remove a job instance', () => {
@@ -109,13 +101,10 @@ describe('SchedulerRegistry', () => {
             registry.removeJob(job);
 
             expect(registry.existsJob('job')).toBe(false);
-            expect(logger.debug).toHaveBeenCalledWith('Removed job job');
         });
 
         it('should not throw when removing a missing job', () => {
             expect(() => registry.removeJob('missing')).not.toThrow();
-
-            expect(logger.debug).toHaveBeenCalledWith('Removed job missing');
         });
     });
 });

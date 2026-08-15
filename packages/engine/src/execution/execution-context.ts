@@ -1,8 +1,9 @@
 import { ScopedContainer } from '@axisparkjs/di';
 import { ExecutionTransport } from './execution-transport';
+import { ExecutionHandler } from './execution-handler';
 
-export interface ExecutionContext {
+export interface ExecutionContext extends ExecutionHandler {
     error?: Error;
     transport: ExecutionTransport;
-    scope: ScopedContainer;
+    scopedContainer: ScopedContainer;
 }

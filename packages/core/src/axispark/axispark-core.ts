@@ -1,5 +1,5 @@
 import { Lifecycle } from '@axisparkjs/common';
-import { PluggableClass, PluginOptions } from '../plugin';
+import { PluginType, PluginOptions } from '../plugin';
 import { AxiSparkContext } from './axispark-context';
 import { Token } from '@axisparkjs/di';
 
@@ -32,7 +32,6 @@ export class AxiSparkCore implements Lifecycle {
         await this.axisparkContext.scanner.scan();
         this.axisparkContext.container.init();
         await this.axisparkContext.plugins.init(this.axisparkContext);
-        this.axisparkContext.engine.init();
         await this.axisparkContext.logger.info('App initialized');
     }
 
@@ -62,12 +61,12 @@ export class AxiSparkCore implements Lifecycle {
         await this.axisparkContext.logger.info('App destroyed');
     }
 
-    public use(plugin: PluggableClass, options?: PluginOptions): this {
+    public use(plugin: PluginType, options?: PluginOptions): this {
         this.axisparkContext.plugins.register(plugin, options);
         return this;
     }
 
-    public used(): readonly { type: PluggableClass; options?: PluginOptions }[] {
+    public used(): readonly { type: PluginType; options?: PluginOptions }[] {
         return this.axisparkContext.plugins.getAll().map((p) => ({ type: p.type, options: p.options }));
     }
 

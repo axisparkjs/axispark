@@ -1,10 +1,10 @@
-import { AxiSparkContext, Pluggable, Plugin } from '@axisparkjs/core';
+import { AxiSparkContext, Plugin } from '@axisparkjs/core';
 import { Logger } from '@axisparkjs/logger';
 import { Dependecy1, Dependecy2, Dependecy3, Dependecy3Impl, DEPENDENCY_3_TOKEN } from './classes';
-import { Inject, InjectionToken, Injector } from '@axisparkjs/di';
+import { Inject, Injectable, InjectionToken, Injector } from '@axisparkjs/di';
 
-@Plugin()
-export class InjectingBlood1Plugin extends Pluggable {
+@Injectable()
+export class InjectingBlood1Plugin extends Plugin {
     static readonly token_exposed = new InjectionToken('dep2-as-token');
 
     constructor(
@@ -29,8 +29,8 @@ export class InjectingBlood1Plugin extends Pluggable {
     }
 }
 
-@Plugin()
-export class InjectingBlood2Plugin extends Pluggable {
+@Injectable()
+export class InjectingBlood2Plugin extends Plugin {
     static readonly dependencies = [InjectingBlood1Plugin];
     static readonly token_exposed = new InjectionToken('dep2-as-token');
     public dep2FromPlugin!: Dependecy2;
@@ -48,8 +48,8 @@ export class InjectingBlood2Plugin extends Pluggable {
     }
 }
 
-@Plugin()
-export class InjectingBlood3Plugin extends Pluggable {
+@Injectable()
+export class InjectingBlood3Plugin extends Plugin {
     public dep1FromInjector!: Dependecy1;
     public dep3FromInjector!: Dependecy3;
 

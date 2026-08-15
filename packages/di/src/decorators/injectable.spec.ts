@@ -13,6 +13,6 @@ describe('Injectable', () => {
         class TestClass {}
 
         expect(defineSpy).toHaveBeenCalledWith(MetadataKeys.CONSTRUCTABLE, true, TestClass);
-        expect(defineSpy).toHaveBeenCalledWith(MetadataKeys.INJECTABLE, true, TestClass);
+        expect(defineSpy).toHaveBeenCalledWith(MetadataKeys.INJECTABLE, { target: TestClass }, TestClass);
     });
 });

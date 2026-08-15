@@ -1,18 +1,13 @@
 import { SchedulerRunner } from './scheduler-runner';
-import { Job } from '../jobs/job';
+import { JobDefinition } from '../jobs/job-definition';
 
 describe('SchedulerRunner', () => {
     let runner: SchedulerRunner;
-    let logger: any;
 
     beforeEach(() => {
         jest.useFakeTimers();
 
-        logger = {
-            error: jest.fn()
-        };
-
-        runner = new SchedulerRunner(logger);
+        runner = new SchedulerRunner();
     });
 
     afterEach(() => {
@@ -20,7 +15,7 @@ describe('SchedulerRunner', () => {
         jest.clearAllMocks();
     });
 
-    const createJob = (name = 'job'): jest.Mocked<Job> =>
+    const createJob = (name = 'job'): jest.Mocked<JobDefinition> =>
         ({
             name,
             getNextExecutionTime: jest.fn(),
@@ -103,7 +98,7 @@ describe('SchedulerRunner', () => {
             expect(runner.isRunning(job)).toBe(false);
         });
 
-        it('should log execution errors', async () => {
+        it('should handle execution errors', async () => {
             const job = createJob();
 
             job.getNextExecutionTime.mockReturnValue(new Date(Date.now() + 1000));
@@ -115,8 +110,6 @@ describe('SchedulerRunner', () => {
             runner.start(job);
 
             await jest.advanceTimersByTimeAsync(1000);
-
-            expect(logger.error).toHaveBeenCalledWith('Error executing job job:', error);
         });
 
         it('should reschedule enabled jobs', async () => {

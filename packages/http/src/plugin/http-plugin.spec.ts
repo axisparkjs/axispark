@@ -1,15 +1,45 @@
 import { PluginNotConfiguredError } from '@axisparkjs/core';
-import { Logger } from '@axisparkjs/logger';
-import { ClassRegistry, InjectableScope } from '@axisparkjs/di';
+import {
+    ClassRegistry,
+    InjectableScopes,
+    Injector
+} from '@axisparkjs/di';
 import { HttpPlugin } from './http-plugin';
 import { RouteGenerator } from '../routes/route-generator';
-import { HTTP_ADAPTER, HTTP_LOGGER, HTTP_OPTIONS } from '../di/tokens';
-import { LogErrorFilter, LogHttpErrorFilter } from '../filters';
-import { LogHttpRequestInterceptor, LogHttpResponseInterceptor } from '../interceptors';
+import {
+    HTTP_ADAPTER,
+    HTTP_LOGGER,
+    HTTP_OPTIONS
+} from '../di/tokens';
 import { HttpPluginOptions } from './http-plugin-options';
-import { HealthController } from '../controllers';
+import {
+    HealthController,
+    VersionGuard
+} from '../implementations';
+import {
+    LogErrorFilter,
+    LogHttpErrorFilter
+} from '../implementations/filters';
+import {
+    LogHttpRequestInterceptor,
+    LogHttpResponseInterceptor
+} from '../implementations';
+import {
+    HttpResultResolver,
+    HttpTimeoutProcessor,
+} from '../implementations';
+import {
+    ExecutionTransport,
+    ParameterGenerator,
+    ResultProcessor,
+    TimeoutGenerator,
+    TimeoutProcessor
+} from '@axisparkjs/engine';
+import { HttpParameter } from '../types';
+import { VersionProcessor, VersionType } from '../version';
 
 jest.mock('../routes/route-generator');
+
 jest.mock('@axisparkjs/di', () => ({
     ...jest.requireActual('@axisparkjs/di'),
     ClassRegistry: {
@@ -17,65 +47,121 @@ jest.mock('@axisparkjs/di', () => ({
     }
 }));
 
+jest.mock('@axisparkjs/engine', () => ({
+    ...jest.requireActual('@axisparkjs/engine'),
+    ResultProcessor: {
+        registerResult: jest.fn()
+    },
+    TimeoutProcessor: {
+        registerTimeout: jest.fn()
+    },
+    ParameterGenerator: {
+        registerParameter: jest.fn()
+    },
+    TimeoutGenerator: {
+        registerTimeout: jest.fn()
+    }
+}));
+
+jest.mock('../version', () => ({
+    VersionProcessor: {
+        registerVersion: jest.fn()
+    },
+    VersionType: {
+        Header: 'header',
+        MediaType: 'media-type',
+        Uri: 'uri'
+    }
+}));
+
 describe('HttpPlugin', () => {
     let plugin: HttpPlugin;
+    let logger: any;
+    let injector: jest.Mocked<Injector>;
+    let container: any;
+    let adapter: any;
+    let context: any;
 
-    const logger = {
-        child: jest.fn(),
-        info: jest.fn().mockResolvedValue(undefined),
-        debug: jest.fn().mockResolvedValue(undefined)
-    };
-
-    const adapter = {
-        registerRoutes: jest.fn().mockResolvedValue(undefined),
-        start: jest.fn().mockResolvedValue(undefined),
-        stop: jest.fn().mockResolvedValue(undefined),
-        initialize: jest.fn().mockResolvedValue(undefined)
-    };
-
-    const container = {
-        resolve: jest.fn(),
-        bind: jest.fn(),
-        unbind: jest.fn()
-    };
-
-    const context: any = {
-        container
-    };
+    const Adapter = class TestAdapter {};
 
     const options = {
-        adapter: class TestAdapter {},
+        adapter: Adapter,
         port: 3000,
         healthChecks: true,
         logHttpRequests: true,
         logHttpResponses: true,
         logHttpErrors: true,
-        logErrors: true
-    } as unknown as HttpPluginOptions;
+        logErrors: true,
+        version: true,
+        timeout: true,
+        timeoutOptions: {
+            time: 5000
+        }
+    } as HttpPluginOptions;
 
     const optionsWithoutComponents = {
-        adapter: class TestAdapter {},
+        adapter: Adapter,
         port: 3000
-    } as unknown as HttpPluginOptions;
+    } as HttpPluginOptions;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        plugin = new HttpPlugin();
+        logger = {
+            child: jest.fn(),
+            info: jest.fn().mockResolvedValue(undefined),
+            debug: jest.fn().mockResolvedValue(undefined)
+        };
 
         logger.child.mockReturnValue(logger);
 
-        container.resolve.mockImplementation((token) => {
-            if (token === Logger) return logger;
-            if (token === HTTP_ADAPTER) return adapter;
+        adapter = {
+            registerRoutes: jest.fn().mockResolvedValue(undefined),
+            start: jest.fn().mockResolvedValue(undefined),
+            stop: jest.fn().mockResolvedValue(undefined),
+            initialize: jest.fn().mockResolvedValue(undefined)
+        };
+
+        container = {
+            resolve: jest.fn(),
+            bind: jest.fn(),
+            unbind: jest.fn()
+        };
+
+        context = {
+            container
+        };
+
+        injector = {
+            get: jest.fn()
+        } as unknown as jest.Mocked<Injector>;
+
+        injector.get.mockImplementation(async (target: any) => {
+            if (target === RouteGenerator) {
+                return {
+                    generate: jest.fn().mockResolvedValue([])
+                };
+            }
+
+            return {};
         });
 
-        (RouteGenerator.generate as jest.Mock).mockReturnValue([]);
+        container.resolve.mockImplementation((token: any) => {
+            if (token === HTTP_ADAPTER) {
+                return adapter;
+            }
+
+            return undefined;
+        });
+
+        plugin = new HttpPlugin(logger, injector);
     });
 
     describe('onRegister', () => {
         it('should throw when options are not provided', async () => {
-            await expect(plugin.onRegister(context)).rejects.toBeInstanceOf(PluginNotConfiguredError);
+            await expect(
+                plugin.onRegister(context)
+            ).rejects.toBeInstanceOf(PluginNotConfiguredError);
         });
 
         it('should register container bindings', async () => {
@@ -89,7 +175,7 @@ describe('HttpPlugin', () => {
             expect(container.bind).toHaveBeenCalledWith({
                 token: HTTP_ADAPTER,
                 useClass: options.adapter,
-                scope: InjectableScope.Singleton
+                scope: InjectableScopes.Singleton
             });
 
             expect(container.bind).toHaveBeenCalledWith({
@@ -98,87 +184,152 @@ describe('HttpPlugin', () => {
             });
         });
 
+        it('should initialize the adapter', async () => {
+            await plugin.onRegister(context, options);
+
+            expect(adapter.initialize).toHaveBeenCalledTimes(1);
+        });
+
         it('should register generated routes', async () => {
             const routes = [
-                { method: 'get', path: '/users' },
-                { method: 'post', path: '/users' }
+                {
+                    target: class UsersController {},
+                    httpMethod: 'GET',
+                    path: '/users'
+                },
+                {
+                    target: class UsersController {},
+                    httpMethod: 'POST',
+                    path: '/users'
+                }
             ];
 
-            (RouteGenerator.generate as jest.Mock).mockReturnValue([
-                {
-                    controller: class UsersController {},
-                    routes
+            const generate = jest.fn().mockResolvedValue(routes);
+
+            injector.get.mockImplementation(async (target: any) => {
+                if (target === RouteGenerator) {
+                    return { generate };
                 }
-            ]);
+
+                return {};
+            });
 
             await plugin.onRegister(context, options);
 
+            expect(generate).toHaveBeenCalledTimes(1);
             expect(adapter.registerRoutes).toHaveBeenCalledWith(routes);
         });
 
         it('should log every registered route', async () => {
             class UsersController {}
 
-            (RouteGenerator.generate as jest.Mock).mockReturnValue([
+            const routes = [
                 {
-                    controller: UsersController,
-                    routes: [
-                        { method: 'get', path: '/users' },
-                        { method: 'post', path: '/users' }
-                    ]
+                    target: UsersController,
+                    httpMethod: 'GET',
+                    path: '/users'
+                },
+                {
+                    target: UsersController,
+                    httpMethod: 'POST',
+                    path: '/users'
                 }
-            ]);
+            ];
+
+            injector.get.mockImplementation(async (target: any) => {
+                if (target === RouteGenerator) {
+                    return {
+                        generate: jest.fn().mockResolvedValue(routes)
+                    };
+                }
+
+                return {};
+            });
 
             await plugin.onRegister(context, options);
 
-            expect(logger.debug).toHaveBeenCalledWith('Registered route GET /users for controller UsersController');
+            expect(logger.debug).toHaveBeenCalledWith(
+                'Registered route GET /users for controller UsersController'
+            );
 
-            expect(logger.debug).toHaveBeenCalledWith('Registered route POST /users for controller UsersController');
+            expect(logger.debug).toHaveBeenCalledWith(
+                'Registered route POST /users for controller UsersController'
+            );
         });
 
-        it('should log registered controller', async () => {
+        it('should log each controller only once', async () => {
             class UsersController {}
 
-            (RouteGenerator.generate as jest.Mock).mockReturnValue([
+            const routes = [
                 {
-                    controller: UsersController,
-                    routes: []
+                    target: UsersController,
+                    httpMethod: 'GET',
+                    path: '/users'
+                },
+                {
+                    target: UsersController,
+                    httpMethod: 'POST',
+                    path: '/users'
                 }
-            ]);
+            ];
+
+            injector.get.mockImplementation(async (target: any) => {
+                if (target === RouteGenerator) {
+                    return {
+                        generate: jest.fn().mockResolvedValue(routes)
+                    };
+                }
+
+                return {};
+            });
 
             await plugin.onRegister(context, options);
 
-            expect(logger.info).toHaveBeenCalledWith('Registered controller UsersController');
+            expect(logger.info).toHaveBeenCalledWith(
+                'Registered controller UsersController'
+            );
+
+            expect(
+                logger.info.mock.calls.filter(
+                    ([message]: [string]) =>
+                        message === 'Registered controller UsersController'
+                )
+            ).toHaveLength(1);
         });
 
-        it('should initialize and log plugin registration', async () => {
+        it('should log plugin registration', async () => {
             await plugin.onRegister(context, options);
 
-            expect(adapter.initialize).toHaveBeenCalled();
-            expect(logger.info).toHaveBeenCalledWith('Plugin registered');
+            expect(logger.info).toHaveBeenCalledWith(
+                'Plugin registered'
+            );
         });
 
-        it('should handle adapters without an initialize method', async () => {
+        it('should support adapters without initialize', async () => {
             const adapterWithoutInitialize = {
                 registerRoutes: jest.fn().mockResolvedValue(undefined),
                 start: jest.fn().mockResolvedValue(undefined),
                 stop: jest.fn().mockResolvedValue(undefined)
             };
 
-            container.resolve.mockImplementation((token) => {
-                if (token === Logger) return logger;
-                if (token === HTTP_ADAPTER) return adapterWithoutInitialize;
-            });
+            container.resolve.mockReturnValue(
+                adapterWithoutInitialize
+            );
 
             await plugin.onRegister(context, options);
 
-            expect(adapterWithoutInitialize.registerRoutes).toHaveBeenCalled();
-            expect(logger.info).toHaveBeenCalledWith('Plugin registered');
+            expect(
+                adapterWithoutInitialize.registerRoutes
+            ).toHaveBeenCalled();
+
+            expect(logger.info).toHaveBeenCalledWith(
+                'Plugin registered'
+            );
         });
     });
 
-    describe('configureComponents', () => {
-        it('should keep all components when enabled', async () => {
+    describe('configureImplementations', () => {
+        it('should keep all optional components when enabled', async () => {
             await plugin.onRegister(context, options);
 
             expect(ClassRegistry.remove).not.toHaveBeenCalled();
@@ -190,14 +341,275 @@ describe('HttpPlugin', () => {
             ['logHttpRequests', LogHttpRequestInterceptor],
             ['logHttpResponses', LogHttpResponseInterceptor],
             ['logHttpErrors', LogHttpErrorFilter],
-            ['logErrors', LogErrorFilter]
-        ])('should disable %s when set to false', async (_flag, target) => {
-            await plugin.onRegister(context, {
-                ...optionsWithoutComponents
+            ['logErrors', LogErrorFilter],
+            ['version', VersionGuard]
+        ])(
+            'should disable %s when it is not enabled',
+            async (_option, target) => {
+                await plugin.onRegister(
+                    context,
+                    optionsWithoutComponents
+                );
+
+                expect(ClassRegistry.remove).toHaveBeenCalledWith(
+                    target
+                );
+
+                expect(container.unbind).toHaveBeenCalledWith(
+                    target
+                );
+            }
+        );
+    });
+
+    describe('registerImplementations', () => {
+        beforeEach(() => {
+            injector.get.mockImplementation(async (target: any) => {
+                return { target };
+            });
+        });
+
+        it('should register the HTTP result resolver', async () => {
+            const resolver = {};
+
+            injector.get.mockImplementation(async (target: any) => {
+                if (target === HttpResultResolver) {
+                    return resolver;
+                }
+
+                return {
+                    generate: jest.fn().mockResolvedValue([])
+                };
             });
 
-            expect(ClassRegistry.remove).toHaveBeenCalledWith(target);
-            expect(container.unbind).toHaveBeenCalledWith(target);
+            await plugin.onRegister(context, options);
+
+            expect(injector.get).toHaveBeenCalledWith(
+                HttpResultResolver
+            );
+
+            expect(
+                ResultProcessor.registerResult
+            ).toHaveBeenCalledWith(
+                ExecutionTransport.Http,
+                resolver
+            );
+        });
+
+        it('should register timeout processing when timeout is enabled', async () => {
+            const timeoutProcessor = {};
+
+            injector.get.mockImplementation(async (target: any) => {
+                if (target === HttpTimeoutProcessor) {
+                    return timeoutProcessor;
+                }
+
+                return {
+                    generate: jest.fn().mockResolvedValue([])
+                };
+            });
+
+            await plugin.onRegister(context, options);
+
+            expect(injector.get).toHaveBeenCalledWith(
+                HttpTimeoutProcessor
+            );
+
+            expect(
+                TimeoutProcessor.registerTimeout
+            ).toHaveBeenCalledWith(
+                ExecutionTransport.Http,
+                timeoutProcessor
+            );
+
+            expect(
+                TimeoutGenerator.registerTimeout
+            ).toHaveBeenCalledWith(
+                ExecutionTransport.Http,
+                5000
+            );
+        });
+
+        it('should register timeout processing without time', async () => {
+            const timeoutProcessor = {};
+
+            injector.get.mockImplementation(async (target: any) => {
+                if (target === HttpTimeoutProcessor) {
+                    return timeoutProcessor;
+                }
+
+                return {
+                    generate: jest.fn().mockResolvedValue([])
+                };
+            });
+
+            await plugin.onRegister(context, {
+                ...options,
+                timeoutOptions: undefined
+            });
+
+            expect(injector.get).toHaveBeenCalledWith(
+                HttpTimeoutProcessor
+            );
+
+            expect(
+                TimeoutProcessor.registerTimeout
+            ).toHaveBeenCalledWith(
+                ExecutionTransport.Http,
+                timeoutProcessor
+            );
+
+            expect(
+                TimeoutGenerator.registerTimeout
+            ).toHaveBeenCalledWith(
+                ExecutionTransport.Http,
+                undefined
+            );
+        });
+
+        it('should not register timeout when timeout is disabled', async () => {
+            injector.get.mockResolvedValue({
+                generate: jest.fn().mockResolvedValue([])
+            });
+
+            await plugin.onRegister(
+                context,
+                {
+                    ...options,
+                    timeout: false
+                }
+            );
+
+            expect(
+                TimeoutProcessor.registerTimeout
+            ).not.toHaveBeenCalled();
+
+            expect(
+                TimeoutGenerator.registerTimeout
+            ).not.toHaveBeenCalled();
+        });
+
+        it('should register all HTTP parameter resolvers', async () => {
+            injector.get.mockResolvedValue({
+                generate: jest.fn().mockResolvedValue([])
+            });
+
+            await plugin.onRegister(context, options);
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledWith(
+                HttpParameter.Request,
+                expect.anything()
+            );
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledWith(
+                HttpParameter.Response,
+                expect.anything()
+            );
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledWith(
+                HttpParameter.Body,
+                expect.anything()
+            );
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledWith(
+                HttpParameter.Param,
+                expect.anything()
+            );
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledWith(
+                HttpParameter.Query,
+                expect.anything()
+            );
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledWith(
+                HttpParameter.Header,
+                expect.anything()
+            );
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledWith(
+                HttpParameter.Ip,
+                expect.anything()
+            );
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledWith(
+                HttpParameter.Session,
+                expect.anything()
+            );
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledWith(
+                HttpParameter.Cookie,
+                expect.anything()
+            );
+
+            expect(
+                ParameterGenerator.registerParameter
+            ).toHaveBeenCalledTimes(9);
+        });
+
+        it('should register version resolvers when version is enabled', async () => {
+            injector.get.mockResolvedValue({
+                generate: jest.fn().mockResolvedValue([])
+            });
+
+            await plugin.onRegister(context, options);
+
+            expect(
+                VersionProcessor.registerVersion
+            ).toHaveBeenCalledWith(
+                VersionType.Header,
+                expect.anything()
+            );
+
+            expect(
+                VersionProcessor.registerVersion
+            ).toHaveBeenCalledWith(
+                VersionType.MediaType,
+                expect.anything()
+            );
+
+            expect(
+                VersionProcessor.registerVersion
+            ).toHaveBeenCalledWith(
+                VersionType.Uri,
+                expect.anything()
+            );
+
+            expect(
+                VersionProcessor.registerVersion
+            ).toHaveBeenCalledTimes(3);
+        });
+
+        it('should not register version resolvers when version is disabled', async () => {
+            injector.get.mockResolvedValue({
+                generate: jest.fn().mockResolvedValue([])
+            });
+            
+            await plugin.onRegister(context, {
+                ...options,
+                version: false
+            });
+
+            expect(
+                VersionProcessor.registerVersion
+            ).not.toHaveBeenCalled();
         });
     });
 
@@ -206,16 +618,18 @@ describe('HttpPlugin', () => {
             await plugin.onRegister(context, options);
         });
 
-        it('should start adapter', async () => {
+        it('should start the adapter', async () => {
             await plugin.onStart();
 
-            expect(adapter.start).toHaveBeenCalled();
+            expect(adapter.start).toHaveBeenCalledTimes(1);
         });
 
-        it('should log start message', async () => {
+        it('should log the start message', async () => {
             await plugin.onStart();
 
-            expect(logger.info).toHaveBeenCalledWith('Plugin started. Listening on port 3000');
+            expect(logger.info).toHaveBeenCalledWith(
+                'Plugin started. Listening on port 3000'
+            );
         });
     });
 
@@ -224,16 +638,18 @@ describe('HttpPlugin', () => {
             await plugin.onRegister(context, options);
         });
 
-        it('should stop adapter', async () => {
+        it('should stop the adapter', async () => {
             await plugin.onStop();
 
-            expect(adapter.stop).toHaveBeenCalled();
+            expect(adapter.stop).toHaveBeenCalledTimes(1);
         });
 
-        it('should log stop message', async () => {
+        it('should log the stop message', async () => {
             await plugin.onStop();
 
-            expect(logger.info).toHaveBeenCalledWith('Plugin stopped');
+            expect(logger.info).toHaveBeenCalledWith(
+                'Plugin stopped'
+            );
         });
     });
 });

@@ -1,7 +1,8 @@
+import { ClassType } from '@axisparkjs/common';
 import { AxiSparkCore } from '@axisparkjs/core';
-import { Constructor, Provider } from '@axisparkjs/di';
+import { Provider } from '@axisparkjs/di';
 
 export interface AxiSparkTestConfig {
-    providers?: (Provider | Constructor)[];
+    providers?: (Provider | ClassType)[];
     app?: AxiSparkCore;
 }

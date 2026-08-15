@@ -1,5 +1,5 @@
 import { Logger } from '@axisparkjs/logger';
-import { Cron, Timeout, CronExpression, Scheduler, SchedulerService, Interval, DateSchedule, IntervalJob } from '@axisparkjs/schedule';
+import { Cron, Timeout, CronExpression, Scheduler, SchedulerService, Interval, DateSchedule, IntervalJobDefinition } from '@axisparkjs/schedule';
 
 @Scheduler()
 export class SchedulerExample {
@@ -13,22 +13,22 @@ export class SchedulerExample {
         await this.logger.trace('Cron job executed');
     }
 
-    @Cron({ cronExpression: '*/2 * * * * *', name: 'every2SecondsJob', timeZone: 'UTC' })
+    @Cron({ value: '*/2 * * * * *', name: 'every2SecondsJob', timeZone: 'UTC' })
     async every2SecondsJob() {
         await this.logger.trace('Every 2 seconds job executed');
     }
 
-    @Cron({ cronExpression: '*/5 * * * * *', name: 'every5SecondsJob', disabled: true })
+    @Cron({ value: '*/5 * * * * *', name: 'every5SecondsJob', disabled: true })
     async every5SecondsJob() {
         await this.logger.trace('Every 5 seconds job executed');
     }
 
-    @Interval({ interval: 3000, name: 'every3SecondsIntervalJob' })
+    @Interval({ value: 3000, name: 'every3SecondsIntervalJob' })
     async every3SecondsIntervalJob() {
         await this.logger.trace('Every 3 seconds interval job executed');
     }
 
-    @Interval({ interval: 7000, name: 'every7SecondsIntervalJob' })
+    @Interval({ value: 7000, name: 'every7SecondsIntervalJob' })
     async every7SecondsIntervalJob() {
         await this.logger.trace('Every 7 seconds interval job executed');
     }
@@ -37,7 +37,7 @@ export class SchedulerExample {
     async dateJob() {
         await this.logger.trace('Date job executed');
         this.schedulerService.startJob(
-            new IntervalJob('everySecondIntervalJob', 1000, async () => {
+            new IntervalJobDefinition('everySecondIntervalJob', 1000, async () => {
                 await this.logger.trace('Every second interval job executed');
             })
         );

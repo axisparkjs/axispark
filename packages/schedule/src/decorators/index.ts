@@ -1,2 +1,2 @@
 export * from './scheduler';
-export * from './job-methods';
+export * from './job';

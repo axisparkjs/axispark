@@ -1,201 +1,646 @@
+import { ResultProcessor } from '../result';
+import { TimeoutDefinition, TimeoutProcessor } from '../timeout';
+import { ExecutionContext } from './execution-context';
 import { ExecutionEngine } from './execution-engine';
-import { ExecutionStepsGenerator } from '../execution-steps/execution-steps-generator';
-import { ExecutionInvoker } from './execution-invoker';
-import { ExecutionTransport } from './execution-transport';
-import { ExecutionStepType } from '../execution-steps/execution-step-type';
-import { ExecutionStepScope } from '../execution-steps/execution-step-scope';
-
-jest.mock('../execution-steps/execution-steps-generator', () => ({
-    ExecutionStepsGenerator: {
-        init: jest.fn(),
-        generate: jest.fn()
-    }
-}));
-
-jest.mock('./execution-invoker', () => ({
-    ExecutionInvoker: {
-        invoke: jest.fn()
-    }
-}));
+import { HandlerInvoker } from './handler-invoker';
+import { ExecutionPlanner } from './execution-planner';
 
 describe('ExecutionEngine', () => {
     let engine: ExecutionEngine;
 
-    const handler = {
-        target: class TestController {},
-        method: 'execute'
-    };
+    let planGenerator: jest.Mocked<ExecutionPlanner>;
+    let handlerInvoker: jest.Mocked<HandlerInvoker>;
+    let timeoutProcessor: jest.Mocked<TimeoutProcessor>;
+    let resultProcessor: jest.Mocked<ResultProcessor>;
 
-    const context: any = {
-        transport: ExecutionTransport.All
-    };
-
-    const core: any = {
-        resultProcessor: {
-            process: jest.fn()
-        }
-    };
+    let context: ExecutionContext;
 
     beforeEach(() => {
-        jest.clearAllMocks();
-        engine = new ExecutionEngine();
+        jest.useRealTimers();
+
+        planGenerator = {
+            plan: jest.fn()
+        } as unknown as jest.Mocked<ExecutionPlanner>;
+
+        handlerInvoker = {
+            invoke: jest.fn()
+        } as unknown as jest.Mocked<HandlerInvoker>;
+
+        timeoutProcessor = {
+            process: jest.fn()
+        } as unknown as jest.Mocked<TimeoutProcessor>;
+
+        resultProcessor = {
+            process: jest.fn()
+        } as unknown as jest.Mocked<ResultProcessor>;
+
+        engine = new ExecutionEngine(planGenerator, handlerInvoker, timeoutProcessor, resultProcessor);
+
+        context = {
+            target: class Controller {},
+            propertyKey: 'execute'
+        } as ExecutionContext;
     });
 
-    describe('init', () => {
-        it('should initialize execution steps generator', () => {
-            engine.init();
-
-            expect(ExecutionStepsGenerator.init).toHaveBeenCalledTimes(1);
-        });
+    afterEach(() => {
+        jest.useRealTimers();
     });
 
     describe('execute', () => {
-        it('should generate execution plan the first time', async () => {
-            (ExecutionStepsGenerator.generate as jest.Mock).mockReturnValue([]);
-            (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(undefined);
+        it('should generate the execution plan', async () => {
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: []
+            };
 
-            await engine.execute(context, handler, core);
+            planGenerator.plan.mockResolvedValue(plan as any);
+            handlerInvoker.invoke.mockResolvedValue('result');
 
-            expect(ExecutionStepsGenerator.generate).toHaveBeenCalledTimes(1);
-            expect(ExecutionInvoker.invoke).toHaveBeenCalledTimes(1);
+            await engine.execute(context);
+
+            expect(planGenerator.plan).toHaveBeenCalledTimes(1);
+            expect(planGenerator.plan).toHaveBeenCalledWith(context);
         });
 
-        it('should reuse cached execution plan', async () => {
-            (ExecutionStepsGenerator.generate as jest.Mock).mockReturnValue([]);
-            (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(undefined);
+        it('should invoke before steps in order', async () => {
+            const before1 = {};
+            const before2 = {};
+            const executionContext = {};
 
-            await engine.execute(context, handler, core);
-            await engine.execute(context, handler, core);
+            const plan = {
+                before: [before1, before2],
+                context: executionContext,
+                catch: [],
+                after: []
+            };
 
-            expect(ExecutionStepsGenerator.generate).toHaveBeenCalledTimes(1);
-            expect(ExecutionInvoker.invoke).toHaveBeenCalledTimes(2);
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockResolvedValueOnce(undefined).mockResolvedValueOnce(undefined).mockResolvedValueOnce('result');
+
+            await engine.execute(context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(1, before1, context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, before2, context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(3, executionContext, context);
         });
 
-        it('should process execution result', async () => {
-            (ExecutionStepsGenerator.generate as jest.Mock).mockReturnValue([]);
+        it('should invoke the main execution context after before steps', async () => {
+            const before = {};
+            const executionContext = {};
 
-            const result = 'OK';
+            const plan = {
+                before: [before],
+                context: executionContext,
+                catch: [],
+                after: []
+            };
 
-            (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(result);
+            planGenerator.plan.mockResolvedValue(plan as any);
 
-            await engine.execute(context, handler, core);
+            handlerInvoker.invoke.mockResolvedValueOnce(undefined).mockResolvedValueOnce('result');
 
-            expect(core.resultProcessor.process).toHaveBeenCalledWith(context, handler, result);
+            await engine.execute(context);
+
+            expect(handlerInvoker.invoke).toHaveBeenCalledTimes(2);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, executionContext, context);
         });
 
-        it('should only include steps matching current transport', async () => {
-            (ExecutionStepsGenerator.generate as jest.Mock).mockReturnValue([
-                {
-                    target: class {},
-                    propertyKey: 'middleware',
-                    global: true,
-                    priority: 0,
-                    transport: ExecutionTransport.Http,
-                    type: ExecutionStepType.Middleware
-                },
-                {
-                    target: class {},
-                    propertyKey: 'guard',
-                    global: true,
-                    priority: 0,
-                    transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Guard
-                },
-                {
-                    target: class {},
-                    propertyKey: 'filter',
-                    global: true,
-                    priority: 0,
-                    transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Filter
-                }
-            ]);
+        it('should process the result returned by the main handler', async () => {
+            const result = {
+                value: 'test'
+            };
 
-            (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(undefined);
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: []
+            };
 
-            await engine.execute(
-                {
-                    transport: ExecutionTransport.Http
-                } as any,
-                handler,
-                core
+            planGenerator.plan.mockResolvedValue(plan as any);
+            handlerInvoker.invoke.mockResolvedValue(result);
+
+            await engine.execute(context);
+
+            expect(resultProcessor.process).toHaveBeenCalledTimes(1);
+            expect(resultProcessor.process).toHaveBeenCalledWith(result, context);
+        });
+
+        it('should execute after steps after successful execution', async () => {
+            const after1 = {};
+            const after2 = {};
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [after1, after2]
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockResolvedValueOnce('result').mockResolvedValueOnce(undefined).mockResolvedValueOnce(undefined);
+
+            await engine.execute(context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, after1, context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(3, after2, context);
+        });
+
+        it('should execute after steps after an error', async () => {
+            const error = new Error('Execution failed');
+            const after = {};
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [after]
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockRejectedValueOnce(error).mockResolvedValueOnce(undefined);
+
+            await expect(engine.execute(context)).resolves.toBeUndefined();
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, after, context);
+        });
+
+        it('should set context.error when execution throws', async () => {
+            const error = new Error('Execution failed');
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: []
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+            handlerInvoker.invoke.mockRejectedValue(error);
+
+            await expect(engine.execute(context)).resolves.toBeUndefined();
+
+            expect(context.error).toBe(error);
+        });
+
+        it('should invoke a catch step when it accepts the error', async () => {
+            const error = new TypeError('Execution failed');
+
+            const catchStep = {
+                acceptedErrors: [TypeError]
+            };
+
+            const catchResult = 'handled';
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [catchStep],
+                after: []
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockRejectedValueOnce(error).mockResolvedValueOnce(catchResult);
+
+            await engine.execute(context);
+
+            expect(context.error).toBe(error);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, catchStep, context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith(catchResult, context);
+        });
+
+        it('should not invoke a catch step when it does not accept the error', async () => {
+            const error = new TypeError('Execution failed');
+
+            const catchStep = {
+                acceptedErrors: [RangeError]
+            };
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [catchStep],
+                after: []
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+            handlerInvoker.invoke.mockRejectedValue(error);
+
+            await expect(engine.execute(context)).resolves.toBeUndefined();
+
+            expect(handlerInvoker.invoke).toHaveBeenCalledTimes(1);
+            expect(resultProcessor.process).toHaveBeenCalledWith(undefined, context);
+        });
+
+        it('should try multiple catch steps until one accepts the error', async () => {
+            const error = new TypeError('Execution failed');
+
+            const firstCatch = {
+                acceptedErrors: [RangeError]
+            };
+
+            const secondCatch = {
+                acceptedErrors: [TypeError]
+            };
+
+            const handledResult = 'handled';
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [firstCatch, secondCatch],
+                after: []
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockRejectedValueOnce(error).mockResolvedValueOnce(handledResult);
+
+            await engine.execute(context);
+
+            expect(handlerInvoker.invoke).toHaveBeenCalledTimes(2);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, secondCatch, context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith(handledResult, context);
+        });
+
+        it('should continue checking catch steps when an accepted catch returns undefined', async () => {
+            const error = new TypeError('Execution failed');
+
+            const firstCatch = {
+                acceptedErrors: [TypeError]
+            };
+
+            const secondCatch = {
+                acceptedErrors: [TypeError]
+            };
+
+            const result = 'handled';
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [firstCatch, secondCatch],
+                after: []
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockRejectedValueOnce(error).mockResolvedValueOnce(undefined).mockResolvedValueOnce(result);
+
+            await engine.execute(context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, firstCatch, context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(3, secondCatch, context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith(result, context);
+        });
+
+        it('should stop checking catch steps after a catch returns a result', async () => {
+            const error = new TypeError('Execution failed');
+
+            const firstCatch = {
+                acceptedErrors: [TypeError]
+            };
+
+            const secondCatch = {
+                acceptedErrors: [TypeError],
+                differentProperty: true // Just to differentiate it from the first catch
+            };
+
+            const result = 'handled';
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [firstCatch, secondCatch],
+                after: []
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockRejectedValueOnce(error).mockResolvedValueOnce(result);
+
+            await engine.execute(context);
+
+            expect(handlerInvoker.invoke).toHaveBeenCalledTimes(2);
+
+            expect(handlerInvoker.invoke).not.toHaveBeenCalledWith(secondCatch, context);
+        });
+
+        it('should process undefined when no handler result is returned', async () => {
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: []
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+            handlerInvoker.invoke.mockResolvedValue(undefined);
+
+            await engine.execute(context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith(undefined, context);
+        });
+    });
+
+    describe('timeout', () => {
+        it('should not invoke the timeout processor when there is no timeout', async () => {
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [],
+                timeout: undefined
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+            handlerInvoker.invoke.mockResolvedValue('result');
+
+            await engine.execute(context);
+
+            expect(timeoutProcessor.process).not.toHaveBeenCalled();
+        });
+
+        it('should not invoke the timeout processor before the timeout expires', async () => {
+            jest.useFakeTimers();
+
+            const timeout = new TimeoutDefinition(1000);
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [],
+                timeout
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            // La ejecución principal termina antes del timeout.
+            handlerInvoker.invoke.mockResolvedValue('result');
+
+            const execution = engine.execute(context);
+
+            await Promise.resolve();
+
+            expect(timeoutProcessor.process).not.toHaveBeenCalled();
+
+            await execution;
+
+            expect(timeoutProcessor.process).not.toHaveBeenCalled();
+
+            jest.runOnlyPendingTimers();
+        });
+
+        it('should invoke the timeout processor after the configured timeout', async () => {
+            jest.useFakeTimers();
+
+            const timeout = new TimeoutDefinition(1000);
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [],
+                timeout
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            // La ejecución principal no termina antes del timeout.
+            handlerInvoker.invoke.mockImplementation(
+                () =>
+                    new Promise(() => {
+                        // intentionally pending
+                    })
             );
 
-            const plan = (ExecutionInvoker.invoke as jest.Mock).mock.calls[0][2];
+            timeoutProcessor.process.mockResolvedValue(undefined);
 
-            expect(plan.before).toHaveLength(2);
+            engine.execute(context);
+
+            await Promise.resolve();
+
+            expect(timeoutProcessor.process).not.toHaveBeenCalled();
+
+            jest.advanceTimersByTime(999);
+            await Promise.resolve();
+
+            expect(timeoutProcessor.process).not.toHaveBeenCalled();
+
+            jest.advanceTimersByTime(1);
+            await Promise.resolve();
+
+            expect(timeoutProcessor.process).toHaveBeenCalledTimes(1);
+            expect(timeoutProcessor.process).toHaveBeenCalledWith(timeout, context);
         });
 
-        it('should order after interceptors in reverse order', async () => {
-            class A {}
-            class B {}
+        it('should wait exactly the configured timeout before processing it', async () => {
+            jest.useFakeTimers();
 
-            (ExecutionStepsGenerator.generate as jest.Mock).mockReturnValue([
-                {
-                    target: A,
-                    propertyKey: 'a',
-                    global: false,
-                    priority: 0,
-                    transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Interceptor,
-                    scope: ExecutionStepScope.After
-                },
-                {
-                    target: B,
-                    propertyKey: 'b',
-                    global: false,
-                    priority: 0,
-                    transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Interceptor,
-                    scope: ExecutionStepScope.After
-                }
-            ]);
+            const timeout = new TimeoutDefinition(5000);
 
-            (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(undefined);
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [],
+                timeout
+            };
 
-            await engine.execute(context, handler, core);
+            planGenerator.plan.mockResolvedValue(plan as any);
 
-            const plan = (ExecutionInvoker.invoke as jest.Mock).mock.calls[0][2];
+            handlerInvoker.invoke.mockImplementation(
+                () =>
+                    new Promise(() => {
+                        // intentionally pending
+                    })
+            );
 
-            expect(plan.after).toEqual([
-                { target: B, method: 'b' },
-                { target: A, method: 'a' }
-            ]);
+            timeoutProcessor.process.mockResolvedValue(undefined);
+
+            const execution = engine.execute(context);
+
+            await Promise.resolve();
+
+            jest.advanceTimersByTime(4999);
+            await Promise.resolve();
+
+            expect(timeoutProcessor.process).not.toHaveBeenCalled();
+
+            jest.advanceTimersByTime(1);
+            await Promise.resolve();
+
+            expect(timeoutProcessor.process).toHaveBeenCalledWith(timeout, context);
+
+            // La ejecución sigue pendiente porque el handler nunca termina.
+            void execution;
         });
 
-        it('should order global middleware by descending priority', async () => {
-            class High {}
-            class Low {}
+        it('should use the execution result when execution finishes before timeout', async () => {
+            jest.useFakeTimers();
 
-            (ExecutionStepsGenerator.generate as jest.Mock).mockReturnValue([
-                {
-                    target: Low,
-                    propertyKey: 'low',
-                    global: true,
-                    priority: 1,
-                    transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Middleware
-                },
-                {
-                    target: High,
-                    propertyKey: 'high',
-                    global: true,
-                    priority: 10,
-                    transport: ExecutionTransport.All,
-                    type: ExecutionStepType.Middleware
-                }
-            ]);
+            const timeout = new TimeoutDefinition(1000);
+            const result = 'execution-result';
 
-            (ExecutionInvoker.invoke as jest.Mock).mockResolvedValue(undefined);
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [],
+                timeout
+            };
 
-            await engine.execute(context, handler, core);
+            planGenerator.plan.mockResolvedValue(plan as any);
+            handlerInvoker.invoke.mockResolvedValue(result);
 
-            const plan = (ExecutionInvoker.invoke as jest.Mock).mock.calls[0][2];
+            await engine.execute(context);
 
-            expect(plan.before).toEqual([
-                { target: High, method: 'high' },
-                { target: Low, method: 'low' }
-            ]);
+            expect(resultProcessor.process).toHaveBeenCalledWith(result, context);
+
+            expect(timeoutProcessor.process).not.toHaveBeenCalled();
+        });
+
+        it('should process undefined when the timeout wins the race', async () => {
+            jest.useFakeTimers();
+
+            const timeout = new TimeoutDefinition(1000);
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [],
+                timeout
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockImplementation(
+                () =>
+                    new Promise(() => {
+                        // never resolves
+                    })
+            );
+
+            timeoutProcessor.process.mockResolvedValue(undefined);
+
+            const execution = engine.execute(context);
+
+            await Promise.resolve();
+
+            jest.advanceTimersByTime(1000);
+
+            await execution;
+
+            expect(timeoutProcessor.process).toHaveBeenCalledWith(timeout, context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith(undefined, context);
+        });
+
+        it('should execute after steps when the timeout wins', async () => {
+            jest.useFakeTimers();
+
+            const timeout = new TimeoutDefinition(1000);
+            const after = {};
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [after],
+                timeout
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke
+                .mockImplementationOnce(
+                    () =>
+                        new Promise(() => {
+                            // never resolves
+                        })
+                )
+                .mockResolvedValueOnce(undefined);
+
+            timeoutProcessor.process.mockResolvedValue(undefined);
+
+            const execution = engine.execute(context);
+
+            await Promise.resolve();
+
+            jest.advanceTimersByTime(1000);
+
+            await execution;
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, after, context);
+
+            expect(timeoutProcessor.process).toHaveBeenCalledWith(timeout, context);
+        });
+    });
+
+    describe('errors', () => {
+        it('should propagate an error from plan generation', async () => {
+            const error = new Error('Plan generation failed');
+
+            planGenerator.plan.mockRejectedValue(error);
+
+            await expect(engine.execute(context)).rejects.toBe(error);
+
+            expect(handlerInvoker.invoke).not.toHaveBeenCalled();
+            expect(resultProcessor.process).not.toHaveBeenCalled();
+        });
+
+        it('should propagate an error from the result processor', async () => {
+            const error = new Error('Result processing failed');
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: []
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+            handlerInvoker.invoke.mockResolvedValue('result');
+            resultProcessor.process.mockRejectedValue(error);
+
+            await expect(engine.execute(context)).rejects.toBe(error);
+        });
+
+        it('should propagate an error thrown by an after step', async () => {
+            const error = new Error('After step failed');
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: [{}]
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockResolvedValueOnce('result').mockRejectedValueOnce(error);
+
+            await expect(engine.execute(context)).rejects.toBe(error);
+
+            expect(resultProcessor.process).not.toHaveBeenCalled();
         });
     });
 });

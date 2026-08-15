@@ -33,25 +33,6 @@ describe('Scheduler', () => {
         @Scheduler()
         class TestScheduler {}
 
-        expect(defineSpy).toHaveBeenCalledWith(MetadataKeys.SCHEDULER, true, TestScheduler);
-    });
-
-    it('should invoke Constructable before defining metadata', () => {
-        const calls: string[] = [];
-
-        (Constructable as jest.Mock).mockReturnValue(() => {
-            calls.push('constructable');
-        });
-
-        jest.spyOn(Metadata, 'define').mockImplementation(() => {
-            calls.push('metadata');
-        });
-
-        @Scheduler()
-        class TestScheduler {}
-
-        expect(calls).toEqual(['constructable', 'metadata']);
-        expect(Constructable).toHaveBeenCalledWith(MetadataKeys.INJECTABLE);
-        expect(TestScheduler).toBeDefined();
+        expect(defineSpy).toHaveBeenCalledWith(MetadataKeys.SCHEDULER, { target: TestScheduler }, TestScheduler);
     });
 });

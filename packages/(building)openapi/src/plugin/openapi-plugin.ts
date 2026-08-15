@@ -1,4 +1,4 @@
-import { AxiSparkContext, Plugin, Pluggable } from '@axisparkjs/core';
+import { AxiSparkContext, Plugin, Plugin } from '@axisparkjs/core';
 import { Logger } from '@axisparkjs/logger';
 import { OpenApiPluginOptions } from './openapi-plugin-options';
 import { OPENAPI_LOGGER, OPENAPI_OPTIONS } from '../di';
@@ -12,11 +12,11 @@ import { HttpAdapter } from '@axisparkjs/http';
 import { HTTP_ADAPTER } from '@axisparkjs/http';
 import { Route } from '@axisparkjs/http';
 import { HttpMethod } from '@axisparkjs/http';
-import { Constructor } from '@axisparkjs/di';
+import { ClassType } from '@axisparkjs/di';
 import { createConfig, lintFromString } from '@redocly/openapi-core';
 
 @Plugin()
-export class OpenApiPlugin extends Pluggable {
+export class OpenApiPlugin extends Plugin {
     static override readonly dependencies = [HttpPlugin];
     static readonly openApiJsonControllerName = 'OpenApi-Json';
     static readonly openApiYamlControllerName = 'OpenApi-Yaml';
@@ -83,7 +83,7 @@ export class OpenApiPlugin extends Pluggable {
         const routes: Route[] = [];
         if (this.options.exposeJson)
             routes.push({
-                controller: { name: OpenApiPlugin.openApiJsonControllerName } as unknown as Constructor,
+                controller: { name: OpenApiPlugin.openApiJsonControllerName } as unknown as ClassType,
                 propertyKey: 'getOpenApiJson',
                 path: this.urls.jsonUrl,
                 method: HttpMethod.Get,
@@ -94,7 +94,7 @@ export class OpenApiPlugin extends Pluggable {
 
         if (this.options.exposeYaml)
             routes.push({
-                controller: { name: OpenApiPlugin.openApiYamlControllerName } as unknown as Constructor,
+                controller: { name: OpenApiPlugin.openApiYamlControllerName } as unknown as ClassType,
                 propertyKey: 'getOpenApiYaml',
                 path: this.urls.yamlUrl,
                 method: HttpMethod.Get,

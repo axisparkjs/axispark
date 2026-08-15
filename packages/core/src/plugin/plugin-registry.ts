@@ -1,47 +1,40 @@
 import { Metadata, MetadataKeys, Lifecycle } from '@axisparkjs/common';
-import { DecoratorNotIncludedError } from '@axisparkjs/di';
+import { DecoratorNotIncludedError, Injectable } from '@axisparkjs/di';
 import { AxiSparkContext } from '../axispark';
 import { PluginAlreadyRegisteredError } from './plugin-already-registered-error';
 import { PluginConfigMismatchError } from './plugin-config-mismatch-error';
 import { PluginCircularDependencyError } from './plugin-circular-dependency-error';
 import { PluginDependencyNotIncludedError } from './plugin-dependency-not-included-error';
-import { Pluggable, PluginLifecycle, PluggableClass, PluginOptions } from './pluggable';
-import { Plugin } from '../decorators';
+import { Plugin, PluginLifecycle, PluginType, PluginOptions } from './plugin';
 
 interface RegisteredPlugin {
-    readonly type: PluggableClass;
+    readonly type: PluginType;
     readonly options?: PluginOptions;
 }
 
 export class PluginRegistry implements Lifecycle {
     private readonly plugins: RegisteredPlugin[] = [];
     private readonly executionOrder: RegisteredPlugin[] = [];
-    private readonly instances = new Map<PluggableClass, Pluggable>();
+    private readonly instances = new Map<PluginType, Plugin>();
 
-    register(plugin: PluggableClass, options?: PluginOptions): void {
-        if (!Metadata.has(MetadataKeys.PLUGIN, plugin)) throw new DecoratorNotIncludedError(plugin.name, Plugin.name);
+    register(plugin: PluginType, options?: PluginOptions): void {
+        if (!Metadata.has(MetadataKeys.INJECTABLE, plugin)) throw new DecoratorNotIncludedError(plugin.name, Injectable.name);
         if (this.plugins.some((p) => p.type === plugin)) throw new PluginAlreadyRegisteredError(plugin.name);
         if (options && plugin !== options.plugin) throw new PluginConfigMismatchError(plugin.name);
 
         this.plugins.push({ type: plugin, options });
     }
 
-    getAll(): readonly { type: PluggableClass; options?: PluginOptions; instance?: Pluggable }[] {
+    getAll(): readonly { type: PluginType; options?: PluginOptions; instance?: Plugin }[] {
         return this.plugins.map((p) => ({ type: p.type, options: p.options, instance: this.instances.get(p.type) }));
-    }
-
-    private async instantiate(context: AxiSparkContext): Promise<void> {
-        for (const plugin of this.plugins) {
-            this.instances.set(plugin.type, await context.container.resolve(plugin.type));
-        }
     }
 
     /* Kahn's algorithm */
     private resolveExecutionOrder(): void {
         this.executionOrder.length = 0;
         const plugins = new Map(this.plugins.map((plugin) => [plugin.type, plugin]));
-        const inDegree = new Map<PluggableClass, number>();
-        const graph = new Map<PluggableClass, PluggableClass[]>();
+        const inDegree = new Map<PluginType, number>();
+        const graph = new Map<PluginType, PluginType[]>();
 
         for (const plugin of this.plugins) {
             inDegree.set(plugin.type, 0);
@@ -52,22 +45,22 @@ export class PluginRegistry implements Lifecycle {
             const dependencies = plugin.type.dependencies || [];
             for (const dependency of dependencies) {
                 if (!graph.has(dependency)) throw new PluginDependencyNotIncludedError(dependency.name);
-                (graph.get(dependency) as PluggableClass[]).push(plugin.type);
+                (graph.get(dependency) as PluginType[]).push(plugin.type);
                 inDegree.set(plugin.type, (inDegree.get(plugin.type) || 0) + 1);
             }
         }
 
-        const queue: PluggableClass[] = [];
+        const queue: PluginType[] = [];
         for (const [plugin, degree] of inDegree.entries()) {
             if (degree === 0) queue.push(plugin);
         }
 
         while (queue.length > 0) {
-            const current = queue.shift() as PluggableClass;
+            const current = queue.shift() as PluginType;
             const currentPlugin = plugins.get(current) as RegisteredPlugin;
             this.executionOrder.push(currentPlugin);
 
-            for (const neighbor of graph.get(current) as PluggableClass[]) {
+            for (const neighbor of graph.get(current) as PluginType[]) {
                 inDegree.set(neighbor, (inDegree.get(neighbor) as number) - 1);
                 if (inDegree.get(neighbor) === 0) queue.push(neighbor);
             }
@@ -79,7 +72,6 @@ export class PluginRegistry implements Lifecycle {
     }
 
     async init(context: AxiSparkContext): Promise<void> {
-        await this.instantiate(context);
         this.resolveExecutionOrder();
         await this.executeLifecycleMethod(context, 'onRegister', PluginLifecycle.Registered);
     }
@@ -92,10 +84,22 @@ export class PluginRegistry implements Lifecycle {
         await this.executeLifecycleMethod(context, 'onStop', PluginLifecycle.Stopped, true);
     }
 
-    private async executeLifecycleMethod(context: AxiSparkContext, methodName: 'onRegister' | 'onStart' | 'onStop', lifecycleState: PluginLifecycle, reversed = false): Promise<void> {
+    private async executeLifecycleMethod(
+        context: AxiSparkContext,
+        methodName: 'onRegister' | 'onStart' | 'onStop',
+        lifecycleState: PluginLifecycle,
+        reversed = false
+    ): Promise<void> {
         const plugins = reversed ? this.executionOrder.toReversed() : this.executionOrder;
         for (const { type, options } of plugins) {
-            const instance = this.instances.get(type) as Pluggable;
+            let instance;
+            if (methodName === 'onRegister') {
+                instance = await context.container.resolve<Plugin>(type);
+                this.instances.set(type, instance);
+            } else {
+                instance = this.instances.get(type) as Plugin;
+            }
+
             try {
                 if (instance.getState() === PluginLifecycle.Error) return;
 

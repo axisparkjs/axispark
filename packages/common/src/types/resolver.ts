@@ -1,3 +1,3 @@
 export interface Resolver<T> {
-    resolve(...args: unknown[]): T;
+    resolve(...args: unknown[]): T | Promise<T>;
 }

@@ -1,5 +1,5 @@
 import { Metadata, MetadataKey, MetadataKeys } from '@axisparkjs/common';
-import { ClassRegistry } from '../class-registry';
+import { ClassRegistry } from '../registry';
 
 export function Constructable(...metadataKeys: MetadataKey[]): ClassDecorator {
     return (target: any) => {

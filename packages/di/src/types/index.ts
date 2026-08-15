@@ -1,3 +1,2 @@
-export * from './constructor';
-export * from './injectable-scope';
+export * from './injectable-scopes';
 export * from './provider';

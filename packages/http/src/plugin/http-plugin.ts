@@ -1,74 +1,113 @@
-import { AxiSparkContext, PluginNotConfiguredError, Plugin, Pluggable } from '@axisparkjs/core';
+import { AxiSparkContext, PluginNotConfiguredError, Plugin } from '@axisparkjs/core';
 import { HttpPluginOptions } from './http-plugin-options';
 import { HTTP_ADAPTER, HTTP_LOGGER, HTTP_OPTIONS } from '../di/tokens';
 import { HttpAdapter } from '../adapter/http-adapter';
-import { RouteGenerator } from '../routes/route-generator';
+import { RouteGenerator, RouteDefinition } from '../routes';
 import { Logger } from '@axisparkjs/logger';
-import { ClassRegistry, Constructor, InjectableScope } from '@axisparkjs/di';
-import { LogHttpRequestInterceptor, LogHttpResponseInterceptor } from '../interceptors';
-import { LogHttpErrorFilter, LogErrorFilter } from '../filters';
-import { HealthController } from '../controllers';
-import { Route } from '../routes/route';
+import { ClassRegistry, Injectable, InjectableScopes, Injector } from '@axisparkjs/di';
+import { ClassType } from '@axisparkjs/common';
+import { HttpParameter } from '../types';
+import { VersionProcessor, VersionType } from '../version';
+import { ResultProcessor, TimeoutProcessor, ParameterGenerator, ExecutionTransport, TimeoutGenerator } from '@axisparkjs/engine';
+import { LogHttpRequestInterceptor, LogHttpResponseInterceptor, LogHttpErrorFilter, LogErrorFilter, HealthController, VersionGuard, RequestResolver, ResponseResolver, IpResolver, BodyResolver, ParamResolver, QueryResolver, CookieResolver, HeaderResolver, SessionResolver, HttpResultResolver, HttpTimeoutProcessor, UriVersionResolver, HeaderVersionResolver, MediaTypeVersionResolver,  } from '../implementations';
 
-@Plugin()
-export class HttpPlugin extends Pluggable {
-    private logger!: Logger;
+@Injectable()
+export class HttpPlugin extends Plugin {
+    private context: AxiSparkContext;
     protected options!: HttpPluginOptions;
     private adapter!: HttpAdapter;
 
+    constructor(
+        private logger: Logger,
+        private readonly injector: Injector,
+    ) {
+        super();
+    }
+
     async onRegister(context: AxiSparkContext, options?: HttpPluginOptions): Promise<void> {
         if (!options) throw new PluginNotConfiguredError(HttpPlugin.name);
-        this.logger = (await context.container.resolve(Logger)).child('HttpPlugin');
+        this.context = context;
         this.options = options;
+        this.logger = this.logger.child('HttpPlugin');
 
-        this.registerContainerBindings(context);
-        this.configureComponents(context);
-        const routes = await this.generateRoutes(context);
+        this.registerContainerBindings();
+        this.configureImplementations();
+        await this.registerImplementations();
+        const routes = await this.generateRoutes();
 
-        this.adapter = await context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
+        this.adapter = await this.context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
         await this.adapter.initialize?.();
         await this.adapter.registerRoutes(routes);
         await this.logger.info(`Plugin registered`);
     }
 
-    private registerContainerBindings(context: AxiSparkContext): void {
-        context.container.bind({ token: HTTP_OPTIONS, useValue: this.options });
-        context.container.bind({ token: HTTP_ADAPTER, useClass: this.options.adapter, scope: InjectableScope.Singleton });
-        context.container.bind({ token: HTTP_LOGGER, useValue: this.logger });
+    private registerContainerBindings(): void {
+        this.context.container.bind({ token: HTTP_OPTIONS, useValue: this.options });
+        this.context.container.bind({ token: HTTP_ADAPTER, useClass: this.options.adapter, scope: InjectableScopes.Singleton });
+        this.context.container.bind({ token: HTTP_LOGGER, useValue: this.logger });
     }
 
-    private async generateRoutes(context: AxiSparkContext): Promise<Route[]> {
-        const routeSets = RouteGenerator.generate(this.options, context);
-        const totalRoutes: Route[] = [];
-        for (const { controller, routes } of routeSets) {
-            totalRoutes.push(...routes);
-            for (const route of routes) {
-                await this.logger.debug(`Registered route ${route.method.toLocaleUpperCase()} ${route.path} for controller ${controller.name}`);
+    private async generateRoutes(): Promise<RouteDefinition[]> {
+        const routeGenerator = await this.injector.get(RouteGenerator);
+        const routes = await routeGenerator.generate();
+
+        const controllers = new Set<ClassType>();
+        for (const route of routes) {
+            await this.logger.debug(`Registered route ${route.httpMethod.toLocaleUpperCase()} ${route.path} for controller ${route.target.name}`);
+
+            if (!controllers.has(route.target)) {
+                controllers.add(route.target);
+                await this.logger.info(`Registered controller ${route.target.name}`);
             }
-            await this.logger.info(`Registered controller ${controller.name}`);
         }
-        return totalRoutes;
+        return routes;
     }
 
-    private configureComponents(context: AxiSparkContext): void {
-        const items: [boolean, Constructor][] = [
+    private configureImplementations(): void {
+        const items: [boolean, ClassType][] = [
             [this.options.healthChecks ?? false, HealthController],
             [this.options.logHttpRequests ?? false, LogHttpRequestInterceptor],
             [this.options.logHttpResponses ?? false, LogHttpResponseInterceptor],
             [this.options.logHttpErrors ?? false, LogHttpErrorFilter],
-            [this.options.logErrors ?? false, LogErrorFilter]
+            [this.options.logErrors ?? false, LogErrorFilter],
+            [this.options.version ?? false, VersionGuard]
         ];
 
         for (const [enabled, target] of items) {
-            this.disableComponentIf(context, enabled, target);
+            this.disableComponentIf(enabled, target);
         }
     }
 
-    private disableComponentIf(context: AxiSparkContext, enabled: boolean, target: Constructor): void {
+    private async registerImplementations(): Promise<void> {
+        ResultProcessor.registerResult(ExecutionTransport.Http, await this.injector.get(HttpResultResolver));
+
+        if (this.options.timeout) {
+            TimeoutGenerator.registerTimeout(ExecutionTransport.Http, this.options.timeoutOptions?.time);
+            TimeoutProcessor.registerTimeout(ExecutionTransport.Http, await this.injector.get(HttpTimeoutProcessor));
+        }
+
+        ParameterGenerator.registerParameter(HttpParameter.Request, await this.injector.get(RequestResolver));
+        ParameterGenerator.registerParameter(HttpParameter.Response, await this.injector.get(ResponseResolver));
+        ParameterGenerator.registerParameter(HttpParameter.Body, await this.injector.get(BodyResolver));
+        ParameterGenerator.registerParameter(HttpParameter.Param, await this.injector.get(ParamResolver));
+        ParameterGenerator.registerParameter(HttpParameter.Query, await this.injector.get(QueryResolver));
+        ParameterGenerator.registerParameter(HttpParameter.Header, await this.injector.get(HeaderResolver));
+        ParameterGenerator.registerParameter(HttpParameter.Ip, await this.injector.get(IpResolver));
+        ParameterGenerator.registerParameter(HttpParameter.Session, await this.injector.get(SessionResolver));
+        ParameterGenerator.registerParameter(HttpParameter.Cookie, await this.injector.get(CookieResolver));
+
+        if (this.options.version) {
+            VersionProcessor.registerVersion(VersionType.Header, await this.injector.get(HeaderVersionResolver));
+            VersionProcessor.registerVersion(VersionType.MediaType, await this.injector.get(MediaTypeVersionResolver));
+            VersionProcessor.registerVersion(VersionType.Uri, await this.injector.get(UriVersionResolver));
+        }
+    }
+
+    private disableComponentIf(enabled: boolean, target: ClassType): void {
         if (enabled) return;
 
         ClassRegistry.remove(target);
-        context.container.unbind(target);
+        this.context.container.unbind(target);
     }
 
     async onStart(): Promise<void> {

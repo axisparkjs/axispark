@@ -1,17 +1,31 @@
-import { Constructor } from '@axisparkjs/di';
+import { MetadataFromMethod } from '@axisparkjs/common';
 import { JobType } from '../jobs';
 
-export interface JobMetadata {
-    name: string;
-    value: number | string | Date;
-    disabled: boolean;
+export interface JobMetadataBase extends MetadataFromMethod {
     type: JobType;
-    target: Constructor;
-    propertyKey: string | symbol;
+    value: any;
+    name: string;
+    disabled: boolean;
 }
-
-export interface CronJobMetadata extends JobMetadata {
+export interface CronJobMetadata extends JobMetadataBase {
     type: JobType.Cron;
     value: string;
     timeZone?: string;
 }
+
+export interface IntervalJobMetadata extends JobMetadataBase {
+    type: JobType.Interval;
+    value: number;
+}
+
+export interface DateJobMetadata extends JobMetadataBase {
+    type: JobType.Date;
+    value: Date;
+}
+
+export interface TimeoutJobMetadata extends JobMetadataBase {
+    type: JobType.Timeout;
+    value: number;
+}
+
+export type JobMetadata = JobMetadataBase & (CronJobMetadata | IntervalJobMetadata | DateJobMetadata | TimeoutJobMetadata);

@@ -1,7 +1,7 @@
 import { Injectable } from '@axisparkjs/di';
 import { SchedulerRegistry } from './scheduler-registry';
 import { SchedulerRunner } from './scheduler-runner';
-import { Job } from '../jobs';
+import { JobDefinition } from '../jobs';
 import { SchedulerError } from '../errors';
 
 @Injectable()
@@ -11,31 +11,28 @@ export class SchedulerService {
         private readonly runner: SchedulerRunner
     ) {}
 
-    registerJob(job: Job, start = false): void {
+    registerJob(job: JobDefinition): void {
         this.registry.registerJob(job);
-        if (start) {
-            this.runner.start(job);
-        }
     }
 
-    registerJobs(jobs: { job: Job; start: boolean }[]): void {
-        jobs.forEach((job) => this.registerJob(job.job, job.start));
+    registerJobs(jobs: JobDefinition[]): void {
+        jobs.forEach((job) => this.registerJob(job));
     }
 
-    startJob(job: string | Job): void {
+    startJob(job: string | JobDefinition): void {
         const jobInstance = this.registry.getJob(typeof job === 'string' ? job : job.name);
         if (!jobInstance && typeof job === 'string') throw new SchedulerError(`Job with name "${job}" is not registered.`);
-        if (!jobInstance && job instanceof Job) this.registry.registerJob(job);
+        if (!jobInstance && job instanceof JobDefinition) this.registry.registerJob(job);
 
-        this.runner.start(jobInstance || (job as Job));
+        this.runner.start(jobInstance || (job as JobDefinition));
     }
 
-    startAllJobs(): void {
-        const jobs = this.registry.getAllJobs();
+    startAllJobs(onlyInitiallyEnabled = false): void {
+        const jobs = this.registry.getAllJobs().filter((job) => !onlyInitiallyEnabled || !job.initiallyDisabled);
         this.runner.startAll(jobs);
     }
 
-    stopJob(job: string | Job): void {
+    stopJob(job: string | JobDefinition): void {
         const jobInstance = this.registry.getJob(typeof job === 'string' ? job : job.name);
         if (!jobInstance) return;
 
@@ -47,7 +44,7 @@ export class SchedulerService {
         this.runner.stopAll(jobs);
     }
 
-    isJobRunning(job: string | Job): boolean {
+    isJobRunning(job: string | JobDefinition): boolean {
         const jobInstance = this.registry.getJob(typeof job === 'string' ? job : job.name);
         if (!jobInstance) return false;
 

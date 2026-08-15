@@ -1,0 +1,98 @@
+import { ExecutionContext } from './execution-context';
+import {
+    StepGenerator,
+    StepType,
+    StepScope,
+    AfterStepDefinition,
+    BeforeStepDefinition,
+    CatchStepDefinition,
+    CheckStepDefinition,
+    HandleStepDefinition,
+    StepDefinition
+} from '../step';
+import { ExecutionPlan } from './execution-plan';
+import { ExecutionTransport } from './execution-transport';
+import { Injectable } from '@axisparkjs/di';
+import { TimeoutGenerator } from '../timeout';
+
+@Injectable()
+export class ExecutionPlanner {
+    private readonly registeredPlans = new Map<string, ExecutionPlan>();
+
+    constructor(
+        private readonly timeoutGenerator: TimeoutGenerator,
+        private readonly stepGenerator: StepGenerator
+    ) {}
+
+    public async plan(context: ExecutionContext): Promise<ExecutionPlan> {
+        const key = `${context.target.name}.${String(context.propertyKey)}`;
+        let plan = this.registeredPlans.get(key);
+        if (!plan) {
+            const steps = await this.stepGenerator.generate(context);
+            plan = this.generatePlan(context, steps);
+            this.registeredPlans.set(key, plan);
+        }
+
+        return plan;
+    }
+
+    private generatePlan(context: ExecutionContext, steps: StepDefinition[]): ExecutionPlan {
+        const validSteps = steps.filter((step) => step.transport === ExecutionTransport.All || step.transport === context.transport);
+        const beforeSteps = this.generateBeforeSteps(validSteps);
+        const afterSteps = this.generateAfterSteps(validSteps);
+        const catchSteps = this.generateCatchSteps(validSteps);
+        const timeoutStep = this.timeoutGenerator.generate(context);
+
+        return { before: beforeSteps, after: afterSteps, context, catch: catchSteps, timeout: timeoutStep };
+    }
+
+    private getSteps(steps: StepDefinition[], type: StepType, global: boolean) {
+        let finalSteps = steps.filter((step) => step.type === type && step.global === global);
+        if (global) finalSteps = finalSteps.sort((a, b) => b.priority - a.priority); // Prioridad descendente
+        return finalSteps;
+    }
+
+    private generateBeforeSteps(steps: StepDefinition[]): (HandleStepDefinition | CheckStepDefinition | BeforeStepDefinition)[] {
+        const before: (HandleStepDefinition | CheckStepDefinition | BeforeStepDefinition)[] = [];
+
+        const globalMiddlewares = this.getSteps(steps, StepType.Middleware, true) as HandleStepDefinition[];
+        const usingMiddlewares = this.getSteps(steps, StepType.Middleware, false) as HandleStepDefinition[];
+        before.push(...globalMiddlewares);
+        before.push(...usingMiddlewares);
+
+        const globalGuards = this.getSteps(steps, StepType.Guard, true) as CheckStepDefinition[];
+        const usingGuards = this.getSteps(steps, StepType.Guard, false) as CheckStepDefinition[];
+        before.push(...globalGuards);
+        before.push(...usingGuards);
+
+        const globalInterceptors = this.getSteps(steps, StepType.Interceptor, true) as (BeforeStepDefinition | AfterStepDefinition)[];
+        const usingInterceptors = this.getSteps(steps, StepType.Interceptor, false) as (BeforeStepDefinition | AfterStepDefinition)[];
+        const interceptors = [...globalInterceptors, ...usingInterceptors].filter((step) => step.scope === StepScope.Before);
+        before.push(...interceptors);
+
+        return before;
+    }
+
+    private generateAfterSteps(steps: StepDefinition[]): AfterStepDefinition[] {
+        const after: AfterStepDefinition[] = [];
+
+        const globalInterceptors = this.getSteps(steps, StepType.Interceptor, true) as (BeforeStepDefinition | AfterStepDefinition)[];
+        const usingInterceptors = this.getSteps(steps, StepType.Interceptor, false) as (BeforeStepDefinition | AfterStepDefinition)[];
+        const interceptors = [...globalInterceptors, ...usingInterceptors].filter((step) => step.scope === StepScope.After);
+        const interceptorsReverse = interceptors.toReversed();
+        after.push(...interceptorsReverse);
+
+        return after;
+    }
+
+    private generateCatchSteps(steps: StepDefinition[]): CatchStepDefinition[] {
+        const catchs: CatchStepDefinition[] = [];
+
+        const globalFilters = this.getSteps(steps, StepType.Filter, true) as CatchStepDefinition[];
+        const usingFilters = this.getSteps(steps, StepType.Filter, false) as CatchStepDefinition[];
+        const allFilters = [...usingFilters.toReversed(), ...globalFilters];
+        catchs.push(...allFilters);
+
+        return catchs;
+    }
+}

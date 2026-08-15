@@ -1,18 +1,25 @@
 import { ClassRegistry } from '@axisparkjs/di';
 import { Metadata, MetadataKeys } from '@axisparkjs/common';
-import { Job } from './job';
+import { JobDefinition } from './job-definition';
 import { JobGenerator } from './job-generator';
-import { JobType } from './job';
+import { JobType } from './job-definition';
 
-jest.mock('@axisparkjs/di', () => ({
-    ClassRegistry: {
-        getWithMetadata: jest.fn()
-    }
-}));
+jest.mock('@axisparkjs/di', () => {
+    const originalModule = jest.requireActual('@axisparkjs/di');
+    return {
+        ...originalModule,
+        ClassRegistry: {
+            getWithMetadata: jest.fn()
+        }
+    };
+});
 
 jest.mock('@axisparkjs/common', () => ({
     Metadata: {
-        get: jest.fn()
+        get: jest.fn(),
+        define: jest.fn(),
+        remove: jest.fn(),
+        normalizeTarget: jest.fn((target) => target)
     },
     MetadataKeys: {
         SCHEDULER: 'scheduler',
@@ -22,6 +29,7 @@ jest.mock('@axisparkjs/common', () => ({
 
 describe('JobGenerator', () => {
     let context: any;
+    let jobGenerator: JobGenerator;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -32,13 +40,15 @@ describe('JobGenerator', () => {
             }
         };
 
-        jest.spyOn(Job, 'fromMetadata').mockImplementation((metadata) => ({ ...metadata }) as any);
+        jobGenerator = new JobGenerator();
+
+        jest.spyOn(JobDefinition, 'fromMetadata').mockImplementation((metadata) => ({ ...metadata }) as any);
     });
 
     it('should return an empty array when there are no schedulers', async () => {
         (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([]);
 
-        expect(await JobGenerator.generate(context)).toEqual([]);
+        expect(await jobGenerator.generate(context)).toEqual([]);
 
         expect(ClassRegistry.getWithMetadata).toHaveBeenCalledWith(MetadataKeys.SCHEDULER);
     });
@@ -50,7 +60,7 @@ describe('JobGenerator', () => {
 
         (Metadata.get as jest.Mock).mockReturnValue(undefined);
 
-        expect(await JobGenerator.generate(context)).toEqual([]);
+        expect(await jobGenerator.generate(context)).toEqual([]);
 
         expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.JOB, Scheduler);
     });
@@ -80,11 +90,11 @@ describe('JobGenerator', () => {
 
         context.container.resolve.mockReturnValue(instance);
 
-        const jobs = await JobGenerator.generate(context);
+        const jobs = await jobGenerator.generate(context);
 
         expect(context.container.resolve).toHaveBeenCalledWith(Scheduler);
 
-        expect(Job.fromMetadata).toHaveBeenCalledWith(
+        expect(JobDefinition.fromMetadata).toHaveBeenCalledWith(
             {
                 name: 'job',
                 type: JobType.Interval,
@@ -95,7 +105,7 @@ describe('JobGenerator', () => {
             expect.any(Function)
         );
 
-        expect(jobs).toEqual([expect.objectContaining({ disabled: undefined, job: expect.objectContaining({ name: 'job', type: JobType.Interval, value: 1000 }) })]);
+        expect(jobs).toEqual([expect.objectContaining({ name: 'job', type: JobType.Interval, value: 1000 })]);
     });
 
     it('should bind the method to the resolved instance', async () => {
@@ -127,12 +137,12 @@ describe('JobGenerator', () => {
 
         let boundMethod!: () => Promise<number>;
 
-        (Job.fromMetadata as jest.Mock).mockImplementation((_) => {
+        (JobDefinition.fromMetadata as jest.Mock).mockImplementation((_) => {
             boundMethod = () => Promise.resolve(42);
             return {} as any;
         });
 
-        await JobGenerator.generate(context);
+        await jobGenerator.generate(context);
 
         await expect(boundMethod()).resolves.toBe(42);
     });
@@ -171,10 +181,10 @@ describe('JobGenerator', () => {
                 execute: jest.fn()
             });
 
-        (Job.fromMetadata as jest.Mock).mockReturnValueOnce({ id: 1 }).mockReturnValueOnce({ id: 2 });
+        (JobDefinition.fromMetadata as jest.Mock).mockReturnValueOnce({ id: 1 }).mockReturnValueOnce({ id: 2 });
 
-        expect(await JobGenerator.generate(context)).toEqual([expect.objectContaining({ job: { id: 1 } }), expect.objectContaining({ job: { id: 2 } })]);
+        expect(await jobGenerator.generate(context)).toEqual([{ id: 1 }, { id: 2 }]);
 
-        expect(Job.fromMetadata).toHaveBeenCalledTimes(2);
+        expect(JobDefinition.fromMetadata).toHaveBeenCalledTimes(2);
     });
 });

@@ -1,6 +1,6 @@
-import { Constructor } from '@axisparkjs/di';
+import { ClassType } from '@axisparkjs/common';
 
 export interface ExecutionHandler {
-    target: Constructor;
-    method: string | symbol;
+    target: ClassType;
+    propertyKey: string | symbol;
 }

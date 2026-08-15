@@ -1,7 +1,7 @@
 import { Injectable } from '@axisparkjs/di';
 import { PluginRegistry } from '../plugin';
 import { HealthData } from './health-data';
-import { PluginLifecycle, Pluggable } from '../plugin/pluggable';
+import { PluginLifecycle, Plugin } from '../plugin/plugin';
 import { AxiSparkConfig } from '../axispark/axispark-config';
 import { HealthStatus } from './health-status';
 
@@ -17,10 +17,10 @@ export class HealthEngine {
             return {
                 component: type.name,
                 timestamp: new Date().toISOString(),
-                status: this.mapPluginStateToHealthData((instance as Pluggable).getState()),
+                status: this.mapPluginStateToHealthData((instance as Plugin).getState()),
                 details: {
                     plugin: type.name,
-                    error: (instance as Pluggable).getStateError()?.message
+                    error: (instance as Plugin).getStateError()?.message
                 }
             };
         });

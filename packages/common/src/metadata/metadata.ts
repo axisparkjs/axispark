@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { MetadataKey } from './metadata-key';
+import { ClassType } from '../types';
 
 class MetadataStatic {
     define(key: MetadataKey, value: unknown, target: object, propertyKey?: string | symbol): void {
@@ -14,9 +15,8 @@ class MetadataStatic {
         if (propertyKey) return Reflect.hasMetadata(key.value, this.normalizeTarget(target), propertyKey);
         return Reflect.hasMetadata(key.value, this.normalizeTarget(target));
     }
-
-    private normalizeTarget(target: object): object {
-        return typeof target === 'function' ? target : target.constructor;
+    normalizeTarget(target: object): ClassType {
+        return (typeof target === 'function' ? target : target.constructor) as ClassType;
     }
 }
 

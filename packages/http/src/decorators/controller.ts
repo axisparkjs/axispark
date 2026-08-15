@@ -2,9 +2,13 @@ import { Metadata, MetadataKeys } from '@axisparkjs/common';
 import { Constructable } from '@axisparkjs/di';
 import { ControllerMetadata } from '../metadata/controller-metadata';
 
-export function Controller(prefix: string | ControllerMetadata = ''): ClassDecorator {
+export function Controller(prefix: string | Omit<ControllerMetadata, 'target'> = ''): ClassDecorator {
     return (target) => {
-        const metadata: ControllerMetadata = typeof prefix === 'string' ? { prefix } : prefix;
+        const metadata: ControllerMetadata = {
+            target: Metadata.normalizeTarget(target),
+            prefix: typeof prefix === 'string' ? prefix : prefix.prefix,
+            version: typeof prefix === 'string' ? undefined : prefix.version
+        }
         Constructable(MetadataKeys.INJECTABLE)(target);
         Metadata.define(MetadataKeys.CONTROLLER, metadata, target);
     };

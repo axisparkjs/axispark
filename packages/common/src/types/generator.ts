@@ -1,3 +1,3 @@
 export interface Generator<T> {
-    generate(...args: unknown[]): T;
+    generate(...args: unknown[]): T | Promise<T>;
 }

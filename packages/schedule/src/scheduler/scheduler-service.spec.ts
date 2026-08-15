@@ -2,9 +2,9 @@ import { SchedulerService } from './scheduler-service';
 import { SchedulerRegistry } from './scheduler-registry';
 import { SchedulerRunner } from './scheduler-runner';
 import { SchedulerError } from '../errors';
-import { Job, JobType } from '../jobs';
+import { JobDefinition, JobType } from '../jobs';
 
-class TestJob extends Job {
+class TestJob extends JobDefinition {
     readonly type = JobType.Timeout;
 
     protected trigger = {
@@ -36,6 +36,7 @@ describe('SchedulerService', () => {
     });
 
     const createJob = (name = 'job') => new TestJob(name, jest.fn().mockResolvedValue(undefined));
+    const createInitiallyDisabledJob = (name = 'job') => new TestJob(name, jest.fn().mockResolvedValue(undefined), true);
 
     describe('registerJob', () => {
         it('should register a job', () => {
@@ -46,37 +47,15 @@ describe('SchedulerService', () => {
             expect(registry.registerJob).toHaveBeenCalledWith(job);
             expect(runner.start).not.toHaveBeenCalled();
         });
-
-        it('should start the job when requested', () => {
-            const job = createJob();
-
-            service.registerJob(job, true);
-
-            expect(runner.start).toHaveBeenCalledWith(job);
-        });
     });
 
     describe('registerJobs', () => {
         it('should register every job', () => {
-            const jobs = [
-                { job: createJob('a'), start: false },
-                { job: createJob('b'), start: false }
-            ];
+            const jobs = [createJob('a'), createJob('b')];
 
             service.registerJobs(jobs);
 
             expect(registry.registerJob).toHaveBeenCalledTimes(2);
-        });
-
-        it('should register and start every job', () => {
-            const jobs = [
-                { job: createJob('a'), start: true },
-                { job: createJob('b'), start: true }
-            ];
-
-            service.registerJobs(jobs);
-
-            expect(runner.start).toHaveBeenCalledTimes(2);
         });
     });
 
@@ -129,6 +108,13 @@ describe('SchedulerService', () => {
             service.startAllJobs();
 
             expect(runner.startAll).toHaveBeenCalledWith(jobs);
+        });
+
+        it('should start only jobs that are not marked as disabled', () => {
+            const jobs = [createInitiallyDisabledJob('a'), createJob('b')];
+            registry.getAllJobs.mockReturnValue(jobs);
+            service.startAllJobs(true);
+            expect(runner.startAll).toHaveBeenCalledWith([jobs[1]]);
         });
     });
 

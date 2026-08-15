@@ -1,5 +1,3 @@
-import { InjectableScope } from '../types';
+import { MetadataFromClass } from '@axisparkjs/common';
 
-export interface InjectableMetadata {
-    scope: InjectableScope;
-}
+export interface InjectableMetadata extends MetadataFromClass {}

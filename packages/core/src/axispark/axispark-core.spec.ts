@@ -18,9 +18,6 @@ describe('AxiSparkCore', () => {
                 register: jest.fn(),
                 getAll: jest.fn()
             },
-            engine: {
-                init: jest.fn()
-            },
             container: {
                 init: jest.fn(),
                 resolve: jest.fn()
@@ -54,7 +51,6 @@ describe('AxiSparkCore', () => {
             expect(context.scanner.scan).toHaveBeenCalled();
             expect(context.container.init).toHaveBeenCalled();
             expect(context.plugins.init).toHaveBeenCalledWith(context);
-            expect(context.engine.init).toHaveBeenCalled();
             expect(context.logger.info).toHaveBeenCalledWith('App initialized');
         });
 
@@ -65,7 +61,6 @@ describe('AxiSparkCore', () => {
             expect(context.scanner.scan).toHaveBeenCalled();
             expect(context.container.init).toHaveBeenCalled();
             expect(context.plugins.init).toHaveBeenCalledWith(context);
-            expect(context.engine.init).toHaveBeenCalled();
             expect(context.logger.info).not.toHaveBeenCalledWith(`
     ╔═════════════════════════════════════════════╗
     ║                                             ║

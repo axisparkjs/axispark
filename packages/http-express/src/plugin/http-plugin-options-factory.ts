@@ -27,6 +27,8 @@ class HttpPluginOptionsFactoryStatic implements Factory<ExpressHttpPluginOptions
             timeoutOptions: {
                 time: 5000
             },
+            version: false,
+            versionOptions: undefined,
             logHttpErrors: false,
             logErrors: true,
             logHttpRequests: false,
