@@ -11,7 +11,7 @@ function StepTarget(config: Partial<StepTargetMetadata>): ClassDecorator {
             target: Metadata.normalizeTarget(target),
             type: config.type as StepType,
             transport: config.transport ?? ExecutionTransport.All,
-            global: config.global ?? false,
+            global: config.global ?? true,
             priority: config.priority ?? StepPriority.Normal
         });
 

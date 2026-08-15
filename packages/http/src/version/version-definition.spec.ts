@@ -74,5 +74,43 @@ describe('VersionDefinition', () => {
 
             expect(definition.isVersionAccepted()).toBe(false);
         });
+
+        it('should accept any version when default is accepted', () => {
+            const definition = new VersionDefinition(['default']);
+
+            definition.setVersion('1');
+
+            expect(definition.isVersionAccepted()).toBe(true);
+        });
+
+        it('should accept any version when default is among the accepted versions', () => {
+            const definition = new VersionDefinition(['1', 'default']);
+
+            definition.setVersion('3');
+
+            expect(definition.isVersionAccepted()).toBe(true);
+        });
+
+        it('should accept an undefined version when default is accepted', () => {
+            const definition = new VersionDefinition(['default']);
+
+            expect(definition.isVersionAccepted()).toBe(true);
+        });
+
+        it('should still accept an explicitly accepted version when default is present', () => {
+            const definition = new VersionDefinition(['1', 'default']);
+
+            definition.setVersion('1');
+
+            expect(definition.isVersionAccepted()).toBe(true);
+        });
+
+        it('should not accept an unaccepted version without default', () => {
+            const definition = new VersionDefinition(['1', '2']);
+
+            definition.setVersion('3');
+
+            expect(definition.isVersionAccepted()).toBe(false);
+        });
     });
 });

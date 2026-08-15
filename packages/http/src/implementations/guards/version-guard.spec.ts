@@ -24,7 +24,7 @@ describe('VersionGuard', () => {
     it('should not throw when the requested version is accepted', async () => {
         const context = {
             version: {
-                isVersionAccepted: true
+                isVersionAccepted: () => true
             },
             request: {
                 method: 'GET',
@@ -38,7 +38,7 @@ describe('VersionGuard', () => {
     it('should throw BadRequestError when the requested version is not accepted', async () => {
         const context = {
             version: {
-                isVersionAccepted: false
+                isVersionAccepted: () => false
             },
             request: {
                 method: 'GET',
@@ -52,7 +52,7 @@ describe('VersionGuard', () => {
     it('should include the request method and path in the error message', async () => {
         const context = {
             version: {
-                isVersionAccepted: false
+                isVersionAccepted: () => false
             },
             request: {
                 method: 'POST',
@@ -66,7 +66,7 @@ describe('VersionGuard', () => {
     it('should not throw when version exists but isVersionAccepted is truthy', async () => {
         const context = {
             version: {
-                isVersionAccepted: true
+                isVersionAccepted: () => true
             },
             request: {
                 method: 'PATCH',

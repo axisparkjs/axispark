@@ -48,7 +48,7 @@ describe('StepTarget decorators', () => {
                         target: TestMiddleware,
                         type: StepType.Middleware,
                         transport: ExecutionTransport.All,
-                        global: false,
+                        global: true,
                         priority: StepPriority.Normal
                     }
                 ],
@@ -94,7 +94,7 @@ describe('StepTarget decorators', () => {
                         target: TestGuard,
                         type: StepType.Guard,
                         transport: ExecutionTransport.All,
-                        global: false,
+                        global: true,
                         priority: StepPriority.Normal
                     }
                 ],
@@ -140,7 +140,7 @@ describe('StepTarget decorators', () => {
                         target: TestInterceptor,
                         type: StepType.Interceptor,
                         transport: ExecutionTransport.All,
-                        global: false,
+                        global: true,
                         priority: StepPriority.Normal
                     }
                 ],
@@ -186,7 +186,7 @@ describe('StepTarget decorators', () => {
                         target: TestFilter,
                         type: StepType.Filter,
                         transport: ExecutionTransport.All,
-                        global: false,
+                        global: true,
                         priority: StepPriority.Normal
                     }
                 ],
@@ -245,7 +245,7 @@ describe('StepTarget decorators', () => {
                         target: TestMiddleware,
                         type: StepType.Middleware,
                         transport: ExecutionTransport.All,
-                        global: false,
+                        global: true,
                         priority: StepPriority.Normal
                     }
                 ],
@@ -283,7 +283,7 @@ describe('StepTarget decorators', () => {
                         target: normalizedTarget,
                         type: StepType.Middleware,
                         transport: ExecutionTransport.All,
-                        global: false,
+                        global: true,
                         priority: StepPriority.Normal
                     }
                 ],
@@ -322,7 +322,7 @@ describe('StepTarget decorators', () => {
                         target: TestMiddleware,
                         type: StepType.Middleware,
                         transport: ExecutionTransport.All,
-                        global: false,
+                        global: true,
                         priority: StepPriority.Normal
                     }
                 ],
@@ -344,7 +344,7 @@ describe('StepTarget decorators', () => {
                         target: TestGuard,
                         type: StepType.Guard,
                         transport: ExecutionTransport.All,
-                        global: false,
+                        global: true,
                         priority: StepPriority.Normal
                     }
                 ],
@@ -366,7 +366,7 @@ describe('StepTarget decorators', () => {
                         target: TestFilter,
                         type: StepType.Filter,
                         transport: ExecutionTransport.All,
-                        global: false,
+                        global: true,
                         priority: StepPriority.Normal
                     }
                 ],

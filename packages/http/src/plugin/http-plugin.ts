@@ -26,7 +26,7 @@ import {
     HeaderResolver,
     SessionResolver,
     HttpResultResolver,
-    HttpTimeoutProcessor,
+    HttpTimeoutResolver,
     UriVersionResolver,
     HeaderVersionResolver,
     MediaTypeVersionResolver
@@ -74,12 +74,14 @@ export class HttpPlugin extends Plugin {
 
         const controllers = new Set<ClassType>();
         for (const route of routes) {
-            await this.logger.debug(`Registered route ${route.httpMethod.toLocaleUpperCase()} ${route.path} for controller ${route.target.name}`);
-
             if (!controllers.has(route.target)) {
                 controllers.add(route.target);
                 await this.logger.info(`Registered controller ${route.target.name}`);
             }
+
+            await this.logger.debug(
+                `Registered route ${route.httpMethod.toLocaleUpperCase()} ${route.path} for controller ${route.target.name}${route.versions ? ` with versions ${route.versions.join(', ')}` : ''}`
+            );
         }
         return routes;
     }
@@ -104,7 +106,7 @@ export class HttpPlugin extends Plugin {
 
         if (this.options.timeout) {
             TimeoutGenerator.registerTimeout(ExecutionTransport.Http, this.options.timeoutOptions?.time);
-            TimeoutProcessor.registerTimeout(ExecutionTransport.Http, await this.injector.get(HttpTimeoutProcessor));
+            TimeoutProcessor.registerTimeout(ExecutionTransport.Http, await this.injector.get(HttpTimeoutResolver));
         }
 
         ParameterGenerator.registerParameter(HttpParameter.Request, await this.injector.get(RequestResolver));

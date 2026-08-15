@@ -27,22 +27,68 @@ export class RouteGenerator implements Generator<RouteDefinition[]> {
             const routesMetadata = Metadata.get<RouteMetadata[]>(MetadataKeys.ROUTE, controller) ?? [];
 
             for (const routeMetadata of routesMetadata) {
+                let finalVersions: string[] | undefined = undefined;
+                const versionOptions = this.httpPluginOptions.versionOptions;
+                const versionUriEnabled = this.httpPluginOptions.version && versionOptions !== undefined && versionOptions.type === VersionType.Uri;
+                if (this.httpPluginOptions.version)
+                    finalVersions =
+                        this.arrayifyFromVersion(routeMetadata.version) ??
+                        this.arrayifyFromVersion(controllerMetadata.version) ??
+                        (versionOptions && versionOptions.type === VersionType.Uri && versionOptions.defaultVersion
+                            ? this.arrayifyFromVersion(versionOptions.defaultVersion)
+                            : ['default']);
+
                 const routeDefinition = new RouteDefinition(
                     routeMetadata.target,
                     routeMetadata.propertyKey,
                     routeMetadata.method,
-                    this.pathCreator(
-                        this.httpPluginOptions.basePath,
-                        controllerMetadata.prefix,
-                        routeMetadata.path,
-                        this.httpPluginOptions.versionOptions?.type === VersionType.Uri
-                    ),
+                    this.pathCreator(this.httpPluginOptions.basePath, controllerMetadata.prefix, routeMetadata.path, versionUriEnabled),
+                    finalVersions,
                     async (context) => await this.httpEngine.execute(this.fillContext(context, routeMetadata))
                 );
                 routes.push(routeDefinition);
             }
         }
+        if (this.httpPluginOptions.version) return this.groupRoutesByPathMergingVersions(routes);
         return routes;
+    }
+
+    private groupRoutesByPathMergingVersions(routes: RouteDefinition[]): RouteDefinition[] {
+        const routesByPath: Record<string, RouteDefinition[]> = {};
+        for (const route of routes) {
+            const key = `${route.httpMethod}:${route.path}`;
+            if (!routesByPath[key]) {
+                routesByPath[key] = [];
+            }
+            routesByPath[key].push(route);
+        }
+
+        const mergedRoutes: RouteDefinition[] = [];
+        for (const key in routesByPath) {
+            const routeGroup = routesByPath[key];
+            const mergedVersions = routeGroup.flatMap((route) => route.versions as string[]);
+            const mergedRoute = new RouteDefinition(
+                routeGroup[0].target,
+                '',
+                routeGroup[0].httpMethod,
+                routeGroup[0].path,
+                mergedVersions,
+                async (context) => await this.httpEngine.versionMapping(routeGroup, context)
+            );
+            mergedRoutes.push(mergedRoute);
+        }
+
+        return mergedRoutes;
+    }
+
+    private arrayifyFromVersion(value: string | string[] | undefined): string[] | undefined {
+        if (!value) {
+            return undefined;
+        }
+        if (Array.isArray(value)) {
+            return value;
+        }
+        return [value];
     }
 
     private fillContext(context: Pick<HttpContext, 'request' | 'response' | 'session'>, routeMetadata: RouteMetadata): HttpContext {
@@ -57,7 +103,7 @@ export class RouteGenerator implements Generator<RouteDefinition[]> {
         };
     }
 
-    private pathCreator(basePath = '', prefix: string, path: string, version: boolean): string {
+    private pathCreator(basePath: string, prefix: string, path: string, version: boolean): string {
         basePath = basePath.startsWith('/') ? basePath : `/${basePath}`;
 
         if (version) {

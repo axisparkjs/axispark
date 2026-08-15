@@ -27,16 +27,20 @@ export class ExecutionEngine implements Executable {
             if (plan.timeout) {
                 let finished = false;
                 const timeout = async () => {
-                    await new Promise<void>((resolve) => {
+                    await new Promise<void>((resolve, reject) => {
                         setTimeout(
-                            () => {
+                            async () => {
                                 if (finished) {
                                     resolve();
                                     return;
                                 }
 
-                                this.timeoutProcessor.process(plan.timeout as TimeoutDefinition, context);
-                                resolve();
+                                try {
+                                    await this.timeoutProcessor.process(plan.timeout as TimeoutDefinition, context);
+                                    resolve();
+                                } catch (error) {
+                                    reject(error);
+                                }
                             },
                             (plan.timeout as TimeoutDefinition).time
                         );

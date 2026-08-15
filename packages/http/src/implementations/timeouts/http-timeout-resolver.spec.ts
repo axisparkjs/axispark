@@ -1,14 +1,14 @@
 import { TimeoutDefinition } from '@axisparkjs/engine';
-import { HttpTimeoutProcessor } from './http-timeout-processor';
+import { HttpTimeoutResolver } from './http-timeout-resolver';
 import { RequestTimeoutError } from '../errors';
 import { HttpPluginOptions } from '../../plugin';
 
-describe('HttpTimeoutProcessor', () => {
+describe('HttpTimeoutResolver', () => {
     const createTimeout = (time: number): TimeoutDefinition => ({ time }) as TimeoutDefinition;
 
     it('should throw RequestTimeoutError with the default message', async () => {
         const options = {} as HttpPluginOptions;
-        const processor = new HttpTimeoutProcessor(options);
+        const processor = new HttpTimeoutResolver(options);
 
         await expect(processor.resolve(createTimeout(5000))).rejects.toThrow(new RequestTimeoutError('Request timed out after 5000ms'));
     });
@@ -20,7 +20,7 @@ describe('HttpTimeoutProcessor', () => {
             }
         } as HttpPluginOptions;
 
-        const processor = new HttpTimeoutProcessor(options);
+        const processor = new HttpTimeoutResolver(options);
 
         await expect(processor.resolve(createTimeout(3000))).rejects.toThrow(new RequestTimeoutError('Custom timeout message'));
     });
@@ -34,7 +34,7 @@ describe('HttpTimeoutProcessor', () => {
             }
         } as any as HttpPluginOptions;
 
-        const processor = new HttpTimeoutProcessor(options);
+        const processor = new HttpTimeoutResolver(options);
 
         await expect(processor.resolve(createTimeout(2500))).rejects.toThrow(new RequestTimeoutError('Request exceeded 2500ms'));
 
@@ -49,14 +49,14 @@ describe('HttpTimeoutProcessor', () => {
             }
         } as HttpPluginOptions;
 
-        const processor = new HttpTimeoutProcessor(options);
+        const processor = new HttpTimeoutResolver(options);
 
         await expect(processor.resolve(createTimeout(1000))).rejects.toThrow(new RequestTimeoutError('Request timed out after 1000ms'));
     });
 
     it('should use the default message when timeout options are not provided', async () => {
         const options = {} as HttpPluginOptions;
-        const processor = new HttpTimeoutProcessor(options);
+        const processor = new HttpTimeoutResolver(options);
 
         await expect(processor.resolve(createTimeout(7500))).rejects.toThrow(new RequestTimeoutError('Request timed out after 7500ms'));
     });
@@ -68,7 +68,7 @@ describe('HttpTimeoutProcessor', () => {
             }
         } as HttpPluginOptions;
 
-        const processor = new HttpTimeoutProcessor(options);
+        const processor = new HttpTimeoutResolver(options);
 
         await expect(processor.resolve(createTimeout(2000))).rejects.toThrow(new RequestTimeoutError('Request timed out after 2000ms'));
     });

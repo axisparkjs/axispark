@@ -7,7 +7,7 @@ import { HttpPluginOptions } from './http-plugin-options';
 import { HealthController, VersionGuard } from '../implementations';
 import { LogErrorFilter, LogHttpErrorFilter } from '../implementations/filters';
 import { LogHttpRequestInterceptor, LogHttpResponseInterceptor } from '../implementations';
-import { HttpResultResolver, HttpTimeoutProcessor } from '../implementations';
+import { HttpResultResolver, HttpTimeoutResolver } from '../implementations';
 import { ExecutionTransport, ParameterGenerator, ResultProcessor, TimeoutGenerator, TimeoutProcessor } from '@axisparkjs/engine';
 import { HttpParameter } from '../types';
 import { VersionProcessor, VersionType } from '../version';
@@ -204,7 +204,8 @@ describe('HttpPlugin', () => {
                 {
                     target: UsersController,
                     httpMethod: 'POST',
-                    path: '/users'
+                    path: '/users',
+                    versions: ['1', '2']
                 }
             ];
 
@@ -222,7 +223,7 @@ describe('HttpPlugin', () => {
 
             expect(logger.debug).toHaveBeenCalledWith('Registered route GET /users for controller UsersController');
 
-            expect(logger.debug).toHaveBeenCalledWith('Registered route POST /users for controller UsersController');
+            expect(logger.debug).toHaveBeenCalledWith('Registered route POST /users for controller UsersController with versions 1, 2');
         });
 
         it('should log each controller only once', async () => {
@@ -336,7 +337,7 @@ describe('HttpPlugin', () => {
             const timeoutProcessor = {};
 
             injector.get.mockImplementation(async (target: any) => {
-                if (target === HttpTimeoutProcessor) {
+                if (target === HttpTimeoutResolver) {
                     return timeoutProcessor;
                 }
 
@@ -347,7 +348,7 @@ describe('HttpPlugin', () => {
 
             await plugin.onRegister(context, options);
 
-            expect(injector.get).toHaveBeenCalledWith(HttpTimeoutProcessor);
+            expect(injector.get).toHaveBeenCalledWith(HttpTimeoutResolver);
 
             expect(TimeoutProcessor.registerTimeout).toHaveBeenCalledWith(ExecutionTransport.Http, timeoutProcessor);
 
@@ -358,7 +359,7 @@ describe('HttpPlugin', () => {
             const timeoutProcessor = {};
 
             injector.get.mockImplementation(async (target: any) => {
-                if (target === HttpTimeoutProcessor) {
+                if (target === HttpTimeoutResolver) {
                     return timeoutProcessor;
                 }
 
@@ -372,7 +373,7 @@ describe('HttpPlugin', () => {
                 timeoutOptions: undefined
             });
 
-            expect(injector.get).toHaveBeenCalledWith(HttpTimeoutProcessor);
+            expect(injector.get).toHaveBeenCalledWith(HttpTimeoutResolver);
 
             expect(TimeoutProcessor.registerTimeout).toHaveBeenCalledWith(ExecutionTransport.Http, timeoutProcessor);
 

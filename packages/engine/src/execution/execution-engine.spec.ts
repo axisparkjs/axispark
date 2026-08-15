@@ -132,6 +132,22 @@ describe('ExecutionEngine', () => {
             expect(resultProcessor.process).toHaveBeenCalledWith(result, context);
         });
 
+        it('should process undefined when the main handler returns undefined', async () => {
+            const plan = {
+                before: [],
+                context: {},
+                catch: [],
+                after: []
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+            handlerInvoker.invoke.mockResolvedValue(undefined);
+
+            await engine.execute(context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith(undefined, context);
+        });
+
         it('should execute after steps after successful execution', async () => {
             const after1 = {};
             const after2 = {};
@@ -152,29 +168,33 @@ describe('ExecutionEngine', () => {
             expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, after1, context);
 
             expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(3, after2, context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith('result', context);
         });
 
-        it('should execute after steps after an error', async () => {
-            const error = new Error('Execution failed');
-            const after = {};
+        it('should set context.error when a before step throws', async () => {
+            const error = new Error('Before failed');
+
+            const before = {};
 
             const plan = {
-                before: [],
+                before: [before],
                 context: {},
                 catch: [],
-                after: [after]
+                after: []
             };
 
             planGenerator.plan.mockResolvedValue(plan as any);
 
-            handlerInvoker.invoke.mockRejectedValueOnce(error).mockResolvedValueOnce(undefined);
+            handlerInvoker.invoke.mockRejectedValue(error);
 
-            await expect(engine.execute(context)).resolves.toBeUndefined();
+            await engine.execute(context);
 
-            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, after, context);
+            expect(context.error).toBe(error);
+            expect(resultProcessor.process).toHaveBeenCalledWith(undefined, context);
         });
 
-        it('should set context.error when execution throws', async () => {
+        it('should set context.error when the main handler throws', async () => {
             const error = new Error('Execution failed');
 
             const plan = {
@@ -190,6 +210,7 @@ describe('ExecutionEngine', () => {
             await expect(engine.execute(context)).resolves.toBeUndefined();
 
             expect(context.error).toBe(error);
+            expect(resultProcessor.process).toHaveBeenCalledWith(undefined, context);
         });
 
         it('should invoke a catch step when it accepts the error', async () => {
@@ -238,9 +259,10 @@ describe('ExecutionEngine', () => {
             planGenerator.plan.mockResolvedValue(plan as any);
             handlerInvoker.invoke.mockRejectedValue(error);
 
-            await expect(engine.execute(context)).resolves.toBeUndefined();
+            await engine.execute(context);
 
             expect(handlerInvoker.invoke).toHaveBeenCalledTimes(1);
+
             expect(resultProcessor.process).toHaveBeenCalledWith(undefined, context);
         });
 
@@ -319,7 +341,7 @@ describe('ExecutionEngine', () => {
 
             const secondCatch = {
                 acceptedErrors: [TypeError],
-                differentProperty: true // Just to differentiate it from the first catch
+                doSomething: true
             };
 
             const result = 'handled';
@@ -340,22 +362,60 @@ describe('ExecutionEngine', () => {
             expect(handlerInvoker.invoke).toHaveBeenCalledTimes(2);
 
             expect(handlerInvoker.invoke).not.toHaveBeenCalledWith(secondCatch, context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith(result, context);
         });
 
-        it('should process undefined when no handler result is returned', async () => {
+        it('should execute after steps after an error', async () => {
+            const error = new Error('Execution failed');
+
+            const after = {};
+
             const plan = {
                 before: [],
                 context: {},
                 catch: [],
-                after: []
+                after: [after]
             };
 
             planGenerator.plan.mockResolvedValue(plan as any);
-            handlerInvoker.invoke.mockResolvedValue(undefined);
+
+            handlerInvoker.invoke.mockRejectedValueOnce(error).mockResolvedValueOnce(undefined);
 
             await engine.execute(context);
 
-            expect(resultProcessor.process).toHaveBeenCalledWith(undefined, context);
+            expect(context.error).toBe(error);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, after, context);
+        });
+
+        it('should execute after steps when an error is handled by catch', async () => {
+            const error = new TypeError('Execution failed');
+
+            const catchStep = {
+                acceptedErrors: [TypeError]
+            };
+
+            const after = {};
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [catchStep],
+                after: [after]
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke.mockRejectedValueOnce(error).mockResolvedValueOnce('handled').mockResolvedValueOnce(undefined);
+
+            await engine.execute(context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, catchStep, context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(3, after, context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith('handled', context);
         });
     });
 
@@ -375,9 +435,10 @@ describe('ExecutionEngine', () => {
             await engine.execute(context);
 
             expect(timeoutProcessor.process).not.toHaveBeenCalled();
+            expect(resultProcessor.process).toHaveBeenCalledWith('result', context);
         });
 
-        it('should not invoke the timeout processor before the timeout expires', async () => {
+        it('should not invoke the timeout processor when execution finishes first', async () => {
             jest.useFakeTimers();
 
             const timeout = new TimeoutDefinition(1000);
@@ -391,24 +452,17 @@ describe('ExecutionEngine', () => {
             };
 
             planGenerator.plan.mockResolvedValue(plan as any);
-
-            // La ejecución principal termina antes del timeout.
             handlerInvoker.invoke.mockResolvedValue('result');
 
-            const execution = engine.execute(context);
-
-            await Promise.resolve();
+            await engine.execute(context);
 
             expect(timeoutProcessor.process).not.toHaveBeenCalled();
-
-            await execution;
-
-            expect(timeoutProcessor.process).not.toHaveBeenCalled();
+            expect(resultProcessor.process).toHaveBeenCalledWith('result', context);
 
             jest.runOnlyPendingTimers();
         });
 
-        it('should invoke the timeout processor after the configured timeout', async () => {
+        it('should invoke the timeout processor when execution does not finish before timeout', async () => {
             jest.useFakeTimers();
 
             const timeout = new TimeoutDefinition(1000);
@@ -423,7 +477,6 @@ describe('ExecutionEngine', () => {
 
             planGenerator.plan.mockResolvedValue(plan as any);
 
-            // La ejecución principal no termina antes del timeout.
             handlerInvoker.invoke.mockImplementation(
                 () =>
                     new Promise(() => {
@@ -433,7 +486,7 @@ describe('ExecutionEngine', () => {
 
             timeoutProcessor.process.mockResolvedValue(undefined);
 
-            engine.execute(context);
+            const execution = engine.execute(context);
 
             await Promise.resolve();
 
@@ -445,13 +498,15 @@ describe('ExecutionEngine', () => {
             expect(timeoutProcessor.process).not.toHaveBeenCalled();
 
             jest.advanceTimersByTime(1);
-            await Promise.resolve();
+            await execution;
 
             expect(timeoutProcessor.process).toHaveBeenCalledTimes(1);
             expect(timeoutProcessor.process).toHaveBeenCalledWith(timeout, context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith(undefined, context);
         });
 
-        it('should wait exactly the configured timeout before processing it', async () => {
+        it('should wait exactly the configured timeout before processing the timeout', async () => {
             jest.useFakeTimers();
 
             const timeout = new TimeoutDefinition(5000);
@@ -489,7 +544,6 @@ describe('ExecutionEngine', () => {
 
             expect(timeoutProcessor.process).toHaveBeenCalledWith(timeout, context);
 
-            // La ejecución sigue pendiente porque el handler nunca termina.
             void execution;
         });
 
@@ -515,6 +569,8 @@ describe('ExecutionEngine', () => {
             expect(resultProcessor.process).toHaveBeenCalledWith(result, context);
 
             expect(timeoutProcessor.process).not.toHaveBeenCalled();
+
+            jest.runOnlyPendingTimers();
         });
 
         it('should process undefined when the timeout wins the race', async () => {
@@ -589,9 +645,57 @@ describe('ExecutionEngine', () => {
 
             await execution;
 
+            expect(timeoutProcessor.process).toHaveBeenCalledWith(timeout, context);
+
             expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, after, context);
+        });
+
+        it('should handle an error thrown by the timeout processor', async () => {
+            jest.useFakeTimers();
+
+            const timeout = new TimeoutDefinition(1000);
+            const error = new Error('Timeout processing failed');
+
+            const catchStep = {
+                acceptedErrors: [Error]
+            };
+
+            const plan = {
+                before: [],
+                context: {},
+                catch: [catchStep],
+                after: [],
+                timeout
+            };
+
+            planGenerator.plan.mockResolvedValue(plan as any);
+
+            handlerInvoker.invoke
+                .mockImplementationOnce(
+                    () =>
+                        new Promise(() => {
+                            // never resolves
+                        })
+                )
+                .mockResolvedValueOnce('handled');
+
+            timeoutProcessor.process.mockRejectedValue(error);
+
+            const execution = engine.execute(context);
+
+            await Promise.resolve();
+
+            jest.advanceTimersByTime(1000);
+
+            await execution;
+
+            expect(context.error).toBe(error);
 
             expect(timeoutProcessor.process).toHaveBeenCalledWith(timeout, context);
+
+            expect(handlerInvoker.invoke).toHaveBeenNthCalledWith(2, catchStep, context);
+
+            expect(resultProcessor.process).toHaveBeenCalledWith('handled', context);
         });
     });
 

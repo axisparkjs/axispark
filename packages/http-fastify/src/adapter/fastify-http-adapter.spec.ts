@@ -44,7 +44,7 @@ describe('FastifyHttpAdapter', () => {
         port: 8080,
         plugin: {} as never,
         adapter: {} as never,
-        basePath: undefined,
+        basePath: '/',
         bodyParser: false,
         urlEncoded: false,
         urlEncodedOptions: {},
@@ -165,6 +165,7 @@ describe('FastifyHttpAdapter', () => {
                     httpMethod: HttpMethod.Get,
                     path: '/users',
                     handler,
+                    versions: ['v1', 'v2'],
                     propertyKey: 'getUsers'
                 }
             ]);
@@ -189,6 +190,7 @@ describe('FastifyHttpAdapter', () => {
                     httpMethod: HttpMethod.Get,
                     path: '/',
                     handler,
+                    versions: ['v1', 'v2'],
                     propertyKey: 'test'
                 }
             ]);
@@ -221,6 +223,7 @@ describe('FastifyHttpAdapter', () => {
                     httpMethod: HttpMethod.Get,
                     path: '/',
                     handler,
+                    versions: ['v1', 'v2'],
                     propertyKey: 'test'
                 }
             ]);
@@ -254,6 +257,7 @@ describe('FastifyHttpAdapter', () => {
                     httpMethod: HttpMethod.Get,
                     path: '/users',
                     handler,
+                    versions: ['v1', 'v2'],
                     propertyKey: 'getUsers'
                 }
             ];

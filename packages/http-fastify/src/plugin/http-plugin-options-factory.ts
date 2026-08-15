@@ -8,7 +8,7 @@ class HttpPluginOptionsFactoryStatic implements Factory<FastifyHttpPluginOptions
         return {
             plugin: HttpPlugin,
             port: 3000,
-            basePath: undefined,
+            basePath: '/',
             adapter: FastifyHttpAdapter,
             bodyParser: false,
             urlEncoded: true,

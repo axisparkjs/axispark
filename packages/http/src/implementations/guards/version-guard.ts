@@ -8,7 +8,7 @@ import { Check } from '@axisparkjs/engine';
 export class VersionGuard {
     @Check()
     public async failedCheckVersion(@Context() context: HttpContext) {
-        if (context.version && !context.version.isVersionAccepted)
+        if (context.version && !context.version.isVersionAccepted())
             throw new BadRequestError(`Invalid version requested for ${context.request.method} ${context.request.path}`);
     }
 }

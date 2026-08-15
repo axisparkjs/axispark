@@ -20,7 +20,7 @@ export class VersionProcessor implements Processable {
         this.resolvers.set(type, resolver);
     }
 
-    process(version: VersionDefinition | undefined, context: HttpContext): void {
+    process(version: VersionDefinition | undefined, context: Pick<HttpContext, 'request' | 'response' | 'session'>): void {
         const options = this.versionOptions;
         if (!options || !options.type || !version) return;
 
@@ -30,6 +30,5 @@ export class VersionProcessor implements Processable {
             resolvedVersion = resolver.resolve(context.request, options);
         }
         version.setVersion(resolvedVersion);
-        context.version = version;
     }
 }

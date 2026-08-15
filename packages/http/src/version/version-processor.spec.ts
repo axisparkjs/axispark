@@ -37,7 +37,7 @@ describe('VersionProcessor', () => {
     describe('registerVersion', () => {
         it('should register a resolver for a version type', () => {
             const resolver: VersionResolver = {
-                resolve: jest.fn()
+                resolve: jest.fn().mockReturnValue('1')
             };
 
             VersionProcessor.registerVersion(VersionType.Header, resolver);
@@ -49,10 +49,9 @@ describe('VersionProcessor', () => {
             const version = new VersionDefinition(['1']);
             const context = createContext();
 
-            (resolver.resolve as jest.Mock).mockReturnValue('1');
-
             processor.process(version, context);
 
+            expect(resolver.resolve).toHaveBeenCalledTimes(1);
             expect(resolver.resolve).toHaveBeenCalledWith(
                 request,
                 expect.objectContaining({
@@ -84,7 +83,7 @@ describe('VersionProcessor', () => {
             processor.process(version, context);
 
             expect(firstResolver.resolve).not.toHaveBeenCalled();
-            expect(secondResolver.resolve).toHaveBeenCalled();
+            expect(secondResolver.resolve).toHaveBeenCalledTimes(1);
             expect(version.version).toBe('2');
         });
     });
@@ -99,7 +98,6 @@ describe('VersionProcessor', () => {
             processor.process(version, context);
 
             expect(version.version).toBeUndefined();
-            expect(context.version).toBeUndefined();
         });
 
         it('should do nothing when version options have no type', () => {
@@ -111,7 +109,6 @@ describe('VersionProcessor', () => {
             processor.process(version, context);
 
             expect(version.version).toBeUndefined();
-            expect(context.version).toBeUndefined();
         });
 
         it('should do nothing when the version definition is undefined', () => {
@@ -130,7 +127,6 @@ describe('VersionProcessor', () => {
             processor.process(undefined, context);
 
             expect(resolver.resolve).not.toHaveBeenCalled();
-            expect(context.version).toBeUndefined();
         });
 
         it('should resolve the version using the registered resolver', () => {
@@ -174,7 +170,7 @@ describe('VersionProcessor', () => {
             expect(version.version).toBe('2');
         });
 
-        it('should assign the version definition to the context', () => {
+        it('should not modify the context version', () => {
             const resolver: VersionResolver = {
                 resolve: jest.fn().mockReturnValue('2')
             };
@@ -190,7 +186,7 @@ describe('VersionProcessor', () => {
 
             processor.process(version, context);
 
-            expect(context.version).toBe(version);
+            expect(context.version).toBeUndefined();
         });
 
         it('should set version to undefined when the resolver does not resolve a version', () => {
@@ -210,7 +206,7 @@ describe('VersionProcessor', () => {
             processor.process(version, context);
 
             expect(version.version).toBeUndefined();
-            expect(context.version).toBe(version);
+            expect(context.version).toBeUndefined();
         });
 
         it('should not throw when no resolver is registered', () => {
@@ -226,7 +222,6 @@ describe('VersionProcessor', () => {
             }).not.toThrow();
 
             expect(version.version).toBeUndefined();
-            expect(context.version).toBe(version);
         });
 
         it('should use the request from the context', () => {
@@ -245,6 +240,54 @@ describe('VersionProcessor', () => {
             processor.process(new VersionDefinition(['1']), context);
 
             expect(resolver.resolve).toHaveBeenCalledWith(context.request, expect.anything());
+        });
+
+        it('should use the configured version options', () => {
+            const resolver: VersionResolver = {
+                resolve: jest.fn().mockReturnValue('1')
+            };
+
+            VersionProcessor.registerVersion(VersionType.Header, resolver);
+
+            const options = {
+                type: VersionType.Header,
+                defaultVersion: '1'
+            } as any;
+
+            const processor = createProcessor(options);
+            const context = createContext();
+            const version = new VersionDefinition(['1']);
+
+            processor.process(version, context);
+
+            expect(resolver.resolve).toHaveBeenCalledWith(context.request, options);
+        });
+
+        it('should not use a resolver registered for another version type', () => {
+            const headerResolver: VersionResolver = {
+                resolve: jest.fn().mockReturnValue('1')
+            };
+
+            const uriResolver: VersionResolver = {
+                resolve: jest.fn().mockReturnValue('2')
+            };
+
+            VersionProcessor.registerVersion(VersionType.Header, headerResolver);
+
+            VersionProcessor.registerVersion(VersionType.Uri, uriResolver);
+
+            const processor = createProcessor({
+                type: VersionType.Uri
+            } as any);
+
+            const version = new VersionDefinition(['1', '2']);
+            const context = createContext();
+
+            processor.process(version, context);
+
+            expect(headerResolver.resolve).not.toHaveBeenCalled();
+            expect(uriResolver.resolve).toHaveBeenCalledTimes(1);
+            expect(version.version).toBe('2');
         });
 
         it('should support different registered version types', () => {

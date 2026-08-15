@@ -5,7 +5,7 @@ import { HTTP_OPTIONS } from '../../di';
 import { Inject, Injectable } from '@axisparkjs/di';
 
 @Injectable()
-export class HttpTimeoutProcessor implements TimeoutResolver {
+export class HttpTimeoutResolver implements TimeoutResolver {
     private readonly options: TimeoutOptions | undefined;
     constructor(@Inject(HTTP_OPTIONS) options: HttpPluginOptions) {
         this.options = options.timeoutOptions;

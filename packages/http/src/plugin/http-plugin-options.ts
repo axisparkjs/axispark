@@ -32,7 +32,7 @@ export interface TimeoutOptions {
 
 export interface HttpPluginOptions extends PluginOptions {
     port: number;
-    basePath?: string;
+    basePath: string;
     adapter: HttpAdapterClass;
     bodyParser: boolean;
     bodyParserOptions?: any;

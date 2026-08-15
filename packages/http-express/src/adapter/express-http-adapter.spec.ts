@@ -38,6 +38,7 @@ describe('ExpressHttpAdapter', () => {
     const app = (express as unknown as jest.Mock)();
     const baseConfig = {
         port: 8080,
+        basePath: '/',
         plugin: {} as never,
         adapter: {} as never,
         bodyParser: false,
@@ -124,6 +125,7 @@ describe('ExpressHttpAdapter', () => {
                     httpMethod: HttpMethod.Get,
                     path: '/users',
                     handler,
+                    versions: ['v1', 'v2'],
                     propertyKey: 'getUsers'
                 }
             ]);
@@ -142,6 +144,7 @@ describe('ExpressHttpAdapter', () => {
                     httpMethod: HttpMethod.Get,
                     path: '/',
                     handler,
+                    versions: ['v1', 'v2'],
                     propertyKey: 'test'
                 }
             ]);
@@ -175,6 +178,7 @@ describe('ExpressHttpAdapter', () => {
                     httpMethod: HttpMethod.Get,
                     path: '/',
                     handler,
+                    versions: ['v1', 'v2'],
                     propertyKey: 'test'
                 }
             ]);
@@ -203,6 +207,7 @@ describe('ExpressHttpAdapter', () => {
                     httpMethod: HttpMethod.Get,
                     path: '/users',
                     handler,
+                    versions: ['v1', 'v2'],
                     propertyKey: 'getUsers'
                 }
             ];

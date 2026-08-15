@@ -62,7 +62,7 @@ describe('VersionGenerator', () => {
             expect(result).toBeInstanceOf(VersionDefinition);
         });
 
-        it('should use the controller version', () => {
+        it('should use the controller version when no route version is defined', () => {
             const generator = createGenerator({
                 type: VersionType.Header
             } as any);
@@ -78,21 +78,7 @@ describe('VersionGenerator', () => {
             expect(result?.acceptedVersions).toEqual(['1']);
         });
 
-        it('should use the route version', () => {
-            const generator = createGenerator({
-                type: VersionType.Header
-            } as any);
-
-            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce({
-                version: '2'
-            });
-
-            const result = generator.generate(context);
-
-            expect(result?.acceptedVersions).toEqual(['2']);
-        });
-
-        it('should combine controller and route versions', () => {
+        it('should prefer the route version over the controller version', () => {
             const generator = createGenerator({
                 type: VersionType.Header
             } as any);
@@ -107,7 +93,23 @@ describe('VersionGenerator', () => {
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual(['1', '2']);
+            expect(result?.acceptedVersions).toEqual(['2']);
+        });
+
+        it('should support a string controller version', () => {
+            const generator = createGenerator({
+                type: VersionType.Header
+            } as any);
+
+            (Metadata.get as jest.Mock)
+                .mockReturnValueOnce({
+                    version: '1'
+                })
+                .mockReturnValueOnce(undefined);
+
+            const result = generator.generate(context);
+
+            expect(result?.acceptedVersions).toEqual(['1']);
         });
 
         it('should support multiple controller versions', () => {
@@ -126,6 +128,20 @@ describe('VersionGenerator', () => {
             expect(result?.acceptedVersions).toEqual(['1', '2']);
         });
 
+        it('should support a string route version', () => {
+            const generator = createGenerator({
+                type: VersionType.Header
+            } as any);
+
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce({
+                version: '2'
+            });
+
+            const result = generator.generate(context);
+
+            expect(result?.acceptedVersions).toEqual(['2']);
+        });
+
         it('should support multiple route versions', () => {
             const generator = createGenerator({
                 type: VersionType.Header
@@ -140,7 +156,7 @@ describe('VersionGenerator', () => {
             expect(result?.acceptedVersions).toEqual(['2', '3']);
         });
 
-        it('should combine multiple controller and route versions', () => {
+        it('should prefer multiple route versions over multiple controller versions', () => {
             const generator = createGenerator({
                 type: VersionType.Header
             } as any);
@@ -155,7 +171,7 @@ describe('VersionGenerator', () => {
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual(['1', '2', '3', '4']);
+            expect(result?.acceptedVersions).toEqual(['3', '4']);
         });
 
         it('should use the default version when URI versioning is enabled', () => {
@@ -171,7 +187,24 @@ describe('VersionGenerator', () => {
             expect(result?.acceptedVersions).toEqual(['1']);
         });
 
-        it('should append the default version after controller and route versions for URI versioning', () => {
+        it('should not use the default version when controller version is defined', () => {
+            const generator = createGenerator({
+                type: VersionType.Uri,
+                defaultVersion: '3'
+            } as any);
+
+            (Metadata.get as jest.Mock)
+                .mockReturnValueOnce({
+                    version: ['1', '2']
+                })
+                .mockReturnValueOnce(undefined);
+
+            const result = generator.generate(context);
+
+            expect(result?.acceptedVersions).toEqual(['1', '2']);
+        });
+
+        it('should not use the default version when route version is defined', () => {
             const generator = createGenerator({
                 type: VersionType.Uri,
                 defaultVersion: '3'
@@ -187,44 +220,36 @@ describe('VersionGenerator', () => {
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual(['1', '2', '4', '3']);
+            expect(result?.acceptedVersions).toEqual(['4']);
         });
 
-        it('should not add the default version for header versioning', () => {
+        it('should use the default version for header versioning when no metadata is defined', () => {
             const generator = createGenerator({
                 type: VersionType.Header,
                 defaultVersion: '3'
             } as any);
 
-            (Metadata.get as jest.Mock)
-                .mockReturnValueOnce({
-                    version: '1'
-                })
-                .mockReturnValueOnce(undefined);
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual(['1']);
+            expect(result?.acceptedVersions).toEqual(['default']);
         });
 
-        it('should not add the default version for media type versioning', () => {
+        it('should use the default version for media type versioning when no metadata is defined', () => {
             const generator = createGenerator({
                 type: VersionType.MediaType,
                 defaultVersion: '3'
             } as any);
 
-            (Metadata.get as jest.Mock)
-                .mockReturnValueOnce({
-                    version: '1'
-                })
-                .mockReturnValueOnce(undefined);
+            (Metadata.get as jest.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce(undefined);
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual(['1']);
+            expect(result?.acceptedVersions).toEqual(['default']);
         });
 
-        it('should not add a default version when defaultVersion is undefined', () => {
+        it('should use the default marker when URI versioning has no defaultVersion', () => {
             const generator = createGenerator({
                 type: VersionType.Uri
             } as any);
@@ -233,10 +258,10 @@ describe('VersionGenerator', () => {
 
             const result = generator.generate(context);
 
-            expect(result?.acceptedVersions).toEqual([]);
+            expect(result?.acceptedVersions).toEqual(['default']);
         });
 
-        it('should handle missing controller and route metadata', () => {
+        it('should use the default marker when no controller or route metadata exists', () => {
             const generator = createGenerator({
                 type: VersionType.Header
             } as any);
@@ -246,7 +271,7 @@ describe('VersionGenerator', () => {
             const result = generator.generate(context);
 
             expect(result).toBeInstanceOf(VersionDefinition);
-            expect(result?.acceptedVersions).toEqual([]);
+            expect(result?.acceptedVersions).toEqual(['default']);
         });
 
         it('should query controller metadata using the target', () => {

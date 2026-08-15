@@ -10,7 +10,7 @@ describe('HttpPluginOptionsFactory', () => {
             expect(options).toEqual({
                 plugin: HttpPlugin,
                 port: 3000,
-                basePath: undefined,
+                basePath: '/',
                 adapter: FastifyHttpAdapter,
                 bodyParser: false,
                 urlEncoded: true,

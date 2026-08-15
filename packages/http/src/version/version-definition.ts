@@ -8,6 +8,6 @@ export class VersionDefinition {
     }
 
     isVersionAccepted(): boolean {
-        return this.version !== undefined && this.acceptedVersions.includes(this.version);
+        return this.acceptedVersions.some((v) => v === 'default') || (this.version !== undefined && this.acceptedVersions.includes(this.version));
     }
 }

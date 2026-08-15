@@ -26,11 +26,17 @@ export class VersionGenerator implements Generator<VersionDefinition | undefined
             ? typeof controllerMetadata.version === 'string'
                 ? [controllerMetadata.version]
                 : controllerMetadata.version
-            : [];
-        const routeVersions = routeMetadata?.version ? (typeof routeMetadata.version === 'string' ? [routeMetadata.version] : routeMetadata.version) : [];
+            : undefined;
+        const routeVersions = routeMetadata?.version
+            ? typeof routeMetadata.version === 'string'
+                ? [routeMetadata.version]
+                : routeMetadata.version
+            : undefined;
 
-        const acceptedVersions = [...controllerVersions, ...routeVersions];
-        if (this.versionOptions.type === VersionType.Uri && this.versionOptions.defaultVersion) acceptedVersions.push(this.versionOptions.defaultVersion);
+        const acceptedVersions =
+            routeVersions ??
+            controllerVersions ??
+            (this.versionOptions.type === VersionType.Uri && this.versionOptions.defaultVersion ? [this.versionOptions.defaultVersion] : ['default']);
 
         return new VersionDefinition(acceptedVersions);
     }

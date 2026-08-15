@@ -1,1 +1,1 @@
-export * from './http-timeout-processor';
+export * from './http-timeout-resolver';

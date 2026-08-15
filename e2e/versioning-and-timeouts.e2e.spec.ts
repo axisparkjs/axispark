@@ -1,0 +1,116 @@
+import { AxiSparkTestFactory } from '@axisparkjs/test';
+import { AxiSparkCore } from '@axisparkjs/core';
+import { HttpPlugin } from '@axisparkjs/http';
+import { app as appExpress } from '@axisparkjs/samples/versioning-and-timeouts/src/app-express';
+import { app as appFasitfy } from '@axisparkjs/samples/versioning-and-timeouts/src/app-fastify';
+import { ExpressHttpAdapter } from '@axisparkjs/http-express';
+import { FastifyHttpAdapter } from '@axisparkjs/http-fastify';
+
+describe.each([
+    { name: 'Express', app: appExpress },
+    { name: 'Fastify', app: appFasitfy }
+])('Versioning and Timeouts App ($name)', ({ app, name }) => {
+    let axiSparkCore: AxiSparkCore;
+
+    beforeAll(async () => {
+        axiSparkCore = AxiSparkTestFactory.create({
+            app
+        });
+        await axiSparkCore.init();
+        await axiSparkCore.run();
+    });
+
+    it('should create an instance of AxiSparkTestCore', () => {
+        expect(axiSparkCore).toBeInstanceOf(AxiSparkCore);
+    });
+
+    it('should create the app', async () => {
+        const plugins = axiSparkCore.used();
+        expect(plugins).toHaveLength(1);
+        expect(plugins).toStrictEqual([
+            {
+                type: HttpPlugin,
+                options: expect.objectContaining({
+                    basePath: '/api',
+                    adapter: name === 'Express' ? ExpressHttpAdapter : FastifyHttpAdapter,
+                    plugin: HttpPlugin,
+                    port: 3000
+                })
+            }
+        ]);
+    });
+
+    it('should handle GET requests to /v1/versions', async () => {
+        const response = await fetch('http://localhost:3000/api/v1/versions', {
+            method: 'GET'
+        });
+        expect(response.status).toBe(200);
+        expect(await response.json()).toEqual({ message: 'This is a GET request example for the default version' });
+    });
+
+    it('should handle GET requests to /v2/versions', async () => {
+        const response = await fetch('http://localhost:3000/api/v2/versions', {
+            method: 'GET'
+        });
+        expect(response.status).toBe(200);
+        expect(await response.json()).toEqual({ message: 'This is a GET request example for version 2' });
+    });
+
+    it('should handle GET requests to /v3/versions', async () => {
+        const response = await fetch('http://localhost:3000/api/v3/versions', {
+            method: 'GET'
+        });
+        expect(response.status).toBe(200);
+        expect(await response.json()).toEqual({ message: 'This is a GET request example for version 3' });
+    });
+
+    it('should fail GET requests to /v4/versions', async () => {
+        const response = await fetch('http://localhost:3000/api/v4/versions', {
+            method: 'GET'
+        });
+        expect(response.status).toBe(400);
+        expect(await response.json()).toEqual(expect.objectContaining({ error: 'Invalid version requested for GET /api/v4/versions' }));
+    });
+
+    it('should handle GET requests to /timeouts and timeout after 0.3 seconds', async () => {
+        const response = await fetch('http://localhost:3000/api/v1/timeouts', {
+            method: 'GET'
+        });
+        expect(response.status).toBe(408);
+        expect(await response.json()).toEqual(expect.objectContaining({ error: 'Request timeout after 300 ms' }));
+    });
+
+    it('should handle GET requests to /timeouts/no-timeout and return a response', async () => {
+        const response = await fetch('http://localhost:3000/api/v1/timeouts/no-timeout', {
+            method: 'GET'
+        });
+        expect(response.status).toBe(200);
+        expect(await response.json()).toEqual({ message: 'This is a GET request example for no timeouts' });
+    });
+
+    it('should handle GET requests to /timeouts/throw-timeout and timeout after 0.3 seconds', async () => {
+        const response = await fetch('http://localhost:3000/api/v1/timeouts/throw-timeout', {
+            method: 'GET'
+        });
+        expect(response.status).toBe(408);
+        expect(await response.json()).toEqual(expect.objectContaining({ error: 'Request timeout after 300 ms' }));
+    });
+
+    it('should handle GET requests to /timeouts/throw-timeout and handle GET requests to /timeouts/no-timeout', async () => {
+        const response = await fetch('http://localhost:3000/api/v1/timeouts/throw-timeout', {
+            method: 'GET'
+        });
+        expect(response.status).toBe(408);
+        expect(await response.json()).toEqual(expect.objectContaining({ error: 'Request timeout after 300 ms' }));
+
+        const response2 = await fetch('http://localhost:3000/api/v1/timeouts/no-timeout', {
+            method: 'GET'
+        });
+        expect(response2.status).toBe(200);
+        expect(await response2.json()).toEqual({ message: 'This is a GET request example for no timeouts' });
+    });
+
+    afterAll(async () => {
+        await axiSparkCore.destroy();
+    });
+});

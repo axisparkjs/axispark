@@ -10,6 +10,7 @@ describe('HttpPluginOptionsFactory', () => {
             expect(options).toEqual({
                 plugin: HttpPlugin,
                 port: 3000,
+                basePath: '/',
                 adapter: ExpressHttpAdapter,
                 bodyParser: true,
                 bodyParserOptions: undefined,
@@ -47,6 +48,7 @@ describe('HttpPluginOptionsFactory', () => {
 
             const options = HttpPluginOptionsFactory.create({
                 port: 8080,
+                basePath: '/',
                 adapter: class TestAdapter {} as unknown as HttpAdapterClass,
                 bodyParser: false,
                 bodyParserOptions,
@@ -74,6 +76,7 @@ describe('HttpPluginOptionsFactory', () => {
             expect(options).toEqual({
                 plugin: HttpPlugin,
                 port: 8080,
+                basePath: '/',
                 adapter: expect.any(Function),
                 bodyParser: false,
                 bodyParserOptions,
