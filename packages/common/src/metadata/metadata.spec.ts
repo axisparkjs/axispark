@@ -45,6 +45,50 @@ describe('Metadata', () => {
 
             expect(spy).toHaveBeenCalledWith(testKey.value, value, TestClass, 'myMethod');
         });
+
+        it('should use the target directly when normalizeTarget is false', () => {
+            const spy = jest.spyOn(Reflect, 'defineMetadata').mockImplementation();
+
+            const value = { foo: 'bar' };
+            const target = new TestClass();
+
+            Metadata.define(testKey, value, target, undefined, false);
+
+            expect(spy).toHaveBeenCalledWith(testKey.value, value, target);
+        });
+
+        it('should use the target directly when normalizeTarget is false and propertyKey is provided', () => {
+            const spy = jest.spyOn(Reflect, 'defineMetadata').mockImplementation();
+
+            const value = { foo: 'bar' };
+            const target = new TestClass();
+
+            Metadata.define(testKey, value, target, 'myMethod', false);
+
+            expect(spy).toHaveBeenCalledWith(testKey.value, value, target, 'myMethod');
+        });
+
+        it('should support symbol property keys', () => {
+            const spy = jest.spyOn(Reflect, 'defineMetadata').mockImplementation();
+
+            const value = { foo: 'bar' };
+            const propertyKey = Symbol('myMethod');
+            const target = new TestClass();
+
+            Metadata.define(testKey, value, target, propertyKey);
+
+            expect(spy).toHaveBeenCalledWith(testKey.value, value, TestClass, propertyKey);
+        });
+
+        it('should not normalize a constructor target', () => {
+            const spy = jest.spyOn(Reflect, 'defineMetadata').mockImplementation();
+
+            const value = { foo: 'bar' };
+
+            Metadata.define(testKey, value, TestClass);
+
+            expect(spy).toHaveBeenCalledWith(testKey.value, value, TestClass);
+        });
     });
 
     describe('get', () => {
@@ -83,6 +127,51 @@ describe('Metadata', () => {
 
             expect(result).toBeUndefined();
         });
+
+        it('should use the target directly when normalizeTarget is false', () => {
+            const expected = { foo: 'bar' };
+            const spy = jest.spyOn(Reflect, 'getMetadata').mockReturnValue(expected);
+
+            const target = new TestClass();
+
+            const result = Metadata.get(testKey, target, undefined, false);
+
+            expect(result).toBe(expected);
+            expect(spy).toHaveBeenCalledWith(testKey.value, target);
+        });
+
+        it('should use the target directly when normalizeTarget is false and propertyKey is provided', () => {
+            const expected = { foo: 'bar' };
+            const spy = jest.spyOn(Reflect, 'getMetadata').mockReturnValue(expected);
+
+            const target = new TestClass();
+
+            const result = Metadata.get(testKey, target, 'myMethod', false);
+
+            expect(result).toBe(expected);
+            expect(spy).toHaveBeenCalledWith(testKey.value, target, 'myMethod');
+        });
+
+        it('should support symbol property keys', () => {
+            const expected = { foo: 'bar' };
+            const propertyKey = Symbol('myMethod');
+            const spy = jest.spyOn(Reflect, 'getMetadata').mockReturnValue(expected);
+
+            const result = Metadata.get(testKey, new TestClass(), propertyKey);
+
+            expect(result).toBe(expected);
+            expect(spy).toHaveBeenCalledWith(testKey.value, TestClass, propertyKey);
+        });
+
+        it('should work with a constructor target and property name', () => {
+            const expected = { foo: 'bar' };
+            const spy = jest.spyOn(Reflect, 'getMetadata').mockReturnValue(expected);
+
+            const result = Metadata.get(testKey, TestClass, 'myMethod');
+
+            expect(result).toBe(expected);
+            expect(spy).toHaveBeenCalledWith(testKey.value, TestClass, 'myMethod');
+        });
     });
 
     describe('has', () => {
@@ -118,6 +207,65 @@ describe('Metadata', () => {
             const result = Metadata.has(testKey, new TestClass(), 'myMethod');
 
             expect(result).toBe(false);
+        });
+
+        it('should use the target directly when normalizeTarget is false', () => {
+            const spy = jest.spyOn(Reflect, 'hasMetadata').mockReturnValue(true);
+
+            const target = new TestClass();
+
+            const result = Metadata.has(testKey, target, undefined, false);
+
+            expect(result).toBe(true);
+            expect(spy).toHaveBeenCalledWith(testKey.value, target);
+        });
+
+        it('should use the target directly when normalizeTarget is false and propertyKey is provided', () => {
+            const spy = jest.spyOn(Reflect, 'hasMetadata').mockReturnValue(true);
+
+            const target = new TestClass();
+
+            const result = Metadata.has(testKey, target, 'myMethod', false);
+
+            expect(result).toBe(true);
+            expect(spy).toHaveBeenCalledWith(testKey.value, target, 'myMethod');
+        });
+
+        it('should support symbol property keys', () => {
+            const propertyKey = Symbol('myMethod');
+            const spy = jest.spyOn(Reflect, 'hasMetadata').mockReturnValue(true);
+
+            const result = Metadata.has(testKey, new TestClass(), propertyKey);
+
+            expect(result).toBe(true);
+            expect(spy).toHaveBeenCalledWith(testKey.value, TestClass, propertyKey);
+        });
+
+        it('should work with a constructor target and property name', () => {
+            const spy = jest.spyOn(Reflect, 'hasMetadata').mockReturnValue(true);
+
+            const result = Metadata.has(testKey, TestClass, 'myMethod');
+
+            expect(result).toBe(true);
+            expect(spy).toHaveBeenCalledWith(testKey.value, TestClass, 'myMethod');
+        });
+    });
+
+    describe('normalizeTarget', () => {
+        it('should return the constructor when target is an instance', () => {
+            const target = new TestClass();
+
+            expect(Metadata.normalizeTarget(target)).toBe(TestClass);
+        });
+
+        it('should return the target when target is already a constructor', () => {
+            expect(Metadata.normalizeTarget(TestClass)).toBe(TestClass);
+        });
+
+        it('should return the same constructor reference', () => {
+            const target = TestClass;
+
+            expect(Metadata.normalizeTarget(target)).toBe(target);
         });
     });
 });
