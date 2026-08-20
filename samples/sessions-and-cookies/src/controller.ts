@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpRequest, HttpResponse, HttpSession, Param, Post, Request, Response, Session } from '@axisparkjs/http';
+import { Body, Controller, Delete, Get, HttpRequest, HttpResponse, HttpSession, Path, Post, Request, Response, Session } from '@axisparkjs/http';
 
 @Controller('sessions')
 export class SessionController {
@@ -42,7 +42,7 @@ export class CookieController {
     }
 
     @Delete(':name')
-    deleteCookie(@Response() response: HttpResponse, @Param('name') name: string) {
+    deleteCookie(@Response() response: HttpResponse, @Path('name') name: string) {
         response.clearCookie(name);
     }
 }

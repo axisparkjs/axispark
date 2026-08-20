@@ -1,6 +1,6 @@
 import { stringify } from 'yaml';
 
-export class OpenApiDocument {
+export class OpenApiDocumentDefinition {
     private readonly document: object;
 
     constructor(document: object) {

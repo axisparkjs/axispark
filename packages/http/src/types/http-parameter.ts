@@ -2,7 +2,7 @@ export enum HttpParameter {
     Request = 'request',
     Response = 'response',
     Body = 'body',
-    Param = 'param',
+    Path = 'path',
     Query = 'query',
     Header = 'header',
     Ip = 'ip',

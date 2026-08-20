@@ -8,7 +8,7 @@ import { Injectable } from '@axisparkjs/di';
 export const Request = () => Parameter(HttpParameter.Request);
 export const Response = () => Parameter(HttpParameter.Response);
 export const Body = () => Parameter(HttpParameter.Body);
-export const Param = (field: string) => Parameter(HttpParameter.Param, field);
+export const Path = (field: string) => Parameter(HttpParameter.Path, field);
 export const Query = (field: string) => Parameter(HttpParameter.Query, field);
 export const Header = (field: string) => Parameter(HttpParameter.Header, field);
 export const Ip = () => Parameter(HttpParameter.Ip);
@@ -34,7 +34,7 @@ export class BodyResolver implements ParameterResolver<any> {
     }
 }
 @Injectable()
-export class ParamResolver implements ParameterResolver<string | string[]> {
+export class PathResolver implements ParameterResolver<string | string[]> {
     resolve(httpContext: HttpContext, parameter: ParameterDefinition) {
         return httpContext.request.params[parameter.field as string];
     }

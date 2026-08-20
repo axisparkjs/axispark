@@ -20,7 +20,7 @@ import {
     ResponseResolver,
     IpResolver,
     BodyResolver,
-    ParamResolver,
+    PathResolver,
     QueryResolver,
     CookieResolver,
     HeaderResolver,
@@ -35,8 +35,8 @@ import {
 @Injectable()
 export class HttpPlugin extends Plugin {
     private context: AxiSparkContext;
-    protected options!: HttpPluginOptions;
-    private adapter!: HttpAdapter;
+    protected options: HttpPluginOptions;
+    private adapter: HttpAdapter;
 
     constructor(
         private logger: Logger,
@@ -112,7 +112,7 @@ export class HttpPlugin extends Plugin {
         ParameterGenerator.registerParameter(HttpParameter.Request, await this.injector.get(RequestResolver));
         ParameterGenerator.registerParameter(HttpParameter.Response, await this.injector.get(ResponseResolver));
         ParameterGenerator.registerParameter(HttpParameter.Body, await this.injector.get(BodyResolver));
-        ParameterGenerator.registerParameter(HttpParameter.Param, await this.injector.get(ParamResolver));
+        ParameterGenerator.registerParameter(HttpParameter.Path, await this.injector.get(PathResolver));
         ParameterGenerator.registerParameter(HttpParameter.Query, await this.injector.get(QueryResolver));
         ParameterGenerator.registerParameter(HttpParameter.Header, await this.injector.get(HeaderResolver));
         ParameterGenerator.registerParameter(HttpParameter.Ip, await this.injector.get(IpResolver));

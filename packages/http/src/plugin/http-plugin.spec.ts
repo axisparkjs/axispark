@@ -408,7 +408,7 @@ describe('HttpPlugin', () => {
 
             expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Body, expect.anything());
 
-            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Param, expect.anything());
+            expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Path, expect.anything());
 
             expect(ParameterGenerator.registerParameter).toHaveBeenCalledWith(HttpParameter.Query, expect.anything());
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundError, Param, Post, Put } from '@axisparkjs/http';
+import { Body, Controller, Delete, Get, NotFoundError, Path, Post, Put } from '@axisparkjs/http';
 import { TodoService } from './service';
 import { NotEmpty, ParseInt, Pipe } from '@axisparkjs/engine';
 
@@ -12,7 +12,7 @@ export class TodoController {
     }
 
     @Get(':index')
-    getTodoByIndex(@Param('index') @Pipe(ParseInt(10)) index: number) {
+    getTodoByIndex(@Path('index') @Pipe(ParseInt(10)) index: number) {
         const todo = this.todoService.getTodoByIndex(index);
         if (todo === undefined) {
             throw new NotFoundError('Todo not found');
@@ -27,7 +27,7 @@ export class TodoController {
     }
 
     @Put(':index')
-    updateTodo(@Param('index') @Pipe(ParseInt(10)) index: number, @Body() @Pipe(NotEmpty()) updatedTodo: { task: string }) {
+    updateTodo(@Path('index') @Pipe(ParseInt(10)) index: number, @Body() @Pipe(NotEmpty()) updatedTodo: { task: string }) {
         const updated = this.todoService.updateTodo(index, updatedTodo.task);
         if (updated === undefined) {
             throw new NotFoundError('Todo not found');
@@ -36,7 +36,7 @@ export class TodoController {
     }
 
     @Delete(':index')
-    removeTodo(@Param('index') @Pipe(ParseInt(10)) index: number) {
+    removeTodo(@Path('index') @Pipe(ParseInt(10)) index: number) {
         this.todoService.removeTodo(index);
         return;
     }

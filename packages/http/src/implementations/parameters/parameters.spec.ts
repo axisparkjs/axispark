@@ -1,10 +1,10 @@
 import { Parameter } from '@axisparkjs/engine';
-import { Body, Header, Ip, Param, Query, Request, Response, Session, Cookie } from './parameters';
+import { Body, Header, Ip, Path, Query, Request, Response, Session, Cookie } from './parameters';
 import {
     RequestResolver,
     ResponseResolver,
     BodyResolver,
-    ParamResolver,
+    PathResolver,
     QueryResolver,
     HeaderResolver,
     IpResolver,
@@ -21,7 +21,7 @@ jest.mock('@axisparkjs/engine', () => {
     };
 });
 
-it.each([Body, Header, Ip, Param, Query, Request, Response, Session, Cookie])('Parameter %p should be defined', (parameter) => {
+it.each([Body, Header, Ip, Path, Query, Request, Response, Session, Cookie])('Parameter %p should be defined', (parameter) => {
     parameter('test');
 
     expect(parameter).toBeDefined();
@@ -79,13 +79,13 @@ describe('ParameterResolvers', () => {
 
     describe('ParamResolver', () => {
         it('should return parameter by field', () => {
-            const resolver = new ParamResolver();
+            const resolver = new PathResolver();
 
             expect(resolver.resolve(httpContext, { field: 'id' } as any)).toBe('123');
         });
 
         it('should return undefined when parameter does not exist', () => {
-            const resolver = new ParamResolver();
+            const resolver = new PathResolver();
 
             expect(resolver.resolve(httpContext, { field: 'unknown' } as any)).toBeUndefined();
         });
