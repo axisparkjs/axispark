@@ -6,7 +6,7 @@ const config: Config = {
     title: 'AxiSpark.js',
     tagline: 'The Ultimate Node.js Framework',
     favicon: 'img/icon.svg',
-    baseUrl: '/',
+    baseUrl: '/axispark/',
     url: 'https://axisparkjs.github.io',
     future: {
         v4: true
