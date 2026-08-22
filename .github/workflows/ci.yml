@@ -1,4 +1,4 @@
-name: Workspace CI
+name: Packages CI
 
 on:
   pull_request:
