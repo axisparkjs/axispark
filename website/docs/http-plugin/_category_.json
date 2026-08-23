@@ -1,8 +1,8 @@
 {
-  "label": "HTTP Plugin",
-  "position": 3,
-  "link": {
-    "type": "generated-index",
-    "description": "The HTTP plugin is a powerful tool that allows your application to serve an HTTP server and handle incoming requests. This section provides comprehensive documentation on how to use the HTTP plugin, including setup instructions, configuration options, and examples of common use cases."
-  }
+    "label": "HTTP Plugin",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "description": "The HTTP plugin is a powerful tool that allows your application to serve an HTTP server and handle incoming requests. This section provides comprehensive documentation on how to use the HTTP plugin, including setup instructions, configuration options, and examples of common use cases."
+    }
 }
