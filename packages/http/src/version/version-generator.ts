@@ -8,6 +8,9 @@ import { HttpPluginOptions, VersionOptions } from '../plugin/http-plugin-options
 import { VersionType } from './version-type';
 import { HTTP_OPTIONS } from '../di';
 
+/**
+ * A generator class for creating version definitions based on the HTTP context. It retrieves version information from controller and route metadata, as well as from the provided version options. The generated version definition includes accepted versions and the current version.
+ */
 @Injectable()
 export class VersionGenerator implements Generator<VersionDefinition | undefined> {
     private readonly versionOptions: VersionOptions | undefined;
@@ -16,6 +19,11 @@ export class VersionGenerator implements Generator<VersionDefinition | undefined
         this.versionOptions = httpOptions.versionOptions;
     }
 
+    /**
+     * Generates a version definition based on the HTTP context.
+     * @param context The HTTP context.
+     * @returns The generated version definition or undefined if no version options are available.
+     */
     generate(context: HttpContext): VersionDefinition | undefined {
         if (!this.versionOptions) return undefined;
 

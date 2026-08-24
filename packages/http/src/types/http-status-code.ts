@@ -1,3 +1,6 @@
+/**
+ * Enumeration of HTTP status codes used in responses.
+ */
 export enum HttpStatusCode {
     Continue = 100,
     SwitchingProtocols = 101,

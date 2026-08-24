@@ -14,6 +14,9 @@ import formbody from '@fastify/formbody';
 import fastifyStatic from '@fastify/static';
 import path from 'node:path';
 
+/**
+ * An HTTP adapter for integrating Fastify with the HTTP Plugin.
+ */
 @Injectable()
 export class FastifyHttpAdapter implements HttpAdapter {
     private readonly app = fastify();

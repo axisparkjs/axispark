@@ -1,6 +1,9 @@
 import { CronTime, validateCronExpression } from 'cron';
 import { JobError } from '../errors/job-error';
 
+/**
+ * An abstract class representing a job trigger.
+ */
 export abstract class JobTrigger {
     public readonly createdAt: Date;
 
@@ -8,9 +11,17 @@ export abstract class JobTrigger {
         this.createdAt = new Date();
     }
 
+    /**
+     * Gets the next execution time for the job.
+     * @param lastExecutionTime The time of the last execution.
+     * @returns The next execution time, or undefined if the job has no more executions.
+     */
     abstract getNextExecutionTime(lastExecutionTime?: Date): Date | undefined;
 }
 
+/**
+ * A class representing a cron-based job trigger.
+ */
 export class CronJobTrigger extends JobTrigger {
     private readonly cronTime: CronTime;
 
@@ -36,6 +47,9 @@ export class CronJobTrigger extends JobTrigger {
     }
 }
 
+/**
+ * A class representing an interval-based job trigger.
+ */
 export class IntervalJobTrigger extends JobTrigger {
     constructor(public readonly interval: number) {
         if (interval <= 0) throw new JobError(`Interval must be greater than 0, got: ${interval}`);
@@ -49,6 +63,9 @@ export class IntervalJobTrigger extends JobTrigger {
     }
 }
 
+/**
+ * A class representing a date-based job trigger.
+ */
 export class DateJobTrigger extends JobTrigger {
     constructor(public readonly date: Date) {
         if (date.getTime() <= Date.now()) throw new JobError(`Date must be in the future, got: ${date}`);
@@ -61,6 +78,9 @@ export class DateJobTrigger extends JobTrigger {
     }
 }
 
+/**
+ * A class representing a timeout-based job trigger.
+ */
 export class TimeoutJobTrigger extends JobTrigger {
     constructor(public readonly timeout: number) {
         if (timeout <= 0) throw new JobError(`Timeout must be greater than 0, got: ${timeout}`);

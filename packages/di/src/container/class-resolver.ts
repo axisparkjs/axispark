@@ -6,9 +6,22 @@ import { ScopeDependencyError, CircularDependencyError } from '../errors';
 import { ScopedContainer } from './scoped-container';
 import { InjectMetadata } from '../metadata';
 
+/**
+ * ClassResolver is responsible for resolving class providers and factory providers. It handles the instantiation of classes, resolving their dependencies, and managing scopes. It also detects circular dependencies and scope violations during the resolution process.
+ * @template T - The type of the instance being resolved.
+ */
 export class ClassResolver<T = unknown> implements Resolver<T> {
     private readonly resolving: { classType: ClassType; scope: InjectableScopes }[] = [];
 
+    /**
+     * Resolves a class provider or factory provider, instantiating the class and resolving its dependencies. It manages the resolution process, including handling scopes and detecting circular dependencies.
+     * @param provider - The class provider or factory provider to resolve.
+     * @param container - The container used for resolving dependencies.
+     * @param scopedContainer - An optional scoped container for managing scoped instances.
+     * @returns A promise that resolves to an instance of the class or the result of the factory function.
+     * @throws {CircularDependencyError} If a circular dependency is detected during resolution.
+     * @throws {ScopeDependencyError} If a scope violation is detected during resolution.
+     */
     async resolve<T>(provider: ClassProvider<T> | FactoryProvider<T>, container: Container, scopedContainer?: ScopedContainer): Promise<T> {
         const { scope } = provider;
         let classType: ClassType<T>;

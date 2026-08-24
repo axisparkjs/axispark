@@ -5,10 +5,18 @@ import { HttpResponse } from '../../types';
 import { Response } from '../parameters';
 import { HandledResult } from '@axisparkjs/engine';
 
+/**
+ * A controller for handling health check endpoints.
+ */
 @Controller('/health')
 export class HealthController {
     constructor(private readonly healthEngine: HealthEngine) {}
 
+    /**
+     * Gets the health status of the application.
+     * @param response The HTTP response object.
+     * @returns A promise resolving to the handled result.
+     */
     @Get()
     public async getHealth(@Response() response: HttpResponse) {
         const checks = this.healthEngine.checkAll();
@@ -24,6 +32,10 @@ export class HealthController {
         return new HandledResult();
     }
 
+    /**
+     * Gets the liveness status of the application.
+     * @returns A promise resolving to the liveness status.
+     */
     @Get('/liveness')
     @HttpCode(200)
     public async getLiveness() {
@@ -31,6 +43,10 @@ export class HealthController {
         return { status: appHealth.status, timestamp: new Date().toISOString() };
     }
 
+    /**
+     * Gets the readiness status of the application.
+     * @returns A promise resolving to the readiness status.
+     */
     @Get('/readiness')
     @HttpCode(200)
     public async getReadiness() {

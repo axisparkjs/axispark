@@ -7,3 +7,4 @@
 - Response mapping (e.g., transforming data before sending it to the client)
 - File uploads
 - Rate limiting (to prevent abuse)
+- Adapt HTTP to latest https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1 RFC

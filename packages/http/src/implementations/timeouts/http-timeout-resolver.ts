@@ -4,6 +4,9 @@ import { TimeoutOptions, HttpPluginOptions } from '../../plugin';
 import { HTTP_OPTIONS } from '../../di';
 import { Inject, Injectable } from '@axisparkjs/di';
 
+/**
+ * A resolver for handling HTTP request timeouts. It throws a RequestTimeoutError with a custom message when a timeout occurs.
+ */
 @Injectable()
 export class HttpTimeoutResolver implements TimeoutResolver {
     private readonly options: TimeoutOptions | undefined;

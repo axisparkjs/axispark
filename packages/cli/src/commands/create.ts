@@ -12,23 +12,16 @@ import { downloadTemplate } from '../utils/template';
 export const createCommand = new Command('create')
     .description('Create a new framework project')
     .argument('[name]', 'project name')
-    .option(
-        "-t, --template <template>",
-        "template to use"
-    ).option(
-        "-i, --install",
-        "install dependencies after creating the project"
-    ).option(
-        "--no-install",
-        "do not install dependencies after creating the project"
-    )
+    .option('-t, --template <template>', 'template to use')
+    .option('-i, --install', 'install dependencies after creating the project')
+    .option('--no-install', 'do not install dependencies after creating the project')
     .action(async (name: string, options: Record<string, any>) => {
         // 1. Preguntar nombre si no lo proporcionamos
         if (!name) {
             const response = await prompts({
                 type: 'text',
                 name: 'name',
-                message: 'What is your project name?',
+                message: 'What is your project name?'
             });
             name = response.name;
         }
@@ -51,7 +44,7 @@ export const createCommand = new Command('create')
                 message: 'Select a template:',
                 choices: [
                     { title: 'Basic', value: 'default' },
-                    { title: 'Http', value: 'http' },
+                    { title: 'Http', value: 'http' }
                 ],
                 initial: 0
             });
@@ -59,10 +52,7 @@ export const createCommand = new Command('create')
         }
 
         try {
-            await downloadTemplate(
-                options.template as string,
-                name as string
-            );
+            await downloadTemplate(options.template as string, name as string);
             await copyTemplate(projectPath);
             await updatePackageJson(projectPath, name as string);
             spinner.succeed(chalk.green('Project created'));

@@ -10,4 +10,8 @@ export class LowerCasePipeStep implements PipeStep<string, string> {
     }
 }
 
+/**
+ * A decorator for applying the `LowerCasePipeStep` to a method parameter. It uses the `Pipe` decorator to define a pipe step that converts the parameter value to lowercase. This allows the decorated method parameter to receive a lowercase version of the input string, enabling consistent formatting and processing of string values.
+ * @returns A pipe decorator that applies the `LowerCasePipeStep`.
+ */
 export const LowerCase = () => LowerCasePipeStep;

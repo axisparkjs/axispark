@@ -1,6 +1,9 @@
 import { ClassType } from '@axisparkjs/common';
 import { ParameterMetadata } from '../metadata';
 
+/**
+ * A definition for a method parameter that includes metadata and value handling.
+ */
 export class ParameterDefinition {
     public originalValue!: any;
     private actualValue!: any;

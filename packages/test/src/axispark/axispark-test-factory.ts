@@ -3,7 +3,15 @@ import { AxiSparkTestConfig } from './axispark-test-config';
 import { AxiSparkContext, AxiSparkCore } from '@axisparkjs/core';
 import { NullTransport, LogLevel, SimpleFormatter } from '@axisparkjs/logger';
 
-class AxiSparkTestFactoryStatic implements Factory<AxiSparkCore> {
+/**
+ * A static factory for creating test instances of AxiSparkCore.
+ */
+export class AxiSparkTestFactoryStatic implements Factory<AxiSparkCore> {
+    /**
+     * Creates a new instance of AxiSparkCore for testing purposes.
+     * @param config Optional configuration for the test instance, including app settings and providers.
+     * @returns A new instance of AxiSparkCore configured for testing.
+     */
     public create(config?: AxiSparkTestConfig): AxiSparkCore {
         // Perform any necessary setup or configuration here
         const context = new AxiSparkContext(
@@ -29,4 +37,7 @@ class AxiSparkTestFactoryStatic implements Factory<AxiSparkCore> {
     }
 }
 
+/**
+ * A factory for creating test instances of AxiSparkCore. It provides a `create` method that can be called with an optional `AxiSparkTestConfig` object to customize the configuration of the test instance. The factory sets up a test context with default settings, including a null log transport and a test environment, and allows for the registration of plugins and providers as specified in the configuration.
+ */
 export const AxiSparkTestFactory = new AxiSparkTestFactoryStatic();

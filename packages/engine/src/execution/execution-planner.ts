@@ -15,6 +15,9 @@ import { ExecutionTransport } from './execution-transport';
 import { Injectable } from '@axisparkjs/di';
 import { TimeoutGenerator } from '../timeout';
 
+/**
+ * A class responsible for generating execution plans based on the provided execution context. It utilizes the `StepGenerator` to generate steps and the `TimeoutGenerator` to generate timeout definitions. The generated execution plan includes before, after, catch, and context steps, as well as an optional timeout definition. The class also caches registered plans for efficient reuse.
+ */
 @Injectable()
 export class ExecutionPlanner {
     private readonly registeredPlans = new Map<string, ExecutionPlan>();
@@ -24,6 +27,11 @@ export class ExecutionPlanner {
         private readonly stepGenerator: StepGenerator
     ) {}
 
+    /**
+     * Generates an execution plan for the provided execution context.
+     * @param context The execution context for which to generate a plan.
+     * @returns A promise resolving to the generated execution plan.
+     */
     public async plan(context: ExecutionContext): Promise<ExecutionPlan> {
         const key = `${context.target.name}.${String(context.propertyKey)}`;
         let plan = this.registeredPlans.get(key);

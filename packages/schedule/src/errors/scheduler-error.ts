@@ -1,3 +1,6 @@
+/**
+ * Represents an error that occurs within the scheduler.
+ */
 export class SchedulerError extends Error {
     constructor(message: string) {
         super(message);

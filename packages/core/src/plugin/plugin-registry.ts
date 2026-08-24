@@ -12,11 +12,19 @@ interface RegisteredPlugin {
     readonly options?: PluginOptions;
 }
 
+/**
+ * A registry for managing plugins and their lifecycle.
+ */
 export class PluginRegistry implements Lifecycle {
     private readonly plugins: RegisteredPlugin[] = [];
     private readonly executionOrder: RegisteredPlugin[] = [];
     private readonly instances = new Map<PluginType, Plugin>();
 
+    /**
+     * Registers a new plugin with the registry.
+     * @param plugin The type of the plugin to register.
+     * @param options The options for the plugin.
+     */
     register(plugin: PluginType, options?: PluginOptions): void {
         if (!Metadata.has(MetadataKeys.INJECTABLE, plugin)) throw new DecoratorNotIncludedError(plugin.name, Injectable.name);
         if (this.plugins.some((p) => p.type === plugin)) throw new PluginAlreadyRegisteredError(plugin.name);
@@ -25,6 +33,10 @@ export class PluginRegistry implements Lifecycle {
         this.plugins.push({ type: plugin, options });
     }
 
+    /**
+     * Retrieves all registered plugins along with their options and instances.
+     * @returns An array of objects containing the plugin type, options, and instance.
+     */
     getAll(): readonly { type: PluginType; options?: PluginOptions; instance?: Plugin }[] {
         return this.plugins.map((p) => ({ type: p.type, options: p.options, instance: this.instances.get(p.type) }));
     }
@@ -71,15 +83,27 @@ export class PluginRegistry implements Lifecycle {
         }
     }
 
+    /**
+     * Initializes the registered plugins by executing their `onRegister` lifecycle method.
+     * @param context The AxiSparkContext to be passed to the plugins during initialization.
+     */
     async init(context: AxiSparkContext): Promise<void> {
         this.resolveExecutionOrder();
         await this.executeLifecycleMethod(context, 'onRegister', PluginLifecycle.Registered);
     }
 
+    /**
+     * Starts the registered plugins by executing their `onStart` lifecycle method.
+     * @param context The AxiSparkContext to be passed to the plugins during startup.
+     */
     async run(context: AxiSparkContext): Promise<void> {
         await this.executeLifecycleMethod(context, 'onStart', PluginLifecycle.Started);
     }
 
+    /**
+     * Destroys the registered plugins by executing their `onStop` lifecycle method in reverse order.
+     * @param context The AxiSparkContext to be passed to the plugins during destruction.
+     */
     async destroy(context: AxiSparkContext): Promise<void> {
         await this.executeLifecycleMethod(context, 'onStop', PluginLifecycle.Stopped, true);
     }

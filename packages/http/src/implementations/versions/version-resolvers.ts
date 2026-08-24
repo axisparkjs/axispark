@@ -3,6 +3,9 @@ import { VersionResolver } from '../../version';
 import { HeaderVersionOptions, MediaTypeVersionOptions, UriVersionOptions } from '../../plugin/http-plugin-options';
 import { Injectable } from '@axisparkjs/di';
 
+/**
+ * A resolver for extracting the API version from the HTTP request header.
+ */
 @Injectable()
 export class HeaderVersionResolver implements VersionResolver {
     resolve(req: HttpRequest, options: HeaderVersionOptions): string | undefined {
@@ -10,6 +13,9 @@ export class HeaderVersionResolver implements VersionResolver {
     }
 }
 
+/**
+ * A resolver for extracting the API version from the HTTP request media type.
+ */
 @Injectable()
 export class MediaTypeVersionResolver implements VersionResolver {
     resolve(req: HttpRequest, options: MediaTypeVersionOptions): string | undefined {
@@ -26,6 +32,9 @@ export class MediaTypeVersionResolver implements VersionResolver {
     }
 }
 
+/**
+ * A resolver for extracting the API version from the HTTP request URI.
+ */
 @Injectable()
 export class UriVersionResolver implements VersionResolver {
     resolve(req: HttpRequest, _options: UriVersionOptions): string | undefined {

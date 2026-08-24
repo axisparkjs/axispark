@@ -31,11 +31,13 @@ describe('OpenApiDocumentGenerator', () => {
     } as OpenApiPluginOptions;
 
     let generator: OpenApiDocumentGenerator;
+    let parameterGenerator: { generate: jest.Mock };
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        generator = new OpenApiDocumentGenerator(options);
+        parameterGenerator = { generate: jest.fn().mockReturnValue([]) };
+        generator = new OpenApiDocumentGenerator(options, parameterGenerator as any);
 
         (Metadata.get as jest.Mock).mockReturnValue(undefined);
     });
@@ -102,7 +104,7 @@ describe('OpenApiDocumentGenerator', () => {
                 }
             } as OpenApiPluginOptions;
 
-            const instance = new OpenApiDocumentGenerator(fullOptions);
+            const instance = new OpenApiDocumentGenerator(fullOptions, parameterGenerator as any);
 
             instance.generate([]);
 
@@ -143,7 +145,7 @@ describe('OpenApiDocumentGenerator', () => {
                 propertyKey: 'getUser'
             } as any;
 
-            (Metadata.get as jest.Mock).mockReturnValue([]);
+            parameterGenerator.generate.mockReturnValue([]);
 
             generator.generate([route]);
 
@@ -215,16 +217,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER && target === route.target) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: route.target,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [CreateUserDto];
@@ -293,16 +293,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: route.target,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [User];
@@ -335,16 +333,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: route.target,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [Product];
@@ -391,16 +387,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: route.target,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [User];
@@ -449,16 +443,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: route.target,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [User];
@@ -510,16 +502,14 @@ describe('OpenApiDocumentGenerator', () => {
             };
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: route.target,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [User];
@@ -561,16 +551,14 @@ describe('OpenApiDocumentGenerator', () => {
             const examples = [{ id: 1 }, { id: 2 }];
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: route.target,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [User];
@@ -611,10 +599,8 @@ describe('OpenApiDocumentGenerator', () => {
                 propertyKey: 'test'
             } as any;
 
-            (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [];
-                }
+            (Metadata.get as jest.Mock).mockImplementation((_key: MetadataKey) => {
+                parameterGenerator.generate.mockReturnValue([]);
 
                 return undefined;
             });
@@ -635,16 +621,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [String];
@@ -669,16 +653,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [type];
@@ -705,16 +687,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [CreateUserDto];
@@ -756,8 +736,7 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'first',
@@ -770,8 +749,7 @@ describe('OpenApiDocumentGenerator', () => {
                             target: TestController,
                             parameterIndex: 1
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [FirstBody, SecondBody];
@@ -1050,16 +1028,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [TestDto];
@@ -1108,16 +1084,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [TestDto];
@@ -1159,7 +1133,8 @@ describe('OpenApiDocumentGenerator', () => {
         });
 
         it('should generate an array containing a class', () => {
-            generator = new OpenApiDocumentGenerator(options);
+            parameterGenerator = { generate: jest.fn().mockReturnValue([]) };
+        generator = new OpenApiDocumentGenerator(options, parameterGenerator as any);
 
             class User {}
             class Group {}
@@ -1172,16 +1147,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any, _propertyKey?: any) => {
-                if (key === MetadataKeys.PARAMETER && target === TestController) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES && target === TestController.prototype) {
                     return [Group];
@@ -1239,7 +1212,8 @@ describe('OpenApiDocumentGenerator', () => {
         });
 
         it('should generate an array without items', () => {
-            generator = new OpenApiDocumentGenerator(options);
+            parameterGenerator = { generate: jest.fn().mockReturnValue([]) };
+        generator = new OpenApiDocumentGenerator(options, parameterGenerator as any);
 
             class User {}
             class Group {}
@@ -1252,16 +1226,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any, _propertyKey?: any) => {
-                if (key === MetadataKeys.PARAMETER && target === TestController) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.OPENAPI_SCHEMA) {
                     return undefined;
@@ -1315,16 +1287,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [SearchResult];
@@ -1391,16 +1361,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [TestDto];
@@ -1743,7 +1711,7 @@ describe('OpenApiDocumentGenerator', () => {
                 propertyKey: 'test'
             } as any;
 
-            (Metadata.get as jest.Mock).mockReturnValue(null);
+            parameterGenerator.generate.mockReturnValue([]);
 
             generator.generate([route]);
 
@@ -1760,7 +1728,7 @@ describe('OpenApiDocumentGenerator', () => {
                 propertyKey: 'test'
             } as any;
 
-            (Metadata.get as jest.Mock).mockReturnValue([]);
+            parameterGenerator.generate.mockReturnValue([]);
 
             generator.generate([route]);
 
@@ -1780,16 +1748,14 @@ describe('OpenApiDocumentGenerator', () => {
             class BodyDto {}
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [BodyDto];
@@ -1822,14 +1788,14 @@ describe('OpenApiDocumentGenerator', () => {
             const parameterTypes = ['path', 'header', 'query', 'cookie'];
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return parameterTypes.map((parameter, parameterIndex) => ({
+                parameterGenerator.generate.mockReturnValue(
+                    parameterTypes.map((parameter, parameterIndex) => ({
                         parameter,
                         propertyKey: `param${parameterIndex}`,
                         target: TestController,
                         parameterIndex
-                    }));
-                }
+                    }))
+                );
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [String, Number, Boolean, Array];
@@ -1968,16 +1934,14 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: route.target,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [Company];
@@ -2048,16 +2012,14 @@ describe('OpenApiDocumentGenerator', () => {
             ] as any[];
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'body',
                             propertyKey: 'body',
                             target: Controller,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [User];
@@ -2106,29 +2068,6 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey, target?: any) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    if (target === firstController) {
-                        return [
-                            {
-                                parameter: 'body',
-                                propertyKey: 'body',
-                                target: firstController,
-                                parameterIndex: 0
-                            }
-                        ];
-                    }
-
-                    if (target === secondController) {
-                        return [
-                            {
-                                parameter: 'body',
-                                propertyKey: 'body',
-                                target: secondController,
-                                parameterIndex: 0
-                            }
-                        ];
-                    }
-                }
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     if (target === firstController.prototype) {
@@ -2147,6 +2086,29 @@ describe('OpenApiDocumentGenerator', () => {
                 return undefined;
             });
 
+            parameterGenerator.generate.mockImplementation((_context, route) => {
+                if (route.target === firstController) {
+                    return [
+                        {
+                            parameter: 'body',
+                            propertyKey: 'body',
+                            target: firstController,
+                            parameterIndex: 0
+                        }
+                    ];
+                } else if (route.target === secondController) {
+                    return [
+                        {
+                            parameter: 'body',
+                            propertyKey: 'body',
+                            target: secondController,
+                            parameterIndex: 0
+                        }
+                    ];
+                }
+                return [];
+            });
+
             const firstDocument = generator.generate([firstRoute]);
             const secondDocument = generator.generate([secondRoute]);
 
@@ -2159,7 +2121,6 @@ describe('OpenApiDocumentGenerator', () => {
             expect(secondDefinition.paths['/first']).toBeUndefined();
 
             expect(secondDefinition.components.schemas.SecondDto).toBeDefined();
-
             expect(secondDefinition.components.schemas.FirstDto).toBeUndefined();
         });
     });
@@ -2294,16 +2255,14 @@ describe('OpenApiDocumentGenerator', () => {
             ]);
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: parameterType,
                             propertyKey: 'id',
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [String];
@@ -2362,8 +2321,7 @@ describe('OpenApiDocumentGenerator', () => {
             } as any;
 
             (Metadata.get as jest.Mock).mockImplementation((key: MetadataKey) => {
-                if (key === MetadataKeys.PARAMETER) {
-                    return [
+                parameterGenerator.generate.mockReturnValue([
                         {
                             parameter: 'query',
                             propertyKey: 'filter',
@@ -2371,8 +2329,7 @@ describe('OpenApiDocumentGenerator', () => {
                             target: TestController,
                             parameterIndex: 0
                         }
-                    ];
-                }
+                    ]);
 
                 if (key === MetadataKeys.DESIGN_PARAM_TYPES) {
                     return [String];

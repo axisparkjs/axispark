@@ -2,6 +2,9 @@ import { LogEntry } from '../log-entry';
 import { LogFormatter } from '../log-formatter';
 import { LogLevel } from '../log-level';
 
+/**
+ * A log formatter that outputs log entries in XML format.
+ */
 export class XmlFormatter implements LogFormatter {
     format(entry: LogEntry): string {
         const metadata = entry.metadata ? `<metadata><![CDATA[${JSON.stringify(entry.metadata)}]]></metadata>` : '';

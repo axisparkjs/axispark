@@ -1,3 +1,6 @@
+/**
+ * Enumeration of HTTP methods used in requests.
+ */
 export enum HttpMethod {
     Get = 'get',
     Post = 'post',

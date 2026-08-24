@@ -11,6 +11,9 @@ import { ExpressHttpResponse } from '../types/express-http-response';
 import { ExpressHttpPluginOptions } from '../plugin/express-http-plugin-options';
 import { ExpressHttpSession } from '../types/express-http-session';
 
+/**
+ * An HTTP adapter for integrating Express.js with the HTTP Plugin.
+ */
 @Injectable()
 export class ExpressHttpAdapter implements HttpAdapter {
     private readonly app = express();

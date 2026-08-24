@@ -10,6 +10,9 @@ import { HttpEngine } from '../engine/http-engine';
 import { VersionType } from '../version';
 import { HttpContext } from '../types';
 
+/**
+ * A generator for creating route definitions based on controller and route metadata.
+ */
 @Injectable()
 export class RouteGenerator implements Generator<RouteDefinition[]> {
     constructor(
@@ -18,6 +21,10 @@ export class RouteGenerator implements Generator<RouteDefinition[]> {
         @Inject(HTTP_OPTIONS) private readonly httpPluginOptions: HttpPluginOptions
     ) {}
 
+    /**
+     * Generates route definitions based on controller and route metadata.
+     * @returns An array of route definitions.
+     */
     async generate(): Promise<RouteDefinition[]> {
         const routes: RouteDefinition[] = [];
 

@@ -5,6 +5,9 @@ import { Logger } from '@axisparkjs/logger';
 import { SchedulerService } from '../scheduler';
 import { JobGenerator } from '../jobs/job-generator';
 
+/**
+ * A plugin for managing scheduled jobs.
+ */
 @Injectable()
 export class SchedulePlugin extends Plugin {
     private context: AxiSparkContext;

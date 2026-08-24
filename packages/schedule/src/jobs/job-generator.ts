@@ -4,8 +4,16 @@ import { AxiSparkContext } from '@axisparkjs/core';
 import { JobDefinition } from './job-definition';
 import { JobMetadata } from '../metadata';
 
+/**
+ * A generator for creating job definitions from metadata.
+ */
 @Injectable()
 export class JobGenerator implements Generator<Promise<JobDefinition[]>> {
+    /**
+     * Generates job definitions from metadata.
+     * @param context The AxisSpark context.
+     * @returns A promise resolving to an array of job definitions.
+     */
     async generate(context: AxiSparkContext): Promise<JobDefinition[]> {
         const schedulers = ClassRegistry.getWithMetadata(MetadataKeys.SCHEDULER);
         const jobs: JobDefinition[] = [];

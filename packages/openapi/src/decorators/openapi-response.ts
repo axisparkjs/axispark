@@ -2,6 +2,11 @@ import { Metadata, MetadataKeys } from '@axisparkjs/common';
 import { OpenApiResponseMetadata } from '../metadata/openapi-response-metadata';
 import { DistributiveOmit } from '../types/distributive-omit';
 
+/**
+ * Decorator for adding OpenAPI response metadata to class methods.
+ * @param metadata The metadata for the OpenAPI response.
+ * @returns A method decorator.
+ */
 export function OpenApiResponse(
     metadata: DistributiveOmit<OpenApiResponseMetadata, 'target' | 'propertyKey'> | OpenApiResponseMetadata['statusCode']
 ): MethodDecorator {
@@ -20,4 +25,9 @@ export function OpenApiResponse(
     };
 }
 
+/**
+ * Decorator for adding a default OpenAPI response metadata to class methods.
+ * @param data The metadata for the default OpenAPI response.
+ * @returns A method decorator.
+ */
 export const OpenApiDefaultResponse = (data: DistributiveOmit<OpenApiResponseMetadata, 'statusCode'>) => OpenApiResponse({ ...data, statusCode: 'default' });

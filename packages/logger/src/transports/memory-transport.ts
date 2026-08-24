@@ -1,6 +1,9 @@
 import { LogEntry } from '../log-entry';
 import { LogTransport } from '../log-transport';
 
+/**
+ * A log transport that stores log entries in memory.
+ */
 export class MemoryTransport extends LogTransport {
     readonly entries: LogEntry[] = [];
 

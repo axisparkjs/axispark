@@ -1,5 +1,8 @@
 import { MetadataKey } from './metadata-key';
 
+/**
+ * An object containing various metadata keys used throughout the application.
+ */
 export const MetadataKeys = {
     /* Common */
     DESIGN_PARAM_TYPES: new MetadataKey('design:paramtypes'),
@@ -33,7 +36,7 @@ export const MetadataKeys = {
     SCHEDULER: new MetadataKey('scheduler'),
     JOB: new MetadataKey('job'),
 
-    /* OpenApi (in progress) */
+    /* OpenApi */
     OPENAPI_RESPONSE: new MetadataKey('openapi-response'),
     OPENAPI_SCHEMA: new MetadataKey('openapi-schema'),
     OPENAPI_PROPERTY: new MetadataKey('openapi-property')

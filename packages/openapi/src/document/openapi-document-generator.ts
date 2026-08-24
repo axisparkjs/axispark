@@ -5,18 +5,29 @@ import { RouteDefinition } from '@axisparkjs/http';
 import { OpenApiResponseMetadata } from '../metadata/openapi-response-metadata';
 import { OpenApiSchemaMetadata } from '../metadata/openapi-schema-metadata';
 import { OpenApiPropertyMetadata } from '../metadata/openapi-property-metadata';
-import { ParameterMetadata } from '@axisparkjs/engine';
 import { Inject, Injectable } from '@axisparkjs/di';
 import { OPENAPI_OPTIONS } from '../di';
+import { ParameterGenerator } from '@axisparkjs/engine';
 
+/**
+ * A generator for creating OpenAPI document definitions based on route definitions and metadata.
+ */
 @Injectable()
 export class OpenApiDocumentGenerator implements Generator<OpenApiDocumentDefinition> {
     private readonly schemasToGenerate = new Set<ClassType>();
     private readonly shcemasAlreadyGenerated = new Set<ClassType>();
     private routes: RouteDefinition[];
 
-    constructor(@Inject(OPENAPI_OPTIONS) private readonly options: OpenApiPluginOptions) {}
+    constructor(
+        @Inject(OPENAPI_OPTIONS) private readonly options: OpenApiPluginOptions,
+        private readonly parameterGenerator: ParameterGenerator
+    ) {}
 
+    /**
+     * Generates an OpenAPI document definition based on the provided route definitions.
+     * @param routes An array of route definitions for which to generate OpenAPI documentation.
+     * @returns An `OpenApiDocumentDefinition` instance representing the generated OpenAPI document.
+     */
     generate(routes: readonly RouteDefinition[]): OpenApiDocumentDefinition {
         this.routes = [...routes];
         const data: object = {
@@ -109,7 +120,7 @@ export class OpenApiDocumentGenerator implements Generator<OpenApiDocumentDefini
 
     private generateParameters(route: RouteDefinition) {
         const allowedParameterTypes = ['path', 'header', 'query', 'cookie'];
-        let parameters = Metadata.get<ParameterMetadata[]>(MetadataKeys.PARAMETER, route.target, route.propertyKey) ?? [];
+        let parameters = this.parameterGenerator.generate(undefined, route, false)
         parameters = parameters.filter((parameter) => allowedParameterTypes.includes(parameter.parameter));
         if (parameters.length === 0) return undefined;
 
@@ -129,7 +140,7 @@ export class OpenApiDocumentGenerator implements Generator<OpenApiDocumentDefini
 
     private generateRequestBody(route: RouteDefinition) {
         const allowedParameterTypes = ['body'];
-        let parameters = Metadata.get<ParameterMetadata[]>(MetadataKeys.PARAMETER, route.target, route.propertyKey) ?? [];
+        let parameters = this.parameterGenerator.generate(undefined, route, false)
         parameters = parameters.filter((parameter) => allowedParameterTypes.includes(parameter.parameter));
         if (parameters.length === 0) return undefined;
         const param = parameters[0];

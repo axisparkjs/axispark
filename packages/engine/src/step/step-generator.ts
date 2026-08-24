@@ -4,10 +4,18 @@ import { ExecutionContext } from '../execution';
 import { StepDefinition } from './step-definition';
 import { StepMethodMetadata, StepTargetMetadata, UseMetadata } from '../metadata';
 
+/**
+ * A generator for creating step definitions based on metadata.
+ */
 @Injectable()
 export class StepGenerator implements Generator<StepDefinition[]> {
     private readonly globalSteps: StepDefinition[] = [];
 
+    /**
+     * Generates step definitions based on the provided execution context.
+     * @param context The execution context containing relevant information for step generation.
+     * @returns An array of generated step definitions.
+     */
     public generate(context: ExecutionContext): StepDefinition[] {
         const globalSteps = this.buildGlobalSteps();
         const steps = this.getTargets(context).flatMap((target) => this.buildSteps(target, false));

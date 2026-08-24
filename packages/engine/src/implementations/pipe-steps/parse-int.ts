@@ -19,6 +19,11 @@ export class ParseIntPipeStep implements PipeStep<string, number> {
     }
 }
 
+/**
+ * A decorator for applying the `ParseIntPipeStep` to a method parameter. It uses the `Pipe` decorator to define a pipe step that attempts to parse the parameter value as an integer. If the value cannot be parsed as an integer, a `PipeStepParsingError` is thrown. This allows the decorated method parameter to enforce integer constraints, ensuring that it is a valid integer value.
+ * @param radix The base of the number system to use for parsing (default is 10).
+ * @returns A pipe decorator that applies the `ParseIntPipeStep`.
+ */
 export const ParseInt = (radix?: number) => {
     return {
         pipeStep: ParseIntPipeStep,

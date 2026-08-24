@@ -1,3 +1,6 @@
+/**
+ * Represents an HTTP session, providing methods to manage session data, including getting, setting, checking, deleting, and clearing session values. Also includes methods to save, reload, regenerate, destroy, and touch the session.
+ */
 export interface HttpSession<T extends object = Record<string, unknown>> {
     readonly id: string;
     readonly data: Readonly<T>;

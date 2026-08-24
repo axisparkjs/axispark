@@ -11,6 +11,9 @@
         "build": "turbo run build",
         "test:unit": "turbo run test:unit",
         "test:e2e": "export NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules && jest --config jest.e2e.config.ts",
+        "docs:api-generate": "typedoc --options typedoc.json",
+        "docs:start": "npm --prefix ./website run start",
+        "docs:build": "npm --prefix ./website run build",
         "ci:prettier": "turbo run prettier --affected",
         "ci:lint": "turbo run lint --affected",
         "ci:build": "turbo run build --affected",
@@ -44,6 +47,9 @@
         "tsconfig-paths": "^4.2.0",
         "tsx": "^4.23.0",
         "turbo": "^2.10.4",
+        "typedoc": "^0.28.20",
+        "typedoc-docusaurus-theme": "^1.4.2",
+        "typedoc-plugin-markdown": "^4.12.0",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.46.0"
     }

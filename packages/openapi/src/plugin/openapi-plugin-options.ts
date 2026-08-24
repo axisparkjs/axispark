@@ -1,5 +1,8 @@
 import { PluginOptions } from '@axisparkjs/core';
 
+/**
+ * Interface representing the options for configuring the OpenAPI plugin.
+ */
 export interface OpenApiPluginOptions extends PluginOptions {
     info: {
         title: string;

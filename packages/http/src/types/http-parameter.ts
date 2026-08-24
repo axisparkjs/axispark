@@ -1,3 +1,6 @@
+/**
+ * Enumeration of HTTP parameters used in requests and responses.
+ */
 export enum HttpParameter {
     Request = 'request',
     Response = 'response',

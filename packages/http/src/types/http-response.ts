@@ -1,3 +1,6 @@
+/**
+ * Represents an HTTP response, providing methods to set status codes, headers, cookies, and send various types of responses such as JSON, files, or streams. Also includes methods to clear cookies and check if the response has been committed.
+ */
 export interface HttpResponse {
     status(code: number): this;
     header(name: string, value: string): this;

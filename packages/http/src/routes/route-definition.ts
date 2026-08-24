@@ -2,6 +2,9 @@ import { RouteHandler } from './route-handler';
 import { HttpMethod } from '../types';
 import { ClassType } from '@axisparkjs/common';
 
+/**
+ * A class representing the definition of an HTTP route.
+ */
 export class RouteDefinition {
     constructor(
         public readonly target: ClassType,

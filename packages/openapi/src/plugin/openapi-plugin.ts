@@ -15,6 +15,9 @@ import { HttpMethod } from '@axisparkjs/http';
 import { Injectable, Injector } from '@axisparkjs/di';
 import { ClassType } from '@axisparkjs/common';
 
+/**
+ * A plugin for integrating OpenAPI documentation into the application.
+ */
 @Injectable()
 export class OpenApiPlugin extends Plugin {
     static override readonly dependencies = [HttpPlugin];

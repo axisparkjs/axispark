@@ -5,14 +5,41 @@ import { HttpRequest } from '../../types/http-request';
 import { HttpResponse } from '../../types/http-response';
 import { Injectable } from '@axisparkjs/di';
 
+/**
+ * A parameter for injecting the HTTP request.
+ */
 export const Request = () => Parameter(HttpParameter.Request);
+/**
+ * A parameter for injecting the HTTP response.
+ */
 export const Response = () => Parameter(HttpParameter.Response);
+/**
+ * A parameter for injecting the HTTP request body.
+ */
 export const Body = () => Parameter(HttpParameter.Body);
+/**
+ * A parameter for injecting the HTTP request path.
+ */
 export const Path = (field: string) => Parameter(HttpParameter.Path, field);
+/**
+ * A parameter for injecting the HTTP request query.
+ */
 export const Query = (field: string) => Parameter(HttpParameter.Query, field);
+/**
+ * A parameter for injecting the HTTP request header.
+ */
 export const Header = (field: string) => Parameter(HttpParameter.Header, field);
+/**
+ * A parameter for injecting the HTTP request IP.
+ */
 export const Ip = () => Parameter(HttpParameter.Ip);
+/**
+ * A parameter for injecting the HTTP request session.
+ */
 export const Session = () => Parameter(HttpParameter.Session);
+/**
+ * A parameter for injecting the HTTP request cookie.
+ */
 export const Cookie = (field: string) => Parameter(HttpParameter.Cookie, field);
 
 @Injectable()

@@ -1,7 +1,11 @@
 import { LogEntry } from '../log-entry';
 import { LogTransport, LogTransportOptions } from '../log-transport';
 
+/**
+ * Options for configuring a webhook log transport.
+ */
 export interface WebhookTransportOptions extends LogTransportOptions {
+    /** The URL to which log entries will be sent via HTTP POST requests. */
     url: string;
 }
 

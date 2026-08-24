@@ -3,7 +3,15 @@ import { AxiSparkContext } from './axispark-context';
 import { AxiSparkCore } from './axispark-core';
 import { AxiSparkConfig } from './axispark-config';
 
-class AxiSparkFactoryStatic implements Factory<AxiSparkCore> {
+/**
+ * Static factory class for creating instances of AxiSparkCore. This class implements the Factory interface and provides a method to create AxiSparkCore instances with an optional configuration.
+ */
+export class AxiSparkFactoryStatic implements Factory<AxiSparkCore> {
+    /**
+     * Creates a new instance of AxiSparkCore with the provided configuration. If no configuration is provided, a default configuration will be used. The method sets up the necessary context and returns a new instance of AxiSparkCore.
+     * @param config Optional configuration object for customizing the AxiSparkCore instance. If not provided, default settings will be applied.
+     * @returns A new instance of AxiSparkCore configured with the provided settings.
+     */
     public create(config?: AxiSparkConfig): AxiSparkCore {
         // Perform any necessary setup or configuration here
         const context = new AxiSparkContext(config);
@@ -11,4 +19,7 @@ class AxiSparkFactoryStatic implements Factory<AxiSparkCore> {
     }
 }
 
+/**
+ * A static factory for creating instances of AxiSparkCore. It provides a `create` method that can be called with an optional `AxiSparkConfig` object to customize the configuration of the instance. The factory sets up a context based on the provided configuration and returns a new instance of AxiSparkCore.
+ */
 export const AxiSparkFactory = new AxiSparkFactoryStatic();

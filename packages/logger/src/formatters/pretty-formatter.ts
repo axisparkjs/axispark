@@ -2,6 +2,9 @@ import { LogEntry } from '../log-entry';
 import { LogFormatter } from '../log-formatter';
 import { LogLevel } from '../log-level';
 
+/**
+ * A log formatter that outputs log entries in a pretty, human-readable format.
+ */
 export class PrettyFormatter implements LogFormatter {
     format(entry: LogEntry): string {
         const timestamp = entry.timestamp.toISOString();

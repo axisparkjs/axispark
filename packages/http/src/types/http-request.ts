@@ -1,3 +1,6 @@
+/**
+ * Represents an HTTP request, including method, path, URL, headers, query parameters, route parameters, body, IP address, and cookies. Provides methods to retrieve specific cookies and headers.
+ */
 export interface HttpRequest {
     method: string;
     path: string;

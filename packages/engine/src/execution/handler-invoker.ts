@@ -4,6 +4,9 @@ import { ExecutionHandler } from './execution-handler';
 import { ParameterGenerator } from '../parameter';
 import { PipeGenerator, PipeProcessor } from '../pipe';
 
+/**
+ * A class responsible for invoking execution handlers within a given execution context. It utilizes the `ParameterGenerator` to generate parameters for the handler, the `PipeGenerator` to generate pipes for processing the parameters, and the `PipeProcessor` to process the generated pipes. The class also uses an `Injector` to retrieve instances of the target classes associated with the execution handlers. The `invoke` method orchestrates the entire process of generating parameters, processing them through pipes, and invoking the handler method with the processed arguments.
+ */
 @Injectable()
 export class HandlerInvoker {
     constructor(
@@ -13,6 +16,12 @@ export class HandlerInvoker {
         private readonly injector: Injector
     ) {}
 
+    /**
+     * Invokes the specified execution handler within the provided execution context. It generates parameters for the handler, processes them through pipes, and invokes the handler method with the processed arguments.
+     * @param handler The execution handler to be invoked.
+     * @param context The execution context in which the handler is invoked.
+     * @returns A promise resolving to the result of the handler invocation.
+     */
     public async invoke(handler: ExecutionHandler, context: ExecutionContext): Promise<unknown> {
         const paramters = this.parameterGenerator.generate(context, handler);
         const pipes = await this.pipeGenerator.generate(paramters, handler);

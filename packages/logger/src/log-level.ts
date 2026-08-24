@@ -1,3 +1,6 @@
+/**
+ * Defines the log levels used in the logging system.
+ */
 export enum LogLevel {
     Trace = 0,
     Debug = 1,

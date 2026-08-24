@@ -1,6 +1,9 @@
 import { LogEntry } from '../log-entry';
 import { LogTransport } from '../log-transport';
 
+/**
+ * A log transport that outputs log entries to the console.
+ */
 export class ConsoleTransport extends LogTransport {
     async write(entry: LogEntry): Promise<void> {
         if (entry.level < this.config.minLevel) return;

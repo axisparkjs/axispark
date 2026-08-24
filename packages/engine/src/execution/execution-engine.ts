@@ -6,6 +6,9 @@ import { ResultProcessor, ResultDefinition } from '../result';
 import { ExecutionPlanner } from './execution-planner';
 import { TimeoutProcessor, TimeoutDefinition } from '../timeout';
 
+/**
+ * A class representing the execution engine for handling asynchronous execution flows.
+ */
 @Injectable()
 export class ExecutionEngine implements Executable {
     constructor(
@@ -15,6 +18,11 @@ export class ExecutionEngine implements Executable {
         private readonly resultProcessor: ResultProcessor
     ) {}
 
+    /**
+     * Executes the provided execution context by generating an execution plan, invoking handlers, processing timeouts, and handling results. It manages the flow of execution, including before, context, catch, and after steps, while also handling errors and timeouts.
+     * @param context The execution context to be processed.
+     * @returns A promise that resolves when the execution is complete.
+     */
     public async execute(context: ExecutionContext): Promise<void> {
         const plan = await this.planGenerator.plan(context);
         let result: unknown | ResultDefinition;

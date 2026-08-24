@@ -3,6 +3,9 @@ import { dirname, extname, basename, join } from 'node:path';
 import { LogEntry } from '../log-entry';
 import { FileTransport } from './file-transport';
 
+/**
+ * A log transport that outputs log entries to a daily rotating file.
+ */
 export class DailyFileTransport extends FileTransport {
     protected override getFile(_entry: LogEntry): string {
         const dir = dirname(this.options.file);

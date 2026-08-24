@@ -3,6 +3,11 @@ import { OpenApiPropertyMetadata } from '../metadata/openapi-property-metadata';
 import { DistributiveOmit } from '../types/distributive-omit';
 import { OpenApiDocumentGenerator } from '../document';
 
+/**
+ * Decorator for adding OpenAPI property metadata to class properties.
+ * @param metadata The metadata for the OpenAPI property.
+ * @returns A property decorator.
+ */
 export function OpenApiProperty(metadata?: DistributiveOmit<OpenApiPropertyMetadata, 'target' | 'propertyKey'>): PropertyDecorator {
     return (target, propertyKey) => {
         const openApiPropertyMetadata = Metadata.get<OpenApiPropertyMetadata[]>(MetadataKeys.OPENAPI_PROPERTY, target) ?? [];

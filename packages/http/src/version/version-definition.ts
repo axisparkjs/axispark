@@ -1,3 +1,6 @@
+/**
+ * Represents a version definition for HTTP requests, including accepted versions and the current version. Provides methods to set the current version and check if the current version is accepted.
+ */
 export class VersionDefinition {
     public version!: string | undefined;
 

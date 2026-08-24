@@ -2,6 +2,9 @@ import { ResultDefinition } from '@axisparkjs/engine';
 import { HttpStatusCode, HttpContext } from '../../types';
 import { HttpError } from '../errors';
 
+/**
+ * An abstract class for representing HTTP results.
+ */
 export abstract class HttpResult<T = unknown> extends ResultDefinition<T> {
     public constructor(value: T, rc: HttpStatusCode) {
         super(value, rc);
@@ -9,6 +12,9 @@ export abstract class HttpResult<T = unknown> extends ResultDefinition<T> {
 
     abstract process(context: HttpContext): Promise<void>;
 }
+/**
+ * A class for representing HTTP results with a body.
+ */
 export class BodyHttpResult<T = unknown> extends HttpResult<T> {
     public constructor(
         value: T,
@@ -39,6 +45,9 @@ export class BodyHttpResult<T = unknown> extends HttpResult<T> {
         context.response.json(this.value);
     }
 }
+/**
+ * A class for representing HTTP redirect results.
+ */
 export class RedirectHttpResult extends HttpResult<undefined> {
     public constructor(
         private readonly location: string,
@@ -54,6 +63,9 @@ export class RedirectHttpResult extends HttpResult<undefined> {
         context.response.end();
     }
 }
+/**
+ * A class for representing HTTP file results.
+ */
 export class FileHttpResult extends HttpResult<undefined> {
     public constructor(
         private readonly filePath: string,
@@ -73,6 +85,9 @@ export class FileHttpResult extends HttpResult<undefined> {
         context.response.file(this.filePath);
     }
 }
+/**
+ * A class for representing HTTP stream results.
+ */
 export class StreamHttpResult extends HttpResult<undefined> {
     public constructor(
         private readonly stream: NodeJS.ReadableStream,
@@ -92,6 +107,9 @@ export class StreamHttpResult extends HttpResult<undefined> {
         context.response.stream(this.stream);
     }
 }
+/**
+ * A class for representing HTTP error results.
+ */
 export class ErrorHttpResult extends HttpResult<HttpError> {
     public constructor(value: HttpError) {
         super(value, value.status);

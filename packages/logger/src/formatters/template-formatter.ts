@@ -2,6 +2,9 @@ import { LogEntry } from '../log-entry';
 import { LogFormatter } from '../log-formatter';
 import { LogLevel } from '../log-level';
 
+/**
+ * A log formatter that outputs log entries based on a user-defined template.
+ */
 export class TemplateFormatter implements LogFormatter {
     constructor(private readonly template: string) {}
 

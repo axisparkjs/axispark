@@ -2,6 +2,9 @@ import { LogEntry } from '../log-entry';
 import { LogFormatter } from '../log-formatter';
 import { LogLevel } from '../log-level';
 
+/**
+ * A log formatter that outputs log entries in JSON format.
+ */
 export class JsonFormatter implements LogFormatter {
     format(entry: LogEntry): string {
         return JSON.stringify({

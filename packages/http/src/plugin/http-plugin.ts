@@ -32,6 +32,9 @@ import {
     MediaTypeVersionResolver
 } from '../implementations';
 
+/**
+ * A plugin for handling HTTP server.
+ */
 @Injectable()
 export class HttpPlugin extends Plugin {
     private context: AxiSparkContext;

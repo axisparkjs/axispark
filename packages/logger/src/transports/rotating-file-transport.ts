@@ -4,8 +4,13 @@ import { dirname, extname, basename, join } from 'node:path';
 
 import { FileTransport, FileTransportOptions } from './file-transport';
 
+/**
+ * Options for configuring a rotating file log transport.
+ */
 export interface RotatingFileTransportOptions extends FileTransportOptions {
+    /** The maximum size of the log file in bytes before rotation occurs. */
     maxSize: number;
+    /** The maximum number of rotated log files to keep. */
     maxFiles: number;
 }
 

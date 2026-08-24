@@ -2,7 +2,10 @@ import { HttpStatusCode } from '../../types/http-status-code';
 import { BodyHttpResult, FileHttpResult, RedirectHttpResult, StreamHttpResult, ErrorHttpResult } from './http-result';
 import { HttpError } from '../errors';
 
-class HttpResultsStatic {
+/**
+ * A static class for creating HTTP results.
+ */
+export class HttpResultsStatic {
     public Ok(value: unknown) {
         return new BodyHttpResult(value, HttpStatusCode.Ok);
     }
@@ -64,4 +67,7 @@ class HttpResultsStatic {
         return new ErrorHttpResult(error);
     }
 }
+/**
+ * A singleton instance of HttpResultsStatic for creating HTTP results.
+ */
 export const HttpResults = new HttpResultsStatic();

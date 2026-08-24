@@ -3,6 +3,11 @@ import { PipeMetadata } from '../metadata/pipe-metadata';
 import { PipeStepConfig, PipeScope, PipeStep } from '../pipe';
 import { ClassType } from '@axisparkjs/common';
 
+/**
+ * A decorator for defining pipes in the dependency injection system.
+ * @param steps The steps to include in the pipe.
+ * @returns A pipe decorator.
+ */
 export function Pipe(
     ...steps: (ClassType<PipeStep> | { pipeStep: ClassType<PipeStep>; PipeStepConfig: PipeStepConfig })[]
 ): ClassDecorator & MethodDecorator & ParameterDecorator {

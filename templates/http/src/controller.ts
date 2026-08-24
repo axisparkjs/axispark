@@ -4,6 +4,6 @@ import { Controller, Get } from '@axisparkjs/http';
 export class ExampleController {
     @Get()
     get() {
-        return { message: 'Hello, world!' }; 
+        return { message: 'Hello, world!' };
     }
 }

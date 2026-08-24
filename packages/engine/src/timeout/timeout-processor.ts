@@ -4,6 +4,10 @@ import { ExecutionContext, ExecutionTransport } from '../execution';
 import { TimeoutResolver } from './timeout-resolver';
 import { TimeoutDefinition } from './timeout-definition';
 
+/**
+ * A processor for handling timeout operations.
+ * It resolves timeout definitions using registered resolvers based on the execution transport.
+ */
 @Injectable()
 export class TimeoutProcessor implements Processable {
     private static readonly resolvers = new Map<ExecutionTransport, TimeoutResolver>();
@@ -12,6 +16,12 @@ export class TimeoutProcessor implements Processable {
         this.resolvers.set(transport, resolver);
     }
 
+    /**
+     * Processes a timeout definition based on the provided execution context.
+     * @param timeout The timeout definition to process.
+     * @param context The execution context containing relevant information for timeout processing.
+     * @returns A promise resolving when the timeout has been processed.
+     */
     async process(timeout: TimeoutDefinition, context: ExecutionContext): Promise<void> {
         const resolver = TimeoutProcessor.resolvers.get(context.transport);
         if (!resolver) {

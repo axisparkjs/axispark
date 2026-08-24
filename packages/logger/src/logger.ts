@@ -4,21 +4,32 @@ import { LogEntry } from './log-entry';
 import { LogLevel } from './log-level';
 import { LogTransport } from './log-transport';
 
+/**
+ * A class for handling logging operations with support for multiple transports and scoping.
+ */
 @Injectable()
 export class Logger {
+    /** 
+     * Constructor for the Logger class. 
+     * @param transports An array of LogTransport instances that define how log entries are handled (e.g., written to console, file, etc.).
+     * @param scopes An optional array of strings representing the scopes or contexts for the logger, allowing for hierarchical logging.
+    */
     constructor(
         private readonly transports: LogTransport[],
         private readonly scopes: string[] = []
     ) {}
 
+    /** Logs an info message. */
     async info(message: string) {
         await this.log({ level: LogLevel.Info, message });
     }
 
+    /** Logs a warning message. */
     async warn(message: string) {
         await this.log({ level: LogLevel.Warn, message });
     }
 
+    /** Logs an error message. */
     async error(message: string, error?: Error) {
         await this.log({
             level: LogLevel.Error,
@@ -27,14 +38,17 @@ export class Logger {
         });
     }
 
+    /** Logs a debug message. */
     async debug(message: string) {
         await this.log({ level: LogLevel.Debug, message });
     }
 
+    /** Logs a trace message. */
     async trace(message: string) {
         await this.log({ level: LogLevel.Trace, message });
     }
 
+    /** Logs a fatal message. */
     async fatal(message: string, error?: Error) {
         await this.log({
             level: LogLevel.Fatal,
@@ -43,10 +57,12 @@ export class Logger {
         });
     }
 
+    /** Creates a child logger with an additional scope. */
     public child(scope: string): Logger {
         return new Logger(this.transports, [...this.scopes, scope]);
     }
 
+    /** Internal method to log data using the configured transports. */
     public async log(data: LogData) {
         const entry: LogEntry = {
             timestamp: new Date(),

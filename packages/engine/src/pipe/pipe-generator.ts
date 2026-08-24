@@ -6,8 +6,18 @@ import { PipeDefinition } from './pipe-definition';
 import { ParameterDefinition } from '../parameter';
 import { Injectable } from '@axisparkjs/di';
 
+/**
+ * A generator for creating pipe definitions based on metadata.
+ */
 @Injectable()
 export class PipeGenerator implements Generator<PipeDefinition[]> {
+    
+    /**
+     * Generates an array of `PipeDefinition` instances based on the provided parameters and execution handler.
+     * @param parameters An array of `ParameterDefinition` instances representing the parameters to be processed.
+     * @param handler The execution handler that provides metadata for the pipes.
+     * @returns An array of `PipeDefinition` instances representing the generated pipes.
+     */
     async generate(parameters: ParameterDefinition[], handler: ExecutionHandler): Promise<PipeDefinition[]> {
         const classPipes = Metadata.get<PipeMetadata[]>(MetadataKeys.PIPE, handler.target) ?? [];
         const methodPipes = (Metadata.get<PipeMetadata[]>(MetadataKeys.PIPE, handler.target, handler.propertyKey) ?? []).filter(

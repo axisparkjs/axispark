@@ -235,5 +235,55 @@ describe('ParameterGenerator', () => {
 
             expect(getSpy).toHaveBeenCalledWith(MetadataKeys.PARAMETER, executionHandler.target, executionHandler.propertyKey);
         });
+
+        it('should generate parameters with resolving set to true', () => {
+            const executionContext = {} as ExecutionContext;
+            const executionHandler = {} as ExecutionHandler;
+
+            const parameterMetadata = {
+                parameter: 'foo',
+                parameterIndex: 0
+            } as ParameterMetadata;
+
+            const resolver: ParameterResolver<any> = {
+                resolve: jest.fn().mockReturnValue('resolved-value')
+            };
+
+            ParameterGenerator.registerParameter('foo', resolver);
+
+            jest.spyOn(Metadata, 'get').mockReturnValue([parameterMetadata]);
+
+            const result = generator.generate(executionContext, executionHandler, true);
+
+            expect(resolver.resolve).toHaveBeenCalledTimes(1);
+            expect(result).toHaveLength(1);
+            expect(result[0]).toBeInstanceOf(ParameterDefinition);
+            expect(result[0].value).toBe('resolved-value');
+        });
+
+        it('should not resolve parameters when resolving is set to false', () => {
+            const executionContext = {} as ExecutionContext;
+            const executionHandler = {} as ExecutionHandler;
+
+            const parameterMetadata = {
+                parameter: 'foo',
+                parameterIndex: 0
+            } as ParameterMetadata;
+
+            const resolver: ParameterResolver<any> = {
+                resolve: jest.fn().mockReturnValue('resolved-value')
+            };
+
+            ParameterGenerator.registerParameter('foo', resolver);
+
+            jest.spyOn(Metadata, 'get').mockReturnValue([parameterMetadata]);
+
+            const result = generator.generate(executionContext, executionHandler, false);
+
+            expect(resolver.resolve).not.toHaveBeenCalled();
+            expect(result).toHaveLength(1);
+            expect(result[0]).toBeInstanceOf(ParameterDefinition);
+            expect(result[0].value).toBeUndefined();
+        });
     });
 });

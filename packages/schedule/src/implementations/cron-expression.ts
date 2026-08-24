@@ -1,3 +1,6 @@
+/**
+ * An enumeration of common cron expressions for scheduling jobs.
+ */
 export enum CronExpression {
     EverySecond = '* * * * * *',
     Every5Seconds = '*/5 * * * * *',
