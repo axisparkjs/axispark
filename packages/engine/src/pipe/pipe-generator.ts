@@ -11,7 +11,6 @@ import { Injectable } from '@axisparkjs/di';
  */
 @Injectable()
 export class PipeGenerator implements Generator<PipeDefinition[]> {
-    
     /**
      * Generates an array of `PipeDefinition` instances based on the provided parameters and execution handler.
      * @param parameters An array of `ParameterDefinition` instances representing the parameters to be processed.

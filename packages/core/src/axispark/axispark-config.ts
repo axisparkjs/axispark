@@ -3,15 +3,15 @@ import { LogTransport } from '@axisparkjs/logger';
 
 /**
  * An injection token used to provide configuration options for the Axispark framework. This token can be used to inject an instance of `AxiSparkConfig` into components or services that require access to the configuration settings.
- * 
+ *
  * The `AxiSparkConfig` interface defines the shape of the configuration object, which includes optional properties such as `name`, `basePath`, `environment`, `banner`, and `logTransports`. These properties allow developers to customize the behavior and settings of the Axispark framework according to their application's needs.
- * 
+ *
  * Example usage:
- * 
+ *
  * ```typescript
  * import { AXISPARK_CONFIG, AxiSparkConfig } from '@axisparkjs/core';
  * import { Injectable, Inject } from '@axisparkjs/di';
- * 
+ *
  * @Injectable()
  * class MyService {
  *   constructor(@Inject(AXISPARK_CONFIG) private config: AxiSparkConfig) {}
@@ -22,16 +22,16 @@ export const AXISPARK_CONFIG = new InjectionToken('AXISPARK_CONFIG');
 
 /**
  * An interface representing the configuration options for the Axispark framework. It defines optional properties that can be used to customize the behavior and settings of the framework.
- * 
+ *
  * Properties:
  * - `name`: An optional string representing the name of the application or module.
  * - `basePath`: An optional string representing the base path for the application or module.
  * - `environment`: An optional string that can be either 'production', 'development', or 'test', indicating the current environment of the application.
  * - `banner`: An optional boolean indicating whether to display a banner in the console when the application starts.
  * - `logTransports`: An optional array of `LogTransport` instances that define how logs should be handled and where they should be sent.
- * 
+ *
  * Example usage:
- * 
+ *
  * ```typescript
  * const config: AxiSparkConfig = {
  *     name: 'Example App',

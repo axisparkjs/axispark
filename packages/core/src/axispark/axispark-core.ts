@@ -5,7 +5,7 @@ import { Token } from '@axisparkjs/di';
 
 /**
  * A class representing the core of the Axispark framework. It implements the `Lifecycle` interface, which includes methods for initialization, running, and destruction of the application. The `AxiSparkCore` class manages the lifecycle of the application, including initializing the context, running the application, and handling shutdown signals.
- * 
+ *
  * The `AxiSparkCore` class provides methods to register plugins, retrieve used plugins, and resolve dependencies from the dependency injection container. It serves as the main entry point for managing the application's lifecycle and coordinating various components and services within the Axispark framework.
  */
 export class AxiSparkCore implements Lifecycle {

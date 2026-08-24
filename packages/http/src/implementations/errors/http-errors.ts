@@ -78,7 +78,7 @@ export class ProxyAuthenticationRequiredError extends HttpError {
         super(response, HttpStatusCode.ProxyAuthenticationRequired, options);
     }
 }
-/** 
+/**
  * An error thrown when the server timed out waiting for the request.
  */
 export class RequestTimeoutError extends HttpError {
@@ -174,7 +174,7 @@ export class MisdirectedError extends HttpError {
         super(response, HttpStatusCode.Misdirected, options);
     }
 }
-/** 
+/**
  * An error thrown when the server returns a 422 Unprocessable Entity response.
  */
 export class UnprocessableEntityError extends HttpError {

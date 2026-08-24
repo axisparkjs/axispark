@@ -9,11 +9,11 @@ import { LogTransport } from './log-transport';
  */
 @Injectable()
 export class Logger {
-    /** 
-     * Constructor for the Logger class. 
+    /**
+     * Constructor for the Logger class.
      * @param transports An array of LogTransport instances that define how log entries are handled (e.g., written to console, file, etc.).
      * @param scopes An optional array of strings representing the scopes or contexts for the logger, allowing for hierarchical logging.
-    */
+     */
     constructor(
         private readonly transports: LogTransport[],
         private readonly scopes: string[] = []

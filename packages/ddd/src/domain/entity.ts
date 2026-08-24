@@ -3,7 +3,7 @@ import { Identifier } from './identifier';
 /**
  * Entity is an abstract class that represents an entity in a domain-driven design context. It provides a base for creating entities that have a unique identifier and can be compared for equality.
  * @template T The type of the unique identifier for the entity, which must extend the Identifier class.
-*/
+ */
 export abstract class Entity<T extends Identifier> {
     protected readonly _id: T;
 

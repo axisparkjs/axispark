@@ -1,6 +1,6 @@
 /**
  * An interface representing the private configuration options for AxiSpark. It defines optional properties that can be used to customize the behavior of the AxiSpark instance. The `scanner` property allows specifying the type of scanner to use, either 'file-system' or 'null', while the `wait` property indicates whether to wait for certain operations to complete before proceeding.
- * 
+ *
  * Properties:
  * - `scanner`: An optional string that can be either 'file-system' or 'null', indicating the type of scanner to use for discovering modules or components.
  * - `wait`: An optional boolean indicating whether to wait for certain operations to complete before proceeding. This can be useful in scenarios where asynchronous initialization is required.

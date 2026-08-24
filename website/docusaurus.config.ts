@@ -52,7 +52,7 @@ const config: Config = {
         colorMode: {
             defaultMode: 'dark',
             disableSwitch: true,
-            respectPrefersColorScheme: false,
+            respectPrefersColorScheme: false
         },
         navbar: {
             title: 'AxiSpark.js',
@@ -94,10 +94,10 @@ const config: Config = {
                 path: 'api',
                 routeBasePath: 'api',
                 sidebarPath: './sidebars-api.ts',
-                includeCurrentVersion: true,
-            },
-        ],
-    ],
+                includeCurrentVersion: true
+            }
+        ]
+    ]
 };
 
 export default config;

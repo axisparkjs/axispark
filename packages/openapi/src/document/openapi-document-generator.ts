@@ -120,7 +120,7 @@ export class OpenApiDocumentGenerator implements Generator<OpenApiDocumentDefini
 
     private generateParameters(route: RouteDefinition) {
         const allowedParameterTypes = ['path', 'header', 'query', 'cookie'];
-        let parameters = this.parameterGenerator.generate(undefined, route, false)
+        let parameters = this.parameterGenerator.generate(undefined, route, false);
         parameters = parameters.filter((parameter) => allowedParameterTypes.includes(parameter.parameter));
         if (parameters.length === 0) return undefined;
 
@@ -140,7 +140,7 @@ export class OpenApiDocumentGenerator implements Generator<OpenApiDocumentDefini
 
     private generateRequestBody(route: RouteDefinition) {
         const allowedParameterTypes = ['body'];
-        let parameters = this.parameterGenerator.generate(undefined, route, false)
+        let parameters = this.parameterGenerator.generate(undefined, route, false);
         parameters = parameters.filter((parameter) => allowedParameterTypes.includes(parameter.parameter));
         if (parameters.length === 0) return undefined;
         const param = parameters[0];

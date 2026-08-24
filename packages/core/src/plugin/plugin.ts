@@ -2,7 +2,7 @@ import { AxiSparkContext } from '../axispark';
 
 /**
  * Represents the lifecycle states of a plugin.
- * 
+ *
  * The lifecycle states are:
  * - `Created`: The plugin has been created but not yet registered.
  * - `Registered`: The plugin has been registered and is ready to be started.
