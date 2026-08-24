@@ -17,6 +17,7 @@
     "@axisparkjs/test": "0.0.1"
   },
   "changesets": [
+    "happy-cats-visit",
     "shiny-bikes-fall"
   ]
 }
