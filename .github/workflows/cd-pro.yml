@@ -40,7 +40,7 @@ jobs:
         run: npm run ci:build
 
       - name: Publish packages
-        run: npm run cd:publish:public
+        run: npm run cd:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

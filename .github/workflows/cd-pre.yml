@@ -45,7 +45,7 @@ jobs:
         run: npm run ci:build
 
       - name: Publish packages
-        run: npm run cd:publish:private
+        run: npm run cd:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

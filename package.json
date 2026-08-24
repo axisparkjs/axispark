@@ -23,8 +23,7 @@
         "ci:sonar": "turbo run sonar --affected",
         "cd:changeset": "changeset",
         "cd:version": "changeset version",
-        "cd:publish:public": "changeset publish --access public",
-        "cd:publish:private": "changeset publish --access restricted"
+        "cd:publish": "changeset publish"
     },
     "engines": {
         "node": ">= 24"
