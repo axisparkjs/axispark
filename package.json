@@ -12,6 +12,7 @@
         "test:unit": "turbo run test:unit",
         "test:e2e": "export NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules && jest --config jest.e2e.config.ts",
         "docs:api-generate": "typedoc --options typedoc.json",
+        "docs:ci": "npm --prefix ./website run ci",
         "docs:start": "npm --prefix ./website run start",
         "docs:build": "npm --prefix ./website run build",
         "ci:prettier": "turbo run prettier --affected",
@@ -22,7 +23,8 @@
         "ci:sonar": "turbo run sonar --affected",
         "cd:changeset": "changeset",
         "cd:version": "changeset version",
-        "cd:publish": "changeset publish"
+        "cd:publish:public": "changeset publish --access public",
+        "cd:publish:private": "changeset publish --access restricted"
     },
     "engines": {
         "node": ">= 24"
