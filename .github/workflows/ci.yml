@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install docs dependencies
+        run: npm docs:ci
+
       - name: Run prettier checks
         run: npm run ci:prettier
 
