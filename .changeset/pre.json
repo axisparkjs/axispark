@@ -1,0 +1,22 @@
+{
+  "mode": "pre",
+  "tag": "pre",
+  "initialVersions": {
+    "@axisparkjs/cli": "0.0.1",
+    "@axisparkjs/common": "0.0.1",
+    "@axisparkjs/core": "0.0.1",
+    "@axisparkjs/ddd": "0.0.1",
+    "@axisparkjs/di": "0.0.1",
+    "@axisparkjs/engine": "0.0.1",
+    "@axisparkjs/http": "0.0.1",
+    "@axisparkjs/http-express": "0.0.1",
+    "@axisparkjs/http-fastify": "0.0.1",
+    "@axisparkjs/logger": "0.0.1",
+    "@axisparkjs/openapi": "0.0.1",
+    "@axisparkjs/schedule": "0.0.1",
+    "@axisparkjs/test": "0.0.1"
+  },
+  "changesets": [
+    "shiny-bikes-fall"
+  ]
+}

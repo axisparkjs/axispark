@@ -1,6 +1,6 @@
 {
     "name": "@axisparkjs/http-fastify",
-    "version": "0.0.1",
+    "version": "1.0.0-pre.0",
     "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/http-fastify",
     "author": "Pablo Gálvez Ortuño",
     "license": "Apache-2.0",
@@ -17,11 +17,11 @@
         "node": ">= 20"
     },
     "dependencies": {
-        "@axisparkjs/common": "0.0.1",
-        "@axisparkjs/core": "0.0.1",
-        "@axisparkjs/di": "0.0.1",
-        "@axisparkjs/http": "0.0.1",
-        "@axisparkjs/logger": "0.0.1",
+        "@axisparkjs/common": "1.0.0-pre.0",
+        "@axisparkjs/core": "1.0.0-pre.0",
+        "@axisparkjs/di": "1.0.0-pre.0",
+        "@axisparkjs/http": "1.0.0-pre.0",
+        "@axisparkjs/logger": "1.0.0-pre.0",
         "@fastify/compress": "^9.1.1",
         "@fastify/cookie": "^11.1.2",
         "@fastify/cors": "^11.3.0",

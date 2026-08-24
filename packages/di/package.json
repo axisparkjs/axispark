@@ -1,6 +1,6 @@
 {
     "name": "@axisparkjs/di",
-    "version": "0.0.1",
+    "version": "1.0.0-pre.0",
     "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/di",
     "author": "Pablo Gálvez Ortuño",
     "license": "Apache-2.0",
@@ -17,6 +17,6 @@
         "node": ">= 20"
     },
     "dependencies": {
-        "@axisparkjs/common": "0.0.1"
+        "@axisparkjs/common": "1.0.0-pre.0"
     }
 }
