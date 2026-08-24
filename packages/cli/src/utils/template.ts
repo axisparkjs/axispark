@@ -34,7 +34,7 @@ export async function downloadTemplate(template: string, destination: string): P
                 cwd: extractDirectory
             });
 
-            templatePath = path.join(extractDirectory, 'axispark-main', template);
+            templatePath = path.join(extractDirectory, 'axispark-main', 'templates', template);
         } else {
             templatePath = path.join(__dirname, '..', '..', '..', '..', 'templates', template);
         }

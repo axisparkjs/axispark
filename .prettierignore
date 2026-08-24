@@ -6,3 +6,5 @@ lib
 **/*.tsbuildinfo
 .turbo
 .scannerwork
+.changeset
+website/build

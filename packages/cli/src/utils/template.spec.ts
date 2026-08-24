@@ -30,10 +30,7 @@ jest.mock('node:stream/promises', () => ({
 }));
 
 jest.mock('tar', () => ({
-    __esModule: true,
-    default: {
-        x: jest.fn()
-    }
+    x: jest.fn()
 }));
 
 const mockedMkdtemp = mkdtemp as jest.MockedFunction<typeof mkdtemp>;
@@ -61,7 +58,7 @@ describe('downloadTemplate', () => {
 
     const extractDirectory = '/tmp/axispark-test/extracted';
 
-    const remoteTemplatePath = '/tmp/axispark-test/extracted/axispark-main/basic';
+    const remoteTemplatePath = '/tmp/axispark-test/extracted/axispark-main/templates/basic';
 
     const localTemplatePath = path.join(__dirname, '..', '..', '..', '..', 'templates', template);
 
@@ -271,7 +268,7 @@ describe('downloadTemplate', () => {
 
             await downloadTemplate(selectedTemplate, destination);
 
-            expect(mockedCp).toHaveBeenCalledWith(path.join(extractDirectory, 'axispark-main', selectedTemplate), destination, {
+            expect(mockedCp).toHaveBeenCalledWith(path.join(extractDirectory, 'axispark-main', 'templates', selectedTemplate), destination, {
                 recursive: true
             });
         });
@@ -489,7 +486,7 @@ describe('downloadTemplate', () => {
         it.each(['basic', 'http', 'custom-template', 'default'])('uses template "%s" in the extracted path', async (selectedTemplate) => {
             await downloadTemplate(selectedTemplate, destination);
 
-            expect(mockedCp).toHaveBeenCalledWith(path.join(extractDirectory, 'axispark-main', selectedTemplate), destination, {
+            expect(mockedCp).toHaveBeenCalledWith(path.join(extractDirectory, 'axispark-main', 'templates', selectedTemplate), destination, {
                 recursive: true
             });
         });
