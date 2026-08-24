@@ -5,7 +5,7 @@ import { pipeline } from 'node:stream/promises';
 import { Readable } from 'node:stream';
 import tar from 'tar';
 
-const REPOSITORY = 'axispark/axisparkjs';
+const REPOSITORY = 'axisparkjs/axispark';
 
 export async function downloadTemplate(template: string, destination: string): Promise<void> {
     const tempDirectory = await createTempDirectory();
