@@ -6,6 +6,12 @@
     "license": "Apache-2.0",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
+    "files": [
+        "lib",
+        "package.json",
+        "PACKAGE.md",
+        "tsconfig.build.json"
+    ],
     "scripts": {
         "build": "tsc -b tsconfig.build.json",
         "prettier": "prettier --config ../../.prettierrc.json --ignore-path ../../.prettierignore '**/*.{ts,js,mjs,json,md,html,css,scss}' --check",
