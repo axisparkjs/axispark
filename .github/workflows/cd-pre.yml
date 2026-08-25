@@ -44,6 +44,11 @@ jobs:
       - name: Build packages with prerelease versions
         run: npm run ci:build
 
+      - name: Generate other package files
+        run: |
+            find packages -mindepth 2 -maxdepth 2 -type f -name package.json -exec sh -c 'cp README.md "$(dirname "$1")/README.md"' _ {} \;
+            find packages -mindepth 2 -maxdepth 2 -type f -name package.json -exec sh -c 'cp LICENSE "$(dirname "$1")/LICENSE"' _ {} \;
+
       - name: Publish packages
         run: npm run cd:publish
         env:
