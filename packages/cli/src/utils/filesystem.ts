@@ -1,4 +1,4 @@
-import { access, cp, readFile, writeFile } from 'node:fs/promises';
+import { access, readFile, writeFile } from 'node:fs/promises';
 
 import path from 'node:path';
 
@@ -9,14 +9,6 @@ export async function directoryExists(directory: string): Promise<boolean> {
     } catch {
         return false;
     }
-}
-
-export async function copyTemplate(destination: string): Promise<void> {
-    const templatePath = path.resolve(__dirname, '../../../../templates/default');
-
-    await cp(templatePath, destination, {
-        recursive: true
-    });
 }
 
 export async function updatePackageJson(projectPath: string, projectName: string): Promise<void> {

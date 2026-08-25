@@ -5,7 +5,7 @@ import { createCommand } from './create';
 import prompts from 'prompts';
 import ora from 'ora';
 
-import { directoryExists, copyTemplate, updatePackageJson } from '../utils/filesystem';
+import { directoryExists, updatePackageJson } from '../utils/filesystem';
 
 import { installDependencies } from '../utils/package-manager';
 import { downloadTemplate } from '../utils/template';
@@ -39,8 +39,6 @@ const mockedOra = ora as jest.MockedFunction<typeof ora>;
 
 const mockedDirectoryExists = directoryExists as jest.MockedFunction<typeof directoryExists>;
 
-const mockedCopyTemplate = copyTemplate as jest.MockedFunction<typeof copyTemplate>;
-
 const mockedUpdatePackageJson = updatePackageJson as jest.MockedFunction<typeof updatePackageJson>;
 
 const mockedInstallDependencies = installDependencies as jest.MockedFunction<typeof installDependencies>;
@@ -71,7 +69,6 @@ describe('create command', () => {
         mockedOra.mockReturnValue(spinner as any);
 
         mockedDirectoryExists.mockResolvedValue(false);
-        mockedCopyTemplate.mockResolvedValue(undefined);
         mockedUpdatePackageJson.mockResolvedValue(undefined);
         mockedDownloadTemplate.mockResolvedValue(undefined);
         mockedInstallDependencies.mockResolvedValue(undefined);
@@ -158,7 +155,6 @@ describe('create command', () => {
 
                 expect(mockedDirectoryExists).not.toHaveBeenCalled();
                 expect(mockedDownloadTemplate).not.toHaveBeenCalled();
-                expect(mockedCopyTemplate).not.toHaveBeenCalled();
                 expect(mockedUpdatePackageJson).not.toHaveBeenCalled();
             }
         );
@@ -194,7 +190,6 @@ describe('create command', () => {
             expect(mockedDirectoryExists).toHaveBeenCalledWith(path.resolve(process.cwd(), 'existing-project'));
 
             expect(mockedDownloadTemplate).not.toHaveBeenCalled();
-            expect(mockedCopyTemplate).not.toHaveBeenCalled();
             expect(mockedUpdatePackageJson).not.toHaveBeenCalled();
             expect(mockedInstallDependencies).not.toHaveBeenCalled();
 
@@ -320,20 +315,6 @@ describe('create command', () => {
             expect(mockedDownloadTemplate).toHaveBeenCalledWith('http', 'my-project');
         });
 
-        it('copies the downloaded template to the project path', async () => {
-            mockedPrompts.mockResolvedValueOnce({
-                install: false
-            } as any);
-
-            const projectPath = path.resolve(process.cwd(), 'my-project');
-
-            await runCommand('my-project', {
-                template: 'default'
-            });
-
-            expect(mockedCopyTemplate).toHaveBeenCalledWith(projectPath);
-        });
-
         it('updates package.json with the project name', async () => {
             mockedPrompts.mockResolvedValueOnce({
                 install: false
@@ -355,10 +336,6 @@ describe('create command', () => {
                 calls.push('download');
             });
 
-            mockedCopyTemplate.mockImplementation(async () => {
-                calls.push('copy');
-            });
-
             mockedUpdatePackageJson.mockImplementation(async () => {
                 calls.push('update');
             });
@@ -371,7 +348,7 @@ describe('create command', () => {
                 template: 'default'
             });
 
-            expect(calls).toEqual(['download', 'copy', 'update']);
+            expect(calls).toEqual(['download', 'update']);
         });
 
         it('starts the creation spinner', async () => {
@@ -412,23 +389,6 @@ describe('create command', () => {
                     template: 'default'
                 })
             ).rejects.toThrow('Download failed');
-
-            expect(spinner.fail).toHaveBeenCalledWith(expect.stringContaining('Failed to create project'));
-
-            expect(mockedCopyTemplate).not.toHaveBeenCalled();
-            expect(mockedUpdatePackageJson).not.toHaveBeenCalled();
-        });
-
-        it('handles template copy errors', async () => {
-            const error = new Error('Copy failed');
-
-            mockedCopyTemplate.mockRejectedValueOnce(error);
-
-            await expect(
-                runCommand('my-project', {
-                    template: 'default'
-                })
-            ).rejects.toThrow('Copy failed');
 
             expect(spinner.fail).toHaveBeenCalledWith(expect.stringContaining('Failed to create project'));
 
@@ -565,7 +525,6 @@ describe('create command', () => {
             ).rejects.toThrow('npm install failed');
 
             expect(mockedDownloadTemplate).toHaveBeenCalled();
-            expect(mockedCopyTemplate).toHaveBeenCalled();
             expect(mockedUpdatePackageJson).toHaveBeenCalled();
             expect(mockedInstallDependencies).toHaveBeenCalled();
         });
@@ -728,8 +687,6 @@ describe('create command', () => {
 
             expect(mockedDownloadTemplate).toHaveBeenCalledWith('http', 'my-project');
 
-            expect(mockedCopyTemplate).toHaveBeenCalledWith(projectPath);
-
             expect(mockedUpdatePackageJson).toHaveBeenCalledWith(projectPath, 'my-project');
 
             expect(mockedInstallDependencies).not.toHaveBeenCalled();
@@ -751,8 +708,6 @@ describe('create command', () => {
             expect(mockedDirectoryExists).toHaveBeenCalledWith(projectPath);
 
             expect(mockedDownloadTemplate).toHaveBeenCalledWith('http', 'my-project');
-
-            expect(mockedCopyTemplate).toHaveBeenCalledWith(projectPath);
 
             expect(mockedUpdatePackageJson).toHaveBeenCalledWith(projectPath, 'my-project');
 
@@ -780,8 +735,6 @@ describe('create command', () => {
             expect(mockedDirectoryExists).toHaveBeenCalledWith(projectPath);
 
             expect(mockedDownloadTemplate).toHaveBeenCalledWith('http', 'interactive-project');
-
-            expect(mockedCopyTemplate).toHaveBeenCalledWith(projectPath);
 
             expect(mockedUpdatePackageJson).toHaveBeenCalledWith(projectPath, 'interactive-project');
 

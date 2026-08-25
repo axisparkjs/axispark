@@ -26,7 +26,6 @@ export async function downloadTemplate(template: string, destination: string): P
             await pipeline(Readable.fromWeb(response.body as any), (await import('node:fs')).createWriteStream(archivePath));
 
             const extractDirectory = path.join(tempDirectory, 'extracted');
-
             await mkdir(extractDirectory);
 
             await tar.x({

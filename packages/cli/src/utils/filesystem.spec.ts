@@ -1,6 +1,6 @@
-import { access, cp, readFile, writeFile } from 'node:fs/promises';
+import { access, readFile, writeFile } from 'node:fs/promises';
 
-import { directoryExists, copyTemplate, updatePackageJson } from './filesystem';
+import { directoryExists, updatePackageJson } from './filesystem';
 
 jest.mock('node:fs/promises', () => ({
     access: jest.fn(),
@@ -17,12 +17,8 @@ jest.mock('node:path', () => ({
 import path from 'node:path';
 
 const mockedAccess = access as jest.MockedFunction<typeof access>;
-const mockedCp = cp as jest.MockedFunction<typeof cp>;
 const mockedReadFile = readFile as jest.MockedFunction<typeof readFile>;
 const mockedWriteFile = writeFile as jest.MockedFunction<typeof writeFile>;
-
-const mockedPathResolve = path.resolve as jest.MockedFunction<typeof path.resolve>;
-
 const mockedPathJoin = path.join as jest.MockedFunction<typeof path.join>;
 
 describe('filesystem utils', () => {
@@ -55,46 +51,6 @@ describe('filesystem utils', () => {
             const result = await directoryExists('/projects/my-project');
 
             expect(result).toBe(false);
-        });
-    });
-
-    describe('copyTemplate', () => {
-        it('copies the default template to the destination', async () => {
-            mockedPathResolve.mockReturnValue('/templates/default');
-
-            mockedCp.mockResolvedValue(undefined);
-
-            await copyTemplate('/projects/my-project');
-
-            expect(mockedPathResolve).toHaveBeenCalledWith(expect.any(String), '../../../../templates/default');
-
-            expect(mockedCp).toHaveBeenCalledWith('/templates/default', '/projects/my-project', {
-                recursive: true
-            });
-        });
-
-        it('uses recursive copy', async () => {
-            mockedPathResolve.mockReturnValue('/templates/default');
-
-            await copyTemplate('/projects/my-project');
-
-            expect(mockedCp).toHaveBeenCalledWith(
-                '/templates/default',
-                '/projects/my-project',
-                expect.objectContaining({
-                    recursive: true
-                })
-            );
-        });
-
-        it('propagates errors from cp', async () => {
-            mockedPathResolve.mockReturnValue('/templates/default');
-
-            const error = new Error('Copy failed');
-
-            mockedCp.mockRejectedValue(error);
-
-            await expect(copyTemplate('/projects/my-project')).rejects.toThrow('Copy failed');
         });
     });
 
