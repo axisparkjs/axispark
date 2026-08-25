@@ -11,6 +11,8 @@
         "lib",
         "package.json",
         "PACKAGE.md",
+        "README.md",
+        "LICENSE",
         "tsconfig.build.json"
     ],
     "scripts": {
