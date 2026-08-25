@@ -3,9 +3,9 @@ import path from 'node:path';
 import os from 'node:os';
 import { pipeline } from 'node:stream/promises';
 import { Readable } from 'node:stream';
-import tar from 'tar';
+import * as tar from 'tar';
 
-const REPOSITORY = 'axispark/axisparkjs';
+const REPOSITORY = 'axisparkjs/axispark';
 
 export async function downloadTemplate(template: string, destination: string): Promise<void> {
     const tempDirectory = await createTempDirectory();
@@ -26,7 +26,6 @@ export async function downloadTemplate(template: string, destination: string): P
             await pipeline(Readable.fromWeb(response.body as any), (await import('node:fs')).createWriteStream(archivePath));
 
             const extractDirectory = path.join(tempDirectory, 'extracted');
-
             await mkdir(extractDirectory);
 
             await tar.x({
@@ -34,7 +33,7 @@ export async function downloadTemplate(template: string, destination: string): P
                 cwd: extractDirectory
             });
 
-            templatePath = path.join(extractDirectory, 'axispark-main', template);
+            templatePath = path.join(extractDirectory, 'axispark-main', 'templates', template);
         } else {
             templatePath = path.join(__dirname, '..', '..', '..', '..', 'templates', template);
         }

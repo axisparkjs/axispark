@@ -3,9 +3,7 @@ import prompts from 'prompts';
 import ora from 'ora';
 import chalk from 'chalk';
 import path from 'node:path';
-
-import { directoryExists, copyTemplate, updatePackageJson } from '../utils/filesystem';
-
+import { directoryExists, updatePackageJson } from '../utils/filesystem';
 import { installDependencies } from '../utils/package-manager';
 import { downloadTemplate } from '../utils/template';
 
@@ -53,7 +51,6 @@ export const createCommand = new Command('create')
 
         try {
             await downloadTemplate(options.template as string, name as string);
-            await copyTemplate(projectPath);
             await updatePackageJson(projectPath, name as string);
             spinner.succeed(chalk.green('Project created'));
         } catch (error) {
