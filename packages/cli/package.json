@@ -1,12 +1,18 @@
 {
     "name": "@axisparkjs/cli",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/cli",
     "author": "Pablo Gálvez Ortuño",
     "license": "Apache-2.0",
     "bin": {
         "axispark": "./lib/index.js"
     },
+    "files": [
+        "lib",
+        "package.json",
+        "PACKAGE.md",
+        "tsconfig.build.json"
+    ],
     "scripts": {
         "build": "tsc -b tsconfig.build.json",
         "prettier": "prettier --config ../../.prettierrc.json --ignore-path ../../.prettierignore '**/*.{ts,js,mjs,json,md,html,css,scss}' --check",

@@ -1,11 +1,17 @@
 {
     "name": "@axisparkjs/schedule",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/schedule",
     "author": "Pablo Gálvez Ortuño",
     "license": "Apache-2.0",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
+    "files": [
+        "lib",
+        "package.json",
+        "PACKAGE.md",
+        "tsconfig.build.json"
+    ],
     "scripts": {
         "build": "tsc -b tsconfig.build.json",
         "prettier": "prettier --config ../../.prettierrc.json --ignore-path ../../.prettierignore '**/*.{ts,js,mjs,json,md,html,css,scss}' --check",
@@ -17,10 +23,10 @@
         "node": ">= 20"
     },
     "dependencies": {
-        "@axisparkjs/common": "0.0.1",
-        "@axisparkjs/core": "0.0.1",
-        "@axisparkjs/di": "0.0.1",
-        "@axisparkjs/logger": "0.0.1",
+        "@axisparkjs/common": "1.0.0",
+        "@axisparkjs/core": "1.0.0",
+        "@axisparkjs/di": "1.0.0",
+        "@axisparkjs/logger": "1.0.0",
         "cron": "^4.4.0"
     }
 }
