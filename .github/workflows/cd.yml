@@ -1,0 +1,217 @@
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Type of deployment"
+        required: true
+        type: choice
+        options:
+          - snapshot
+          - pre
+          - pro
+        default: snapshot
+
+jobs:
+  publish:
+    name: Publish ${{ inputs.environment }} packages
+    runs-on: ubuntu-latest
+
+    if: >
+      startsWith(github.ref, 'refs/heads/release/') ||
+      startsWith(github.ref, 'refs/heads/feature/')
+
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get branch name
+        id: branch
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+
+          # npm dist-tags cannot contain spaces or some special characters.
+          # Convert feature/foo-bar into foo-bar.
+          TAG="${BRANCH#feature/}"
+
+          # Replace characters that are not valid/recommended in npm dist-tags.
+          TAG=$(echo "$TAG" | sed 's#[^a-zA-Z0-9._-]#-#g')
+
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+          echo "Branch: $BRANCH"
+          echo "Snapshot tag: $TAG"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: ${{ inputs.environment == 'pro' && 'https://registry.npmjs.org' || 'https://npm.pkg.github.com' }}
+          scope: ${{ inputs.environment == 'pro' && '' || '@axisparkjs' }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run ci:build
+
+      # ------------------------------------------------------------
+      # PRE
+      # ------------------------------------------------------------
+
+      - name: Enter prerelease mode
+        if: inputs.environment == 'pre' && hashFiles('.changeset/pre.json') == ''
+        run: npx changeset pre enter pre
+
+      # ------------------------------------------------------------
+      # PRO
+      # ------------------------------------------------------------
+
+      - name: Exit prerelease mode
+        if: inputs.environment == 'pro'
+        run: npx changeset pre exit
+
+      # ------------------------------------------------------------
+      # VERSION
+      # ------------------------------------------------------------
+
+      - name: Version packages - snapshot
+        if: inputs.environment == 'snapshot'
+        run: npx changeset version --snapshot "${{ steps.branch.outputs.tag }}"
+
+      - name: Version packages - pre/pro
+        if: inputs.environment != 'snapshot'
+        run: npx changeset version
+
+      - name: Build packages with release versions
+        run: npm run ci:build
+
+      - name: Generate other package files
+        run: |
+          find packages -mindepth 2 -maxdepth 2 -type f -name package.json \
+            -exec sh -c 'cp README.md "$(dirname "$1")/README.md"' _ {} \;
+
+          find packages -mindepth 2 -maxdepth 2 -type f -name package.json \
+            -exec sh -c 'cp LICENSE "$(dirname "$1")/LICENSE"' _ {} \;
+
+      # ------------------------------------------------------------
+      # PUBLISH
+      # ------------------------------------------------------------
+
+      - name: Publish snapshot packages
+        if: inputs.environment == 'snapshot'
+        run: npm run cd:publish -- --tag "${{ steps.branch.outputs.tag }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish pre packages
+        if: inputs.environment == 'pre'
+        run: npm run cd:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish production packages
+        if: inputs.environment == 'pro'
+        run: npm run cd:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # ------------------------------------------------------------
+      # COMMIT
+      # ------------------------------------------------------------
+
+      - name: Commit release state
+        if: inputs.environment != 'snapshot'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .changeset package.json package-lock.json packages/*/package.json
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          VERSION=$(node -p "require('./package.json').version")
+
+          git commit -m "chore: release ${VERSION}"
+          git push
+
+      - name: Show snapshot information
+        if: inputs.environment == 'snapshot'
+        run: |
+          echo ""
+          echo "========================================"
+          echo "Snapshot published"
+          echo "========================================"
+          echo ""
+          echo "Branch: ${{ steps.branch.outputs.branch }}"
+          echo "Tag:    ${{ steps.branch.outputs.tag }}"
+          echo ""
+          echo "Install with:"
+          echo ""
+          echo "npm install @axisparkjs/<package>@${{ steps.branch.outputs.tag }}"
+          echo ""
+          echo "========================================"
+
+  docs:
+    name: Build and deploy documentation
+    runs-on: ubuntu-latest
+    needs: publish
+
+    if: >
+      inputs.environment == 'pro' &&
+      startsWith(github.ref, 'refs/heads/release/')
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install docs dependencies
+        run: npm run docs:ci
+
+      - name: Build packages
+        run: npm run ci:build
+
+      - name: Generate API documentation
+        run: npm run docs:api-generate
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build documentation
+        run: npm run docs:build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/build
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
