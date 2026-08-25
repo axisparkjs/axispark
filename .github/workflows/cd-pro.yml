@@ -2,14 +2,6 @@ name: CD - PRO
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: "Environment to deploy"
-        required: true
-        type: choice
-        options:
-          - pre
-          - pro
 
 jobs:
   publish:
