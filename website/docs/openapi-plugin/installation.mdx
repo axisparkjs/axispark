@@ -1,5 +1,46 @@
-import { PluginOptions } from '@axisparkjs/core';
+---
+sidebar_position: 1
+---
 
+# Installation
+
+Thanks to AxiSpark.js, you can easily install the OpenApi Plugin in your project. Follow the steps below to get started.
+
+## Prerequisites
+
+Before using the OpenApi Plugin, you need to have the HTTP Plugin installed and configured in your project. The OpenApi Plugin relies on the HTTP Plugin to extract information about your API endpoints and to expose the OpenAPI documentation as REST endpoints. Please, check the [HTTP Plugin documentation](/axispark/docs/http-plugin/installation)
+
+## 1. Install the OpenApi Plugin
+
+You can use npm or any other package manager to install the OpenApi Plugin. Run the following command in your project directory:
+
+```
+npm install @axispark/openapi
+```
+
+## 2. Import the OpenApi Plugin
+
+Once the installation is complete, you can import the OpenApi Plugin into your project. Add the following line to your code:
+
+```ts
+import { AxiSparkFactory } from '@axisparkjs/core';
+import { OpenApiPlugin, OpenApiPluginOptionsFactory } from '@axisparkjs/openapi';
+
+export const app = AxiSparkFactory.create({
+    ...
+});
+
+app.use(OpenApiPlugin, OpenApiPluginOptionsFactory.create({
+    // Configuration options
+}));
+```
+
+## 3. Configure the OpenApi Plugin
+
+OpenApi Plugin offers a `OpenApiPluginOptionsFactory` class that allows you to configure the plugin with various options. The `OpenApiPluginOptionsFactory.create()` method accepts an object with the following properties:
+
+
+```ts name="openapi-plugin-options.ts"
 /**
  * Interface representing the options for configuring the OpenAPI plugin.
  */
@@ -61,3 +102,4 @@ export interface OpenApiPluginOptions extends PluginOptions {
      */
     exposeYaml?: boolean;
 }
+```

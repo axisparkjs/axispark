@@ -1,8 +1,42 @@
-import { PluginOptions } from '@axisparkjs/core';
-import { HttpAdapterClass } from '../adapter/http-adapter';
-import { VersionType } from '../version';
-import { HttpRequest } from '../types';
+---
+sidebar_position: 1
+---
 
+# Installation
+
+Thanks to AxiSpark.js, you can easily install the Http Plugin in your project. Follow the steps below to get started.
+
+## 1. Install the Http Plugin
+
+You can use npm or any other package manager to install the Http Plugin. Run the following command in your project directory:
+
+```
+npm install @axispark/http
+```
+
+## 2. Import the Http Plugin
+
+Once the installation is complete, you can import the Http Plugin into your project. Add the following line to your code:
+
+```ts
+import { AxiSparkFactory } from '@axisparkjs/core';
+import { HttpPlugin, HttpPluginOptionsFactory } from '@axisparkjs/http';
+
+export const app = AxiSparkFactory.create({
+    ...
+});
+
+app.use(HttpPlugin, HttpPluginOptionsFactory.create({
+    // Configuration options
+}));
+```
+
+## 3. Configure the Http Plugin
+
+Http Plugin offers a `HttpPluginOptionsFactory` class that allows you to configure the plugin with various options. The `HttpPluginOptionsFactory.create()` method accepts an object with the following properties:
+
+
+```ts name="http-plugin-options.ts"
 /**
  * Options for configuring the header-based version resolver.
  */
@@ -155,3 +189,4 @@ export interface HttpPluginOptions extends PluginOptions {
      */
     logErrors?: boolean;
 }
+```

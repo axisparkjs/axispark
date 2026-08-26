@@ -22,7 +22,7 @@ export class JobGenerator implements Generator<Promise<JobDefinition[]>> {
             const jobsMetadata = Metadata.get<JobMetadata[]>(MetadataKeys.JOB, scheduler) ?? [];
 
             for (const jobMetadata of jobsMetadata) {
-                const jobInstance = await context.container.resolve<JobDefinition>(jobMetadata.target as ClassType<JobDefinition>);
+                const jobInstance = await context.container.resolve(jobMetadata.target as ClassType<JobDefinition>);
                 const jobMethod = (jobInstance[jobMetadata.propertyKey as keyof typeof jobInstance] as MethodType).bind(jobInstance);
 
                 jobs.push(JobDefinition.fromMetadata(jobMetadata, jobMethod));

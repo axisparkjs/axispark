@@ -5,3 +5,5 @@ export * from './parameter';
 export * from './result';
 export * from './step';
 export * from './timeout';
+export * from './pipe';
+export * from './metadata';
