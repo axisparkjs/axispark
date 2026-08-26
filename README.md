@@ -28,7 +28,7 @@ To get started with AxiSpark.js, checkout the [official documentation](https://a
 AxiSpark.js is an open-source project and we welcome contributions from the community. If you encounter any issues or have questions, please reach out to us via our [GitHub repository](https://github.com/axisparkjs/axispark/issues).
 
 ### Contributors 
-Contributors are welcome! If you would like to contribute to AxiSpark.js, please read our [contributing guidelines](CONTRIBUTING.md) for more information.
+Contributors are welcome! If you would like to contribute to AxiSpark.js, please read our [contributing guidelines](https://github.com/axisparkjs/axispark/blob/main/CONTRIBUTING.md) for more information.
 
 ### Contact
 If you have any questions or need assistance, please contact me at pablogalvez31@gmail.com 
