@@ -25,7 +25,7 @@ describe.each([
         expect(axiSparkCore).toBeInstanceOf(AxiSparkCore);
     });
 
-    it('should create the app with OpenApi plugin', async () => {
+    it('should create the app with OpenApi Plugin', async () => {
         const plugins = axiSparkCore.used();
         expect(plugins).toHaveLength(2);
         expect(plugins).toStrictEqual([

@@ -30,6 +30,9 @@ AxiSpark.js is an open-source project and we welcome contributions from the comm
 ### Contributors 
 Contributors are welcome! If you would like to contribute to AxiSpark.js, please read our [contributing guidelines](CONTRIBUTING.md) for more information.
 
+### Contact
+If you have any questions or need assistance, please contact me at pablogalvez31@gmail.com 
+
 ## License
 
 AxiSpark is [MIT licensed](LICENSE).

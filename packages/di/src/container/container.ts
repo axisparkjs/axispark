@@ -16,7 +16,7 @@ export class Container implements Initializable {
     private readonly resolver = new ClassResolver();
 
     /**
-     * Initializes the container by scanning for classes decorated with @Injectable and binding them to the container. It retrieves metadata for injectable classes and registers them with their respective tokens and scopes. This method should be called after all providers have been registered to ensure that the container is properly initialized.
+     * Initializes the container by scanning for classes decorated with `@Injectable` and binding them to the container. It retrieves metadata for injectable classes and registers them with their respective tokens and scopes. This method should be called after all providers have been registered to ensure that the container is properly initialized.
      */
     init() {
         ClassRegistry.getWithMetadata(MetadataKeys.INJECTABLE).forEach((entry) => {
@@ -32,10 +32,10 @@ export class Container implements Initializable {
     }
 
     /**
-     * Binds a provider or class type to the container. If a class type is provided, it is automatically wrapped in a ClassProvider with a singleton scope. The method checks for the presence of the @Injectable decorator on the class and throws an error if it is not included. This ensures that only properly decorated classes can be registered with the container.
+     * Binds a provider or class type to the container. If a class type is provided, it is automatically wrapped in a ClassProvider with a singleton scope. The method checks for the presence of the `@Injectable` decorator on the class and throws an error if it is not included. This ensures that only properly decorated classes can be registered with the container.
      * @template T - The type of the instance being bound.
      * @param provider - The provider or class type to bind to the container.
-     * @throws {DecoratorNotIncludedError} If the @Injectable decorator is not included on the class being bound.
+     * @throws {DecoratorNotIncludedError} If the `@Injectable` decorator is not included on the class being bound.
      */
     bind<T>(provider: Provider<T> | ClassType<T>): void {
         if (!('token' in provider)) {
@@ -59,8 +59,6 @@ export class Container implements Initializable {
 
     /**
      * Creates a new scoped container that is associated with the current container. The scoped container allows for managing scoped instances of providers, enabling the resolution of dependencies within a specific scope. This is useful for scenarios where certain instances need to be isolated or have a limited lifetime.
-     * @template T - The type of the instance being resolved within the scoped container.
-     * @param resolver - An optional custom resolver to use for resolving dependencies within the scoped container. If not provided, the default ClassResolver is used.
      * @returns A new instance of ScopedContainer that is associated with the current container and uses the specified resolver for dependency resolution.
      */
     createScopedContainer(): ScopedContainer {
