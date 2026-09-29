@@ -56,7 +56,6 @@ export class SocketIOWebSocketAdapter implements WebSocketAdapter {
             }
 
             console.log(`Registering events for namespace: ${namespace}, events: ${events.map((e) => e.event).join(', ')}`);
-            
 
             nsp.on('connection', async (socket: Socket) => {
                 await connectionEvent?.(socket);

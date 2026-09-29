@@ -115,7 +115,7 @@ describe.each([{ name: 'Socket.IO', app: appSocketio }])('Messages Everywhere Ap
 
     it('should use v2 websocket namespace', async () => {
         const socketV2 = io(`http://localhost:3000/chat-v2`, {
-            path: '/websocket',
+            path: '/websocket'
         });
 
         let response = await new Promise<any>((resolve, reject) => {
@@ -129,7 +129,6 @@ describe.each([{ name: 'Socket.IO', app: appSocketio }])('Messages Everywhere Ap
             message: 'Connection event',
             connectionId: socketV2.id
         });
-
 
         const message = { text: 'Hello, WebSocket!' };
         response = await new Promise<any>((resolve, reject) => {
