@@ -38,7 +38,6 @@ export class SocketIOWebSocketAdapter implements WebSocketAdapter {
         for (const event of events) {
             if (!eventByNamespace.has(event.namespace)) {
                 eventByNamespace.set(event.namespace, []);
-                console.log(`Registering namespace: ${event.namespace}`);
             }
             eventByNamespace.get(event.namespace)?.push(event);
         }
@@ -55,7 +54,6 @@ export class SocketIOWebSocketAdapter implements WebSocketAdapter {
                 events.splice(events.indexOf(connectionEventDefinition), 1);
             }
 
-            console.log(`Registering events for namespace: ${namespace}, events: ${events.map((e) => e.event).join(', ')}`);
 
             nsp.on('connection', async (socket: Socket) => {
                 await connectionEvent?.(socket);
