@@ -77,28 +77,32 @@ export class OpenApiPlugin extends Plugin {
     private configureRoutes(): void {
         const routes: RouteDefinition[] = [];
         if (this.options.exposeJson)
-            routes.push({
-                target: { name: 'OpenApiController' } as ClassType,
-                propertyKey: 'getOpenApiJson',
-                path: this.docsUrls.jsonUrl,
-                httpMethod: HttpMethod.Get,
-                versions: ['default'],
-                handler: async (context) => {
-                    context.response.json(this.document.toObject());
-                }
-            });
+            routes.push(
+                new RouteDefinition(
+                    { name: 'OpenApiController' } as ClassType,
+                    'getOpenApiJson',
+                    HttpMethod.Get,
+                    this.docsUrls.jsonUrl,
+                    ['default'],
+                    async (context) => {
+                        context.response.json(this.document.toObject());
+                    }
+                )
+            );
 
         if (this.options.exposeYaml)
-            routes.push({
-                target: { name: 'OpenApiController' } as ClassType,
-                propertyKey: 'getOpenApiYaml',
-                path: this.docsUrls.yamlUrl,
-                httpMethod: HttpMethod.Get,
-                versions: ['default'],
-                handler: async (context) => {
-                    context.response.header('Content-Type', 'text/yaml').send(this.document.toYaml());
-                }
-            });
+            routes.push(
+                new RouteDefinition(
+                    { name: 'OpenApiController' } as ClassType,
+                    'getOpenApiYaml',
+                    HttpMethod.Get,
+                    this.docsUrls.yamlUrl,
+                    ['default'],
+                    async (context) => {
+                        context.response.header('Content-Type', 'text/yaml').send(this.document.toYaml());
+                    }
+                )
+            );
 
         this.httpAdapter.registerRoutes(routes);
     }

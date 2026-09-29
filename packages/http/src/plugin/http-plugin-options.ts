@@ -54,10 +54,27 @@ export interface TimeoutOptions {
     message?: string | ((time: number) => string);
 }
 
+/** Severity to apply to a route compatibility finding. */
+export type RouteValidationAction = 'error' | 'warn' | 'ignore';
+
+/** Options for validating declared HTTP routes during plugin registration. */
+export interface RouteValidationOptions {
+    /** Action for routes with the same method and normalized path. @default 'warn' */
+    onDuplicate?: RouteValidationAction;
+    /** Action for overlapping static and dynamic path segments. @default 'warn' */
+    onAmbiguous?: RouteValidationAction;
+    /** Action for routes shadowed by an earlier wildcard route. @default 'warn' */
+    onUnreachable?: RouteValidationAction;
+}
+
 /**
  * Options for configuring the HTTP plugin.
  */
 export interface HttpPluginOptions extends PluginOptions {
+    /** Whether to validate route compatibility during plugin registration. Defaults to true. */
+    routeValidation?: boolean;
+    /** Actions to apply to each kind of route compatibility finding. */
+    routeValidationOptions?: RouteValidationOptions;
     /**
      * The port on which the HTTP server will listen.
      */
