@@ -2,7 +2,7 @@ import { AxiSparkContext, PluginNotConfiguredError, Plugin } from '@axisparkjs/c
 import { HttpPluginOptions } from './http-plugin-options';
 import { HTTP_ADAPTER, HTTP_LOGGER, HTTP_OPTIONS } from '../di/tokens';
 import { HttpAdapter } from '../adapter/http-adapter';
-import { RouteGenerator, RouteDefinition } from '../routes';
+import { RouteGenerator, RouteDefinition, RouteConflict, RouteConflictType } from '../routes';
 import { Logger } from '@axisparkjs/logger';
 import { ClassRegistry, Injectable, InjectableScopes, Injector } from '@axisparkjs/di';
 import { ClassType } from '@axisparkjs/common';
@@ -58,11 +58,45 @@ export class HttpPlugin extends Plugin {
         this.configureImplementations();
         await this.registerImplementations();
         const routes = await this.generateRoutes();
+        await this.validateRoutes(routes);
 
         this.adapter = await this.context.container.resolve<HttpAdapter>(HTTP_ADAPTER);
         await this.adapter.initialize?.();
         await this.adapter.registerRoutes(routes);
         await this.logger.info(`Plugin registered`);
+    }
+
+    private async validateRoutes(routes: readonly RouteDefinition[]): Promise<void> {
+        if (this.options.routeValidation === false) return;
+
+        const conflicts: RouteConflict[] = [];
+        for (let i = 0; i < routes.length; i++) {
+            for (let j = i + 1; j < routes.length; j++) {
+                conflicts.push(...routes[i].compare(routes[j]));
+            }
+        }
+        const options = this.options.routeValidationOptions;
+        const actionFor: Record<RouteConflictType, 'error' | 'warn' | 'ignore'> = {
+            duplicate: options?.onDuplicate ?? 'warn',
+            ambiguous: options?.onAmbiguous ?? 'warn',
+            unreachable: options?.onUnreachable ?? 'warn'
+        };
+        const actionable = conflicts.filter((conflict) => actionFor[conflict.type] !== 'ignore');
+        const errors = actionable.filter((conflict) => actionFor[conflict.type] === 'error');
+
+        for (const conflict of actionable) {
+            const [first, second] = conflict.routes;
+            const message = `HTTP route ${conflict.type}: ${conflict.message}. ` + `${describeRoute(first)}; ${describeRoute(second)}`;
+            if (actionFor[conflict.type] === 'error') continue;
+            await this.logger.warn(message);
+        }
+
+        if (errors.length) {
+            const report = errors
+                .map(({ type, message, routes: [first, second] }) => `- ${type}: ${message}. ${describeRoute(first)}; ${describeRoute(second)}`)
+                .join('\n');
+            throw new Error(`HTTP route validation failed with ${errors.length} conflict(s):\n${report}`);
+        }
     }
 
     private registerContainerBindings(): void {
@@ -145,4 +179,8 @@ export class HttpPlugin extends Plugin {
         await this.adapter.stop();
         await this.logger.info(`Plugin stopped`);
     }
+}
+
+function describeRoute(route: RouteDefinition): string {
+    return `${route.httpMethod.toUpperCase()} ${route.path} (${route.target.name}.${String(route.propertyKey)})`;
 }
