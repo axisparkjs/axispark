@@ -15,17 +15,23 @@ import { FastifyHttpSession } from '../types/fastify-http-session';
 import { FastifyHttpPluginOptions } from '../plugin';
 
 jest.mock('fastify', () => {
+    const server = {
+        listen: jest.fn(),
+        close: jest.fn()
+    };
     const app = {
         register: jest.fn().mockResolvedValue(undefined),
         route: jest.fn(),
         listen: jest.fn().mockResolvedValue(undefined),
-        close: jest.fn().mockResolvedValue(undefined)
+        close: jest.fn().mockResolvedValue(undefined),
+        server
     };
 
     return Object.assign(
         jest.fn(() => app),
         {
-            __app: app
+            __app: app,
+            __server: server
         }
     );
 });
@@ -265,6 +271,15 @@ describe('FastifyHttpAdapter', () => {
             adapter.registerRoutes(routes);
 
             expect(adapter.getRegisteredRoutes()).toEqual(routes);
+        });
+    });
+
+    describe('getHttpServer', () => {
+        it('should return the underlying http server', () => {
+            const adapter = new FastifyHttpAdapter(baseConfig, axisparkConfig as any);
+            const server = (fastify as any).__server;
+
+            expect(adapter.getHttpServer()).toBe(server);
         });
     });
 

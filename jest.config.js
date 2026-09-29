@@ -41,7 +41,11 @@ const config = {
         '^@axisparkjs/schedule$': '<rootDir>../../packages/schedule/src',
         '^@axisparkjs/schedule/(.*)$': '<rootDir>../../packages/schedule/src/$1',
         '^@axisparkjs/test$': '<rootDir>../../packages/test/src',
-        '^@axisparkjs/test/(.*)$': '<rootDir>../../packages/test/src/$1'
+        '^@axisparkjs/test/(.*)$': '<rootDir>../../packages/test/src/$1',
+        '^@axisparkjs/websocket$': '<rootDir>../../packages/websocket/src',
+        '^@axisparkjs/websocket/(.*)$': '<rootDir>../../packages/websocket/src/$1',
+        '^@axisparkjs/websocket-socketio$': '<rootDir>../../packages/websocket-socketio/src',
+        '^@axisparkjs/websocket-socketio/(.*)$': '<rootDir>../../packages/websocket-socketio/src/$1'
     },
     setupFiles: ['<rootDir>/jest.setup.ts']
 };

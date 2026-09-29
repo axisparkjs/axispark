@@ -1,3 +1,4 @@
+import { HttpServer } from '@axisparkjs/common';
 import { RouteDefinition } from '../routes/route-definition';
 
 /**
@@ -16,6 +17,11 @@ export interface HttpAdapter {
      * @returns An array of route definitions that have been registered with the adapter.
      */
     getRegisteredRoutes(): readonly RouteDefinition[];
+    /**
+     * Retrieves the underlying HTTP server instance used by the adapter.
+     * @returns The HTTP server instance, which can be of type `http.Server`, `https.Server`, `http2.Http2Server`, or `http2.Http2SecureServer`.
+     */
+    getHttpServer(): HttpServer;
     /**
      * Initializes the HTTP adapter.
      * @returns A promise that resolves when the adapter has been initialized, or void if the operation is synchronous.

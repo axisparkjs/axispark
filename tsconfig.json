@@ -46,6 +46,10 @@
             "@axisparkjs/schedule/*": ["./packages/schedule/src/*"],
             "@axisparkjs/test": ["./packages/test/src"],
             "@axisparkjs/test/*": ["./packages/test/src/*"],
+            "@axisparkjs/websocket": ["./packages/websocket/src"],
+            "@axisparkjs/websocket/*": ["./packages/websocket/src/*"],
+            "@axisparkjs/websocket-socketio": ["./packages/websocket-socketio/src"],
+            "@axisparkjs/websocket-socketio/*": ["./packages/websocket-socketio/src/*"],
             "@axisparkjs/samples": ["./samples"],
             "@axisparkjs/samples/*": ["./samples/*"]
         },

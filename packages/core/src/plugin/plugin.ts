@@ -23,7 +23,7 @@ export enum PluginLifecycle {
  */
 export interface PluginType<T extends Plugin = Plugin> {
     new (...args: any[]): T;
-    readonly dependencies?: readonly PluginType[];
+    readonly dependencies?: readonly (PluginType | { plugin: PluginType; optional: boolean })[];
 }
 
 /**
@@ -33,7 +33,7 @@ export abstract class Plugin {
     protected state: PluginLifecycle = PluginLifecycle.Created;
     protected stateError?: Error;
     protected options?: PluginOptions;
-    static readonly dependencies?: PluginType[];
+    static readonly dependencies?: (PluginType | { plugin: PluginType; optional: boolean })[];
 
     /**
      * Sets the error state of the plugin.

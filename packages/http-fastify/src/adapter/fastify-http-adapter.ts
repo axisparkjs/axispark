@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@axisparkjs/di';
 import { HTTP_OPTIONS, HttpAdapter, RouteDefinition } from '@axisparkjs/http';
+import { HttpServer } from '@axisparkjs/common';
 import { AxiSparkConfig, AXISPARK_CONFIG } from '@axisparkjs/core';
 import { FastifyHttpRequest } from '../types/fastify-http-request';
 import { FastifyHttpResponse } from '../types/fastify-http-response';
@@ -42,6 +43,10 @@ export class FastifyHttpAdapter implements HttpAdapter {
 
     getRegisteredRoutes(): readonly RouteDefinition[] {
         return this.registeredRoutes;
+    }
+
+    getHttpServer(): HttpServer {
+        return this.app.server;
     }
 
     registerRoutes(routes: readonly RouteDefinition[]): void {
