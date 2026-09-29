@@ -167,10 +167,7 @@ describe('HttpPlugin', () => {
         });
 
         it('should register generated routes', async () => {
-            const routes = [
-                route(class UsersController {}, HttpMethod.Get, '/users'),
-                route(class UsersController {}, HttpMethod.Post, '/users')
-            ];
+            const routes = [route(class UsersController {}, HttpMethod.Get, '/users'), route(class UsersController {}, HttpMethod.Post, '/users')];
 
             const generate = jest.fn().mockResolvedValue(routes);
 
@@ -198,9 +195,7 @@ describe('HttpPlugin', () => {
                 route(UsersController, HttpMethod.Get, '/files/*'),
                 route(UsersController, HttpMethod.Get, '/files/report')
             ];
-            injector.get.mockImplementation(async (target: any) => target === RouteGenerator
-                ? { generate: jest.fn().mockResolvedValue(routes) }
-                : {});
+            injector.get.mockImplementation(async (target: any) => (target === RouteGenerator ? { generate: jest.fn().mockResolvedValue(routes) } : {}));
 
             await plugin.onRegister(context, options);
 
@@ -212,9 +207,7 @@ describe('HttpPlugin', () => {
             logger.warn = jest.fn().mockResolvedValue(undefined);
             const compare = jest.spyOn(RouteDefinition.prototype, 'compare');
             const routes = [route(class UsersController {}, HttpMethod.Get, '/users/*'), route(class AdminController {}, HttpMethod.Get, '/users/:name')];
-            injector.get.mockImplementation(async (target: any) => target === RouteGenerator
-                ? { generate: jest.fn().mockResolvedValue(routes) }
-                : {});
+            injector.get.mockImplementation(async (target: any) => (target === RouteGenerator ? { generate: jest.fn().mockResolvedValue(routes) } : {}));
 
             await plugin.onRegister(context, { ...options, routeValidationOptions: { onUnreachable: 'ignore' } });
 
@@ -230,14 +223,14 @@ describe('HttpPlugin', () => {
                 route(UsersController, HttpMethod.Get, '/users/:slug'),
                 route(UsersController, HttpMethod.Get, '/users/me')
             ];
-            injector.get.mockImplementation(async (target: any) => target === RouteGenerator
-                ? { generate: jest.fn().mockResolvedValue(routes) }
-                : {});
+            injector.get.mockImplementation(async (target: any) => (target === RouteGenerator ? { generate: jest.fn().mockResolvedValue(routes) } : {}));
 
-            await expect(plugin.onRegister(context, {
-                ...options,
-                routeValidationOptions: { onDuplicate: 'error', onAmbiguous: 'error' }
-            })).rejects.toThrow(/3 conflict\(s\):[\s\S]*duplicate:[\s\S]*ambiguous:/);
+            await expect(
+                plugin.onRegister(context, {
+                    ...options,
+                    routeValidationOptions: { onDuplicate: 'error', onAmbiguous: 'error' }
+                })
+            ).rejects.toThrow(/3 conflict\(s\):[\s\S]*duplicate:[\s\S]*ambiguous:/);
 
             expect(adapter.initialize).not.toHaveBeenCalled();
             expect(adapter.registerRoutes).not.toHaveBeenCalled();
@@ -246,9 +239,7 @@ describe('HttpPlugin', () => {
         it('should skip comparison when validation is disabled', async () => {
             const compare = jest.spyOn(RouteDefinition.prototype, 'compare');
             const routes = [route(class UsersController {}, HttpMethod.Get, '/users/:id'), route(class AdminController {}, HttpMethod.Get, '/users/:name')];
-            injector.get.mockImplementation(async (target: any) => target === RouteGenerator
-                ? { generate: jest.fn().mockResolvedValue(routes) }
-                : {});
+            injector.get.mockImplementation(async (target: any) => (target === RouteGenerator ? { generate: jest.fn().mockResolvedValue(routes) } : {}));
 
             await plugin.onRegister(context, { ...options, routeValidation: false });
 
@@ -258,10 +249,7 @@ describe('HttpPlugin', () => {
         it('should log every registered route', async () => {
             class UsersController {}
 
-            const routes = [
-                route(UsersController, HttpMethod.Get, '/users'),
-                route(UsersController, HttpMethod.Post, '/users', ['1', '2'])
-            ];
+            const routes = [route(UsersController, HttpMethod.Get, '/users'), route(UsersController, HttpMethod.Post, '/users', ['1', '2'])];
 
             injector.get.mockImplementation(async (target: any) => {
                 if (target === RouteGenerator) {
@@ -283,10 +271,7 @@ describe('HttpPlugin', () => {
         it('should log each controller only once', async () => {
             class UsersController {}
 
-            const routes = [
-                route(UsersController, HttpMethod.Get, '/users'),
-                route(UsersController, HttpMethod.Post, '/users')
-            ];
+            const routes = [route(UsersController, HttpMethod.Get, '/users'), route(UsersController, HttpMethod.Post, '/users')];
 
             injector.get.mockImplementation(async (target: any) => {
                 if (target === RouteGenerator) {

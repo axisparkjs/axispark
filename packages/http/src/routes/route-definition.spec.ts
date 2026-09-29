@@ -27,11 +27,19 @@ describe('RouteDefinition', () => {
                     .compare(route('/users/me'))
                     .map(({ type }) => type)
             ).toEqual(['ambiguous']);
-            expect(route('/users/me').compare(route('/users/:id')).map(({ type }) => type)).toEqual(['ambiguous']);
+            expect(
+                route('/users/me')
+                    .compare(route('/users/:id'))
+                    .map(({ type }) => type)
+            ).toEqual(['ambiguous']);
         });
 
         it('normalizes empty and root paths to the same route', () => {
-            expect(route('').compare(route('/')).map(({ type }) => type)).toEqual(['duplicate']);
+            expect(
+                route('')
+                    .compare(route('/'))
+                    .map(({ type }) => type)
+            ).toEqual(['duplicate']);
         });
 
         it('finds a specific route shadowed by an earlier wildcard', () => {
