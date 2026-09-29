@@ -1,0 +1,45 @@
+import { WebSocketPlugin } from './websocket-plugin';
+
+describe('WebSocketPlugin', () => {
+    const baseOptions: any = { adapter: class {}, useHttpPluginServer: false, port: 42 };
+    const createPlugin = (useHttpPluginServer = false) => {
+        const adapter = { initialize: jest.fn(), registerEvents: jest.fn(), start: jest.fn(), stop: jest.fn() };
+        const container: any = { bind: jest.fn(), resolve: jest.fn().mockResolvedValue(adapter) };
+        const logger = { child: jest.fn().mockReturnThis(), info: jest.fn() };
+        const injector = {
+            get: jest.fn(async (token: any) => {
+                if (String(token).includes('HTTP_OPTIONS')) return { port: 80 };
+                if (String(token).includes('HTTP_ADAPTER')) return { getHttpServer: () => 'server' };
+                if (token.name === 'WebSocketEventGenerator') return { generate: async () => ['event'] };
+                return {};
+            })
+        };
+        const plugin = new WebSocketPlugin(logger as any, injector as any);
+        return { plugin, adapter, container, logger, injector, context: { container }, options: { ...baseOptions, useHttpPluginServer } };
+    };
+    it('requires options', async () => {
+        await expect(createPlugin().plugin.onRegister({} as any)).rejects.toThrow();
+    });
+    it('registers bindings and implementations, then starts and stops the adapter', async () => {
+        const test = createPlugin();
+        await test.plugin.onRegister(test.context as any, test.options);
+        expect(test.container.bind).toHaveBeenCalledTimes(3);
+        expect(test.adapter.initialize).toHaveBeenCalledWith(undefined);
+        expect(test.adapter.registerEvents).toHaveBeenCalledWith(['event']);
+        await test.plugin.onStart();
+        await test.plugin.onStop();
+        expect(test.adapter.start).toHaveBeenCalled();
+        expect(test.adapter.stop).toHaveBeenCalled();
+    });
+    it('uses the configured HTTP server when requested', async () => {
+        const test = createPlugin(true);
+        await test.plugin.onRegister(test.context as any, test.options);
+        expect(test.adapter.initialize).toHaveBeenCalledWith('server');
+        await test.plugin.onStart();
+    });
+    it('supports adapters without an initialize method', async () => {
+        const test = createPlugin();
+        test.context.container.resolve = jest.fn().mockResolvedValue({ registerEvents: jest.fn(), start: jest.fn(), stop: jest.fn() });
+        await test.plugin.onRegister(test.context as any, test.options);
+    });
+});

@@ -8,3 +8,6 @@
 - File uploads
 - Rate limiting (to prevent abuse)
 - Adapt HTTP to latest https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1 RFC
+
+## WebSocket Plugin
+- Add support for regex in @WebSocketEvent for more flexible event handling

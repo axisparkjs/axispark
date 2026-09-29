@@ -8,6 +8,16 @@ import { HttpMethod } from '@axisparkjs/http';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
+import { createServer } from 'node:http';
+
+const mockServer = {
+    listen: jest.fn(),
+    close: jest.fn()
+};
+
+jest.mock('node:http', () => ({
+    createServer: jest.fn(() => mockServer)
+}));
 
 jest.mock('express', () => {
     const app = {
@@ -61,9 +71,9 @@ describe('ExpressHttpAdapter', () => {
         jest.clearAllMocks();
     });
 
-    describe('constructor', () => {
-        it('should register all enabled middlewares', () => {
-            new ExpressHttpAdapter({
+    describe('initialize', () => {
+        it('should create http server and register all enabled middlewares', async () => {
+            const adapter = new ExpressHttpAdapter({
                 ...baseConfig,
                 bodyParser: true,
                 bodyParserOptions: { limit: '10mb' },
@@ -79,6 +89,9 @@ describe('ExpressHttpAdapter', () => {
                 compressionOptions: { threshold: 1024 }
             });
 
+            await adapter.initialize();
+
+            expect(createServer).toHaveBeenCalledWith(app);
             expect(express.json).toHaveBeenCalledWith({ limit: '10mb' });
             expect(express.urlencoded).toHaveBeenCalledWith({ extended: false });
             expect(session).toHaveBeenCalledWith({ secret: 'secret' });
@@ -89,8 +102,8 @@ describe('ExpressHttpAdapter', () => {
             expect(app.use).toHaveBeenCalledTimes(6);
         });
 
-        it('should not register disabled middlewares', () => {
-            new ExpressHttpAdapter({
+        it('should not register disabled middlewares', async () => {
+            const adapter = new ExpressHttpAdapter({
                 ...baseConfig,
                 bodyParser: false,
                 urlEncoded: false,
@@ -100,16 +113,31 @@ describe('ExpressHttpAdapter', () => {
                 cors: false
             });
 
+            await adapter.initialize();
+
+            expect(createServer).toHaveBeenCalledWith(app);
             expect(app.use).not.toHaveBeenCalled();
         });
 
-        it('should register cookies without options', () => {
-            new ExpressHttpAdapter({
+        it('should register cookies without options', async () => {
+            const adapter = new ExpressHttpAdapter({
                 ...baseConfig,
                 cookies: true
             });
 
+            await adapter.initialize();
+
             expect(app.use).toHaveBeenCalled();
+            expect(cookieParser).toHaveBeenCalledWith(undefined, undefined);
+        });
+    });
+
+    describe('getHttpServer', () => {
+        it('should return the underlying http server', async () => {
+            const adapter = new ExpressHttpAdapter(baseConfig);
+            await adapter.initialize();
+
+            expect(adapter.getHttpServer()).toBe(mockServer);
         });
     });
 
@@ -219,37 +247,38 @@ describe('ExpressHttpAdapter', () => {
     });
 
     describe('start', () => {
-        it('should listen on configured port', () => {
-            const server = {};
-
-            app.listen.mockReturnValue(server);
-
+        it('should listen on configured port when initialized', async () => {
             const adapter = new ExpressHttpAdapter(baseConfig);
+            await adapter.initialize();
 
             adapter.start();
 
-            expect(app.listen).toHaveBeenCalledWith(8080);
+            expect(mockServer.listen).toHaveBeenCalledWith(8080);
+        });
+
+        it('should do nothing when httpServer is not initialized', () => {
+            const adapter = new ExpressHttpAdapter(baseConfig);
+
+            expect(() => adapter.start()).not.toThrow();
+            expect(mockServer.listen).not.toHaveBeenCalled();
         });
     });
 
     describe('stop', () => {
-        it('should close the server', () => {
-            const close = jest.fn();
-
-            app.listen.mockReturnValue({ close });
-
+        it('should close the server when initialized', async () => {
             const adapter = new ExpressHttpAdapter(baseConfig);
+            await adapter.initialize();
 
-            adapter.start();
             adapter.stop();
 
-            expect(close).toHaveBeenCalled();
+            expect(mockServer.close).toHaveBeenCalled();
         });
 
-        it('should do nothing when server has not been started', () => {
+        it('should do nothing when server has not been initialized', () => {
             const adapter = new ExpressHttpAdapter(baseConfig);
 
             expect(() => adapter.stop()).not.toThrow();
+            expect(mockServer.close).not.toHaveBeenCalled();
         });
     });
 });

@@ -1,4 +1,4 @@
-import { HttpPlugin, HttpAdapterClass } from '@axisparkjs/http';
+import { HttpPlugin } from '@axisparkjs/http';
 import { FastifyHttpAdapter } from '../adapter/fastify-http-adapter';
 import { HttpPluginOptionsFactory } from './http-plugin-options-factory';
 
@@ -49,7 +49,6 @@ describe('HttpPluginOptionsFactory', () => {
             const options = HttpPluginOptionsFactory.create({
                 port: 8080,
                 basePath: '/api',
-                adapter: class TestAdapter {} as unknown as HttpAdapterClass,
                 bodyParser: false,
                 urlEncoded: false,
                 urlEncodedOptions,
@@ -76,7 +75,7 @@ describe('HttpPluginOptionsFactory', () => {
                 plugin: HttpPlugin,
                 port: 8080,
                 basePath: '/api',
-                adapter: expect.any(Function),
+                adapter: FastifyHttpAdapter,
                 bodyParser: false,
                 urlEncoded: false,
                 urlEncodedOptions,

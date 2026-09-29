@@ -39,5 +39,9 @@ export const MetadataKeys = {
     /* OpenApi */
     OPENAPI_RESPONSE: new MetadataKey('openapi-response'),
     OPENAPI_SCHEMA: new MetadataKey('openapi-schema'),
-    OPENAPI_PROPERTY: new MetadataKey('openapi-property')
+    OPENAPI_PROPERTY: new MetadataKey('openapi-property'),
+
+    /* WebSockets */
+    WEBSOCKET: new MetadataKey('websocket'),
+    WEBSOCKET_EVENT: new MetadataKey('websocket-event')
 } as const;

@@ -12,6 +12,11 @@ interface RegisteredPlugin {
     readonly options?: PluginOptions;
 }
 
+interface NormalizedDependency {
+    readonly type: PluginType;
+    readonly optional: boolean;
+}
+
 /**
  * A registry for managing plugins and their lifecycle.
  */
@@ -41,6 +46,13 @@ export class PluginRegistry implements Lifecycle {
         return this.plugins.map((p) => ({ type: p.type, options: p.options, instance: this.instances.get(p.type) }));
     }
 
+    private static normalizeDependency(dependency: PluginType | { plugin: PluginType; optional: boolean }): NormalizedDependency {
+        if (typeof dependency === 'function') {
+            return { type: dependency, optional: false };
+        }
+        return { type: dependency.plugin, optional: dependency.optional };
+    }
+
     /* Kahn's algorithm */
     private resolveExecutionOrder(): void {
         this.executionOrder.length = 0;
@@ -55,9 +67,16 @@ export class PluginRegistry implements Lifecycle {
 
         for (const plugin of this.plugins) {
             const dependencies = plugin.type.dependencies || [];
-            for (const dependency of dependencies) {
-                if (!graph.has(dependency)) throw new PluginDependencyNotIncludedError(dependency.name);
-                (graph.get(dependency) as PluginType[]).push(plugin.type);
+            for (const rawDependency of dependencies) {
+                const { type: dependencyType, optional } = PluginRegistry.normalizeDependency(rawDependency);
+
+                if (!graph.has(dependencyType)) {
+                    if (optional) continue;
+                    throw new PluginDependencyNotIncludedError(dependencyType.name);
+                }
+
+                // Si SÍ está registrada, se respeta el orden aunque sea opcional.
+                (graph.get(dependencyType) as PluginType[]).push(plugin.type);
                 inDegree.set(plugin.type, (inDegree.get(plugin.type) || 0) + 1);
             }
         }

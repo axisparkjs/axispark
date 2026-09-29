@@ -83,6 +83,31 @@ class CircularB extends Plugin {
 
 CircularA.dependencies = [CircularB];
 
+@Injectable()
+class OptionalDepTarget extends Plugin {
+    async onRegister() {
+        executionOrder.push('optional-target');
+    }
+}
+
+@Injectable()
+class OptionalDepPlugin extends Plugin {
+    static override dependencies = [{ plugin: OptionalDepTarget, optional: true }];
+
+    async onRegister() {
+        executionOrder.push('optional-plugin');
+    }
+}
+
+@Injectable()
+class RequiredObjectDepPlugin extends Plugin {
+    static override dependencies = [{ plugin: DependencyPlugin, optional: false }];
+
+    async onRegister() {
+        executionOrder.push('required-object-plugin');
+    }
+}
+
 describe('PluginRegistry', () => {
     let registry: PluginRegistry;
     let context: jest.Mocked<AxiSparkContext>;
@@ -252,6 +277,46 @@ describe('PluginRegistry', () => {
             });
 
             await expect(registry.init(context)).rejects.toThrow(PluginCircularDependencyError);
+        });
+
+        it('should allow optional dependencies when they are not registered', async () => {
+            registry.register(OptionalDepPlugin, { plugin: OptionalDepPlugin });
+
+            context.container.resolve = jest.fn().mockImplementation((type) => {
+                if (type === OptionalDepPlugin) return new OptionalDepPlugin();
+                throw new Error(`Unknown type: ${type}`);
+            });
+
+            await registry.init(context);
+            expect(executionOrder).toEqual(['optional-plugin']);
+        });
+
+        it('should respect dependency order when optional dependency is registered', async () => {
+            registry.register(OptionalDepPlugin, { plugin: OptionalDepPlugin });
+            registry.register(OptionalDepTarget, { plugin: OptionalDepTarget });
+
+            context.container.resolve = jest.fn().mockImplementation((type) => {
+                if (type === OptionalDepPlugin) return new OptionalDepPlugin();
+                if (type === OptionalDepTarget) return new OptionalDepTarget();
+                throw new Error(`Unknown type: ${type}`);
+            });
+
+            await registry.init(context);
+            expect(executionOrder).toEqual(['optional-target', 'optional-plugin']);
+        });
+
+        it('should respect object-style required dependencies', async () => {
+            registry.register(RequiredObjectDepPlugin, { plugin: RequiredObjectDepPlugin });
+            registry.register(DependencyPlugin, { plugin: DependencyPlugin });
+
+            context.container.resolve = jest.fn().mockImplementation((type) => {
+                if (type === RequiredObjectDepPlugin) return new RequiredObjectDepPlugin();
+                if (type === DependencyPlugin) return new DependencyPlugin();
+                throw new Error(`Unknown type: ${type}`);
+            });
+
+            await registry.init(context);
+            expect(executionOrder).toEqual(['dependency', 'required-object-plugin']);
         });
     });
 });

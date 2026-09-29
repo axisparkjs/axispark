@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@axisparkjs/di';
 import { HTTP_OPTIONS, HttpAdapter, RouteDefinition } from '@axisparkjs/http';
+import { HttpServer } from '@axisparkjs/common';
 import express, { Request, Response } from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
-import { Server } from 'node:http';
+import { createServer } from 'node:http';
 import { ExpressHttpRequest } from '../types/express-http-request';
 import { ExpressHttpResponse } from '../types/express-http-response';
 import { ExpressHttpPluginOptions } from '../plugin/express-http-plugin-options';
@@ -17,13 +18,16 @@ import { ExpressHttpSession } from '../types/express-http-session';
 @Injectable()
 export class ExpressHttpAdapter implements HttpAdapter {
     private readonly app = express();
-    private server?: Server;
+    private httpServer?: HttpServer;
     private readonly registeredRoutes: RouteDefinition[] = [];
 
     constructor(
         @Inject(HTTP_OPTIONS)
         private readonly options: ExpressHttpPluginOptions
-    ) {
+    ) {}
+
+    async initialize(): Promise<void> {
+        this.httpServer = createServer(this.app);
         if (this.options.bodyParser) this.app.use(express.json(this.options.bodyParserOptions));
         if (this.options.urlEncoded) this.app.use(express.urlencoded(this.options.urlEncodedOptions));
         if (this.options.session) this.app.use(session(this.options.sessionOptions));
@@ -46,6 +50,10 @@ export class ExpressHttpAdapter implements HttpAdapter {
         }
     }
 
+    getHttpServer(): HttpServer {
+        return this.httpServer as HttpServer;
+    }
+
     private createContext(request: Request, response: Response) {
         const req = new ExpressHttpRequest(request);
         const res = new ExpressHttpResponse(response);
@@ -54,10 +62,10 @@ export class ExpressHttpAdapter implements HttpAdapter {
     }
 
     start(): void {
-        this.server = this.app.listen(this.options.port);
+        this.httpServer?.listen(this.options.port);
     }
 
     stop(): void {
-        this.server?.close();
+        this.httpServer?.close();
     }
 }
