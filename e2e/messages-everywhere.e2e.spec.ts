@@ -8,6 +8,7 @@ import { io, Socket } from 'socket.io-client';
 describe.each([{ name: 'Socket.IO', app: appSocketio }])('Messages Everywhere App ($name)', ({ app, name }) => {
     let axiSparkCore: AxiSparkCore;
     let socket: Socket;
+    let socketV2: Socket;
 
     beforeAll(async () => {
         axiSparkCore = AxiSparkTestFactory.create({
@@ -114,7 +115,7 @@ describe.each([{ name: 'Socket.IO', app: appSocketio }])('Messages Everywhere Ap
     });
 
     it('should use v2 websocket namespace', async () => {
-        const socketV2 = io(`http://localhost:3000/chat-v2`, {
+        socketV2 = io(`http://localhost:3000/chat-v2`, {
             path: '/websocket'
         });
 
@@ -132,22 +133,21 @@ describe.each([{ name: 'Socket.IO', app: appSocketio }])('Messages Everywhere Ap
 
         const message = { text: 'Hello, WebSocket!' };
         response = await new Promise<any>((resolve, reject) => {
-            socket.emit('message', message, (ackResponse: any) => {
+            socketV2.emit('message', message, (ackResponse: any) => {
                 resolve(ackResponse);
             });
-            socket.on('error', (err) => reject(err));
+            socketV2.on('error', (err) => reject(err));
         });
 
         expect(response).toEqual({
             message: 'Received message v2',
             data: message
         });
-
-        socketV2.close();
     });
 
     afterEach(async () => {
         socket?.close();
+        socketV2?.close();
     });
 
     afterAll(async () => {
