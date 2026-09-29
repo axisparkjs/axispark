@@ -80,10 +80,12 @@ describe('SocketIOWebSocketAdapter', () => {
         });
         const ack = jest.fn();
         await listeners.chat(1, ack);
-        expect(chatHandler).toHaveBeenCalledWith(expect.objectContaining({
-            connection: expect.any(SocketIOWebSocketConnection),
-            message: expect.objectContaining({ event: 'chat', data: 1, ack })
-        }));
+        expect(chatHandler).toHaveBeenCalledWith(
+            expect.objectContaining({
+                connection: expect.any(SocketIOWebSocketConnection),
+                message: expect.objectContaining({ event: 'chat', data: 1, ack })
+            })
+        );
         expect(socket.on).toHaveBeenCalledTimes(1);
     });
 

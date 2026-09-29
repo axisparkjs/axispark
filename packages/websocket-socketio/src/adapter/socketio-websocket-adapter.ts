@@ -54,7 +54,6 @@ export class SocketIOWebSocketAdapter implements WebSocketAdapter {
                 events.splice(events.indexOf(connectionEventDefinition), 1);
             }
 
-
             nsp.on('connection', async (socket: Socket) => {
                 await connectionEvent?.(socket);
 
