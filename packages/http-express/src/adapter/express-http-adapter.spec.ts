@@ -4,7 +4,7 @@ import { ExpressHttpAdapter } from './express-http-adapter';
 import { ExpressHttpRequest } from '../types/express-http-request';
 import { ExpressHttpResponse } from '../types/express-http-response';
 import { ExpressHttpSession } from '../types/express-http-session';
-import { HttpMethod } from '@axisparkjs/http';
+import { HttpMethod, RouteDefinition } from '@axisparkjs/http';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
@@ -33,6 +33,9 @@ jest.mock('express-session', () => jest.fn(() => 'session-middleware'));
 jest.mock('cookie-parser', () => jest.fn(() => 'cookie-parser-middleware'));
 jest.mock('compression', () => jest.fn(() => 'compression-middleware'));
 jest.mock('cors', () => jest.fn(() => 'cors-middleware'));
+
+const route = (target: any, path: string, handler: jest.Mock, propertyKey: string): RouteDefinition =>
+    new RouteDefinition(target, propertyKey, HttpMethod.Get, path, ['v1', 'v2'], handler);
 
 describe('ExpressHttpAdapter', () => {
     const app = (express as unknown as jest.Mock)();
@@ -119,16 +122,7 @@ describe('ExpressHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            adapter.registerRoutes([
-                {
-                    target: class TestController {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/users',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'getUsers'
-                }
-            ]);
+            adapter.registerRoutes([route(class TestController {}, '/users', handler, 'getUsers')]);
 
             expect(app.get).toHaveBeenCalledWith('/users', expect.any(Function));
         });
@@ -138,16 +132,7 @@ describe('ExpressHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            adapter.registerRoutes([
-                {
-                    target: class TestController {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'test'
-                }
-            ]);
+            adapter.registerRoutes([route(class TestController {}, '/', handler, 'test')]);
 
             const callback = app.get.mock.calls[0][1];
 
@@ -172,16 +157,7 @@ describe('ExpressHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            adapter.registerRoutes([
-                {
-                    target: class TestController {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'test'
-                }
-            ]);
+            adapter.registerRoutes([route(class TestController {}, '/', handler, 'test')]);
 
             const callback = app.get.mock.calls[0][1];
 
@@ -201,16 +177,7 @@ describe('ExpressHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            const routes = [
-                {
-                    target: class TestController {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/users',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'getUsers'
-                }
-            ];
+            const routes = [route(class TestController {}, '/users', handler, 'getUsers')];
 
             adapter.registerRoutes(routes);
 
