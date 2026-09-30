@@ -42,6 +42,8 @@
             "@axisparkjs/logger/*": ["./packages/logger/src/*"],
             "@axisparkjs/openapi": ["./packages/openapi/src"],
             "@axisparkjs/openapi/*": ["./packages/openapi/src/*"],
+            "@axisparkjs/rabbitmq": ["./packages/rabbitmq/src"],
+            "@axisparkjs/rabbitmq/*": ["./packages/rabbitmq/src/*"],
             "@axisparkjs/schedule": ["./packages/schedule/src"],
             "@axisparkjs/schedule/*": ["./packages/schedule/src/*"],
             "@axisparkjs/test": ["./packages/test/src"],

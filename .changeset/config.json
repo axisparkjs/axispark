@@ -14,8 +14,11 @@
         "@axisparkjs/http-fastify",
         "@axisparkjs/logger",
         "@axisparkjs/openapi",
+        "@axisparkjs/rabbitmq",
         "@axisparkjs/schedule",
-        "@axisparkjs/test"
+        "@axisparkjs/test",
+        "@axisparkjs/websocket",
+        "@axisparkjs/websocket-socketio"
     ]],
     "linked": [],
     "access": "public",
