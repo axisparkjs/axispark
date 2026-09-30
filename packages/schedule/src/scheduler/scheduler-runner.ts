@@ -1,5 +1,7 @@
-import { Injectable } from '@axisparkjs/di';
+import { Inject, Injectable } from '@axisparkjs/di';
 import { JobDefinition } from '../jobs/job-definition';
+import { Logger } from '@axisparkjs/logger';
+import { SCHEDULE_LOGGER } from '../di';
 
 /**
  * A class for running scheduled jobs.
@@ -8,6 +10,8 @@ import { JobDefinition } from '../jobs/job-definition';
 export class SchedulerRunner {
     private readonly runningJobs = new Map<string, NodeJS.Timeout>();
     private readonly enabledJobs = new Set<string>();
+
+    constructor(@Inject(SCHEDULE_LOGGER) private readonly logger: Logger) {}
 
     /**
      * Starts a job.
@@ -67,8 +71,8 @@ export class SchedulerRunner {
         const timeout = setTimeout(async () => {
             try {
                 await job.execute();
-            } catch {
-                /*empty*/
+            } catch (error) {
+                this.logger.error(`Error executing job ${job.name}`, error as Error);
             } finally {
                 this.runningJobs.delete(job.name);
                 if (this.enabledJobs.has(job.name)) this.schedule(job);

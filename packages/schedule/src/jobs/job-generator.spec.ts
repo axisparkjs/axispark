@@ -28,27 +28,22 @@ jest.mock('@axisparkjs/common', () => ({
 }));
 
 describe('JobGenerator', () => {
-    let context: any;
     let jobGenerator: JobGenerator;
+    let injector: { get: jest.Mock };
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        context = {
-            container: {
-                resolve: jest.fn()
-            }
-        };
+        injector = { get: jest.fn() };
+        jobGenerator = new JobGenerator(injector as any);
 
-        jobGenerator = new JobGenerator();
-
-        jest.spyOn(JobDefinition, 'fromMetadata').mockImplementation((metadata) => ({ ...metadata }) as any);
+        jest.spyOn(JobDefinition, 'fromMetadata').mockImplementation((metadata, execute) => ({ ...metadata, execute }) as any);
     });
 
     it('should return an empty array when there are no schedulers', async () => {
         (ClassRegistry.getWithMetadata as jest.Mock).mockReturnValue([]);
 
-        expect(await jobGenerator.generate(context)).toEqual([]);
+        expect(await jobGenerator.generate()).toEqual([]);
 
         expect(ClassRegistry.getWithMetadata).toHaveBeenCalledWith(MetadataKeys.SCHEDULER);
     });
@@ -60,7 +55,7 @@ describe('JobGenerator', () => {
 
         (Metadata.get as jest.Mock).mockReturnValue(undefined);
 
-        expect(await jobGenerator.generate(context)).toEqual([]);
+        expect(await jobGenerator.generate()).toEqual([]);
 
         expect(Metadata.get).toHaveBeenCalledWith(MetadataKeys.JOB, Scheduler);
     });
@@ -88,11 +83,11 @@ describe('JobGenerator', () => {
 
         const instance = new SchedulerInstance();
 
-        context.container.resolve.mockReturnValue(instance);
+        injector.get.mockResolvedValue(instance);
 
-        const jobs = await jobGenerator.generate(context);
+        const jobs = await jobGenerator.generate();
 
-        expect(context.container.resolve).toHaveBeenCalledWith(Scheduler);
+        expect(injector.get).not.toHaveBeenCalled();
 
         expect(JobDefinition.fromMetadata).toHaveBeenCalledWith(
             {
@@ -106,6 +101,10 @@ describe('JobGenerator', () => {
         );
 
         expect(jobs).toEqual([expect.objectContaining({ name: 'job', type: JobType.Interval, value: 1000 })]);
+
+        await jobs[0].execute();
+        expect(injector.get).toHaveBeenCalledWith(Scheduler);
+        expect(instance.execute).toHaveBeenCalledTimes(1);
     });
 
     it('should bind the method to the resolved instance', async () => {
@@ -133,18 +132,13 @@ describe('JobGenerator', () => {
 
         const instance = new SchedulerInstance();
 
-        context.container.resolve.mockReturnValue(instance);
+        injector.get.mockResolvedValue(instance);
 
-        let boundMethod!: () => Promise<number>;
+        const jobs = await jobGenerator.generate();
 
-        (JobDefinition.fromMetadata as jest.Mock).mockImplementation((_) => {
-            boundMethod = () => Promise.resolve(42);
-            return {} as any;
-        });
-
-        await jobGenerator.generate(context);
-
-        await expect(boundMethod()).resolves.toBe(42);
+        await expect(jobs[0].execute()).resolves.toBeUndefined();
+        expect(injector.get).toHaveBeenCalledWith(Scheduler);
+        expect(instance.value).toBe(42);
     });
 
     it('should generate jobs from multiple schedulers', async () => {
@@ -173,7 +167,7 @@ describe('JobGenerator', () => {
                 }
             ]);
 
-        context.container.resolve
+        injector.get
             .mockReturnValueOnce({
                 execute: jest.fn()
             })
@@ -183,7 +177,7 @@ describe('JobGenerator', () => {
 
         (JobDefinition.fromMetadata as jest.Mock).mockReturnValueOnce({ id: 1 }).mockReturnValueOnce({ id: 2 });
 
-        expect(await jobGenerator.generate(context)).toEqual([{ id: 1 }, { id: 2 }]);
+        expect(await jobGenerator.generate()).toEqual([{ id: 1 }, { id: 2 }]);
 
         expect(JobDefinition.fromMetadata).toHaveBeenCalledTimes(2);
     });
