@@ -11,7 +11,6 @@ export class JobGenerator implements Generator<Promise<JobDefinition[]>> {
     constructor(private readonly injector: Injector) {}
     /**
      * Generates job definitions from metadata.
-     * @param context The AxisSpark context.
      * @returns A promise resolving to an array of job definitions.
      */
     async generate(): Promise<JobDefinition[]> {
