@@ -1,12 +1,14 @@
 import { SchedulePlugin } from './schedule-plugin';
 import { JobGenerator } from '../jobs/job-generator';
 import { SCHEDULE_LOGGER } from '../di/tokens';
+import { SchedulerService } from '../scheduler';
 
 describe('SchedulePlugin', () => {
     let plugin: SchedulePlugin;
     let jobGenerator: jest.Mocked<JobGenerator>;
     let logger: any;
     let scheduler: any;
+    let injector: { get: jest.Mock };
     let context: any;
     const jobs = [
         { name: 'job1', type: 'type1', initiallyDisabled: false },
@@ -37,8 +39,10 @@ describe('SchedulePlugin', () => {
             }
         };
 
+        injector = { get: jest.fn().mockResolvedValue(scheduler) };
+
         (jobGenerator.generate as jest.Mock).mockReturnValue(jobs);
-        plugin = new SchedulePlugin(logger, jobGenerator, scheduler);
+        plugin = new SchedulePlugin(logger, jobGenerator, injector as any);
     });
 
     describe('onRegister', () => {
@@ -61,6 +65,8 @@ describe('SchedulePlugin', () => {
             await plugin.onRegister(context);
 
             expect(jobGenerator.generate).toHaveBeenCalled();
+            expect(jobGenerator.generate).toHaveBeenCalledWith();
+            expect(injector.get).toHaveBeenCalledWith(SchedulerService);
             expect(scheduler.registerJobs).toHaveBeenCalledWith(jobs);
         });
 
