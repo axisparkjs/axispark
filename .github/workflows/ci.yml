@@ -39,6 +39,9 @@ jobs:
       - name: Build the project
         run: npm run ci:build
 
+      - name: Start services for e2e tests
+        run: npm run test:docker:up
+
       - name: Run e2e tests
         run: npm run ci:test:e2e
 
