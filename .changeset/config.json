@@ -12,6 +12,7 @@
         "@axisparkjs/http",
         "@axisparkjs/http-express",
         "@axisparkjs/http-fastify",
+        "@axisparkjs/kafka",
         "@axisparkjs/logger",
         "@axisparkjs/openapi",
         "@axisparkjs/rabbitmq",
