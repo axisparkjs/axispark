@@ -8,15 +8,17 @@ jest.mock('amqp-connection-manager', () => ({
 const connectMock = jest.mocked(connect);
 
 describe('RabbitMQConnectionManager', () => {
+    const logger = { info: jest.fn(), error: jest.fn() };
+
     beforeEach(() => {
-        jest.clearAllMocks();
+        jest.resetAllMocks();
     });
 
-    const createManager = (connections: any[]) => new RabbitMQConnectionManager({ connections } as any);
+    const createManager = (connections: any[]) => new RabbitMQConnectionManager({ connections } as any, logger as any);
 
     it('creates all configured connections and passes their settings through', async () => {
-        const first = { close: jest.fn() };
-        const second = { close: jest.fn() };
+        const first = { close: jest.fn(), on: jest.fn() };
+        const second = { close: jest.fn(), on: jest.fn() };
         connectMock.mockReturnValueOnce(first as any).mockReturnValueOnce(second as any);
         const configs = [
             { name: 'PRIMARY', url: 'amqp://primary', options: { heartbeatIntervalInSeconds: 10 } },
@@ -30,11 +32,41 @@ describe('RabbitMQConnectionManager', () => {
         expect(connectMock).toHaveBeenNthCalledWith(2, configs[1].url, configs[1].options);
         expect(manager.getConnection('PRIMARY')).toBe(first);
         expect(manager.getConnection('REPORTING')).toBe(second);
+        expect(first.on).toHaveBeenCalledWith('connect', expect.any(Function));
+        expect(first.on).toHaveBeenCalledWith('connectFailed', expect.any(Function));
+        expect(first.on).toHaveBeenCalledWith('disconnect', expect.any(Function));
+        expect(second.on).toHaveBeenCalledWith('connect', expect.any(Function));
+        expect(second.on).toHaveBeenCalledWith('connectFailed', expect.any(Function));
+        expect(second.on).toHaveBeenCalledWith('disconnect', expect.any(Function));
+    });
+
+    it('logs connection, connection-failure, and disconnection events', async () => {
+        const connection = { close: jest.fn(), on: jest.fn() };
+        connectMock.mockReturnValue(connection as any);
+        const manager = createManager([{ name: 'PRIMARY', url: 'amqp://primary' }]);
+
+        await manager.createConnections();
+
+        const connectHandler = connection.on.mock.calls.find(([event]) => event === 'connect')![1];
+        const connectFailedHandler = connection.on.mock.calls.find(([event]) => event === 'connectFailed')![1];
+        const disconnectHandler = connection.on.mock.calls.find(([event]) => event === 'disconnect')![1];
+        const connectError = new Error('unable to connect');
+        const disconnectError = new Error('connection dropped');
+
+        connectHandler();
+        connectFailedHandler({ err: connectError });
+        disconnectHandler();
+        disconnectHandler(disconnectError);
+
+        expect(logger.info).toHaveBeenCalledWith("Connection 'PRIMARY' established");
+        expect(logger.error).toHaveBeenCalledWith("Connection 'PRIMARY' encountered an error", connectError);
+        expect(logger.info).toHaveBeenCalledWith("Connection 'PRIMARY' finished");
+        expect(logger.error).toHaveBeenCalledWith("Connection 'PRIMARY' disconnected with error", disconnectError);
     });
 
     it('creates independent named connections when they share a URL', async () => {
-        const first = { close: jest.fn() };
-        const second = { close: jest.fn() };
+        const first = { close: jest.fn(), on: jest.fn() };
+        const second = { close: jest.fn(), on: jest.fn() };
         connectMock.mockReturnValueOnce(first as any).mockReturnValueOnce(second as any);
         const url = 'amqp://shared-host';
         const manager = createManager([
@@ -65,8 +97,8 @@ describe('RabbitMQConnectionManager', () => {
     });
 
     it('allows a connection name to be reused after the connection was destroyed', async () => {
-        const first = { close: jest.fn().mockResolvedValue(undefined) };
-        const second = { close: jest.fn().mockResolvedValue(undefined) };
+        const first = { close: jest.fn().mockResolvedValue(undefined), on: jest.fn() };
+        const second = { close: jest.fn().mockResolvedValue(undefined), on: jest.fn() };
         connectMock.mockReturnValueOnce(first as any).mockReturnValueOnce(second as any);
         const manager = createManager([{ name: 'PRIMARY', url: 'amqp://primary' }]);
 
@@ -80,7 +112,7 @@ describe('RabbitMQConnectionManager', () => {
     });
 
     it('does not create a second connection with a duplicate name', async () => {
-        const connection = { close: jest.fn() };
+        const connection = { close: jest.fn(), on: jest.fn() };
         connectMock.mockReturnValue(connection as any);
         const manager = createManager([
             { name: 'PRIMARY', url: 'amqp://one' },
@@ -92,7 +124,7 @@ describe('RabbitMQConnectionManager', () => {
     });
 
     it('returns undefined for unknown names and a defensive copy of all connections', async () => {
-        const connection = { close: jest.fn() };
+        const connection = { close: jest.fn(), on: jest.fn() };
         connectMock.mockReturnValue(connection as any);
         const manager = createManager([{ name: 'PRIMARY', url: 'amqp://primary' }]);
         await manager.createConnections();
@@ -105,8 +137,8 @@ describe('RabbitMQConnectionManager', () => {
     });
 
     it('closes and removes every managed connection', async () => {
-        const first = { close: jest.fn().mockResolvedValue(undefined) };
-        const second = { close: jest.fn().mockResolvedValue(undefined) };
+        const first = { close: jest.fn().mockResolvedValue(undefined), on: jest.fn() };
+        const second = { close: jest.fn().mockResolvedValue(undefined), on: jest.fn() };
         connectMock.mockReturnValueOnce(first as any).mockReturnValueOnce(second as any);
         const manager = createManager([
             { name: 'PRIMARY', url: 'amqp://primary' },

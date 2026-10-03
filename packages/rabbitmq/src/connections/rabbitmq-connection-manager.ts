@@ -1,7 +1,8 @@
 import { Injectable, Inject } from '@axisparkjs/di';
-import { RABBITMQ_OPTIONS } from '../di';
+import { RABBITMQ_LOGGER, RABBITMQ_OPTIONS } from '../di';
 import { RabbitMQPluginOptions } from '../plugin';
 import { AmqpConnectionManager, AmqpConnectionManagerOptions, ConnectionUrl, connect } from 'amqp-connection-manager';
+import { Logger } from '@axisparkjs/logger';
 
 /**
  * A manager for creating and managing connections to RabbitMQ.
@@ -10,7 +11,10 @@ import { AmqpConnectionManager, AmqpConnectionManagerOptions, ConnectionUrl, con
 export class RabbitMQConnectionManager {
     private readonly connections = new Map<string, AmqpConnectionManager>();
 
-    constructor(@Inject(RABBITMQ_OPTIONS) private readonly rabbitmqPluginOptions: RabbitMQPluginOptions) {}
+    constructor(
+        @Inject(RABBITMQ_OPTIONS) private readonly rabbitmqPluginOptions: RabbitMQPluginOptions,
+        @Inject(RABBITMQ_LOGGER) private readonly logger: Logger
+    ) {}
 
     async createConnections(): Promise<void> {
         for (const connectionConfig of this.rabbitmqPluginOptions.connections) {
@@ -20,6 +24,11 @@ export class RabbitMQConnectionManager {
             }
 
             const connection = await this.createConnection(url, options);
+            connection.on('connect', () => this.logger.info(`Connection '${name}' established`));
+            connection.on('connectFailed', ({ err }) => this.logger.error(`Connection '${name}' encountered an error`, err));
+            connection.on('disconnect', (err: Error | undefined) =>
+                err ? this.logger.error(`Connection '${name}' disconnected with error`, err) : this.logger.info(`Connection '${name}' finished`)
+            );
             this.connections.set(name, connection);
         }
     }

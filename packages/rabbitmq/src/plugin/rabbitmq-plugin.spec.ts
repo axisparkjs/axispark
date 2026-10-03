@@ -42,8 +42,8 @@ describe('RabbitMQPlugin', () => {
     });
 
     it('binds options and logger, creates connections, and binds each connection by its namespaced token', async () => {
-        const primary = { on: jest.fn() };
-        const reports = { on: jest.fn() };
+        const primary = {};
+        const reports = {};
         connectionManager.getAllConnections.mockReturnValue(
             new Map([
                 ['PRIMARY', primary],
@@ -62,12 +62,6 @@ describe('RabbitMQPlugin', () => {
         expect(context.container.bind).toHaveBeenCalledWith({ token: RABBITMQ_LOGGER, useValue: logger });
         expect(injector.get).toHaveBeenCalledWith(RabbitMQConnectionManager);
         expect(connectionManager.createConnections).toHaveBeenCalledTimes(1);
-        expect(primary.on).toHaveBeenCalledWith('connect', expect.any(Function));
-        expect(primary.on).toHaveBeenCalledWith('connectFailed', expect.any(Function));
-        expect(primary.on).toHaveBeenCalledWith('disconnect', expect.any(Function));
-        expect(reports.on).toHaveBeenCalledWith('connect', expect.any(Function));
-        expect(reports.on).toHaveBeenCalledWith('connectFailed', expect.any(Function));
-        expect(reports.on).toHaveBeenCalledWith('disconnect', expect.any(Function));
         expect(context.container.bind).toHaveBeenCalledWith({
             token: new InjectionToken('RABBITMQ_CONNECTION_PRIMARY'),
             useValue: primary
@@ -77,35 +71,6 @@ describe('RabbitMQPlugin', () => {
             useValue: reports
         });
         expect(logger.info).toHaveBeenCalledWith('Plugin registered');
-    });
-
-    it('logs connection and disconnection events, including disconnect errors', async () => {
-        const connection = { on: jest.fn() };
-        connectionManager.getAllConnections.mockReturnValue(new Map([['PRIMARY', connection]]));
-        await plugin.onRegister(appContext(), options([{ name: 'PRIMARY', url: 'amqp://primary' }]));
-        const connectHandler = connection.on.mock.calls.find(([event]) => event === 'connect')[1];
-        const disconnectHandler = connection.on.mock.calls.find(([event]) => event === 'disconnect')[1];
-        const disconnectError = new Error('connection dropped');
-
-        connectHandler();
-        disconnectHandler();
-        disconnectHandler(disconnectError);
-
-        expect(logger.info).toHaveBeenCalledWith("Connection 'PRIMARY' established");
-        expect(logger.info).toHaveBeenCalledWith("Connection 'PRIMARY' finished");
-        expect(logger.error).toHaveBeenCalledWith("Connection 'PRIMARY' disconnected with error", disconnectError);
-    });
-
-    it('logs failed connection attempts', async () => {
-        const connection = { on: jest.fn() };
-        connectionManager.getAllConnections.mockReturnValue(new Map([['PRIMARY', connection]]));
-        await plugin.onRegister(appContext(), options([{ name: 'PRIMARY', url: 'amqp://primary' }]));
-        const connectFailedHandler = connection.on.mock.calls.find(([event]) => event === 'connectFailed')[1];
-        const connectError = new Error('unable to connect');
-
-        connectFailedHandler({ err: connectError });
-
-        expect(logger.error).toHaveBeenCalledWith("Connection 'PRIMARY' encountered an error", connectError);
     });
 
     it('propagates connection startup failures without logging successful registration', async () => {
