@@ -47,9 +47,9 @@ describe('RabbitMQConnectionManager', () => {
 
         await manager.createConnections();
 
-        const connectHandler = connection.on.mock.calls.find(([event]) => event === 'connect')![1];
-        const connectFailedHandler = connection.on.mock.calls.find(([event]) => event === 'connectFailed')![1];
-        const disconnectHandler = connection.on.mock.calls.find(([event]) => event === 'disconnect')![1];
+        const connectHandler = connection.on.mock.calls.find(([event]) => event === 'connect')[1];
+        const connectFailedHandler = connection.on.mock.calls.find(([event]) => event === 'connectFailed')[1];
+        const disconnectHandler = connection.on.mock.calls.find(([event]) => event === 'disconnect')[1];
         const connectError = new Error('unable to connect');
         const disconnectError = new Error('connection dropped');
 
