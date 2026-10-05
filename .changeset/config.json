@@ -6,6 +6,7 @@
         "@axisparkjs/cli",
         "@axisparkjs/common",
         "@axisparkjs/core",
+        "@axisparkjs/data",
         "@axisparkjs/ddd",
         "@axisparkjs/di",
         "@axisparkjs/engine",

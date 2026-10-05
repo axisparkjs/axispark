@@ -26,6 +26,8 @@
             "@axisparkjs/common/*": ["./packages/common/src/*"],
             "@axisparkjs/core": ["./packages/core/src"],
             "@axisparkjs/core/*": ["./packages/core/src/*"],
+            "@axisparkjs/data": ["./packages/data/src"],
+            "@axisparkjs/data/*": ["./packages/data/src/*"],
             "@axisparkjs/ddd": ["./packages/ddd/src"],
             "@axisparkjs/ddd/*": ["./packages/ddd/src/*"],
             "@axisparkjs/di": ["./packages/di/src"],

@@ -43,5 +43,8 @@ export const MetadataKeys = {
 
     /* WebSockets */
     WEBSOCKET: new MetadataKey('websocket'),
-    WEBSOCKET_EVENT: new MetadataKey('websocket-event')
+    WEBSOCKET_EVENT: new MetadataKey('websocket-event'),
+
+    /* Data */
+    REPOSITORY: new MetadataKey('repository')
 } as const;
