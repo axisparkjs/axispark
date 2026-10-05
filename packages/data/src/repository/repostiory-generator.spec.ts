@@ -10,9 +10,7 @@ interface TestEntity extends ObjectLiteral {
     id: number;
 }
 
-class TestRepository extends BaseRepository<TestEntity> {
-    
-}
+class TestRepository extends BaseRepository<TestEntity> {}
 
 class RepositoryWithUndefinedMember extends TestRepository {
     get unsetMember(): undefined {
