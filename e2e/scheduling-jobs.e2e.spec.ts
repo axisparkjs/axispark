@@ -30,7 +30,7 @@ describe('Scheduling Jobs App', () => {
         expect(axiSparkCore).toBeInstanceOf(AxiSparkCore);
     });
 
-    it('should create the app with Schedule plugin', async () => {
+    it('should create the app with Schedule Plugin', async () => {
         const plugins = axiSparkCore.used();
         expect(plugins).toHaveLength(1);
         expect(plugins).toStrictEqual([{ type: SchedulePlugin, options: undefined }]);

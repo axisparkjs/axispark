@@ -4,10 +4,20 @@ import { ExpressHttpAdapter } from './express-http-adapter';
 import { ExpressHttpRequest } from '../types/express-http-request';
 import { ExpressHttpResponse } from '../types/express-http-response';
 import { ExpressHttpSession } from '../types/express-http-session';
-import { HttpMethod } from '@axisparkjs/http';
+import { HttpMethod, RouteDefinition } from '@axisparkjs/http';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
+import { createServer } from 'node:http';
+
+const mockServer = {
+    listen: jest.fn(),
+    close: jest.fn()
+};
+
+jest.mock('node:http', () => ({
+    createServer: jest.fn(() => mockServer)
+}));
 
 jest.mock('express', () => {
     const app = {
@@ -33,6 +43,9 @@ jest.mock('express-session', () => jest.fn(() => 'session-middleware'));
 jest.mock('cookie-parser', () => jest.fn(() => 'cookie-parser-middleware'));
 jest.mock('compression', () => jest.fn(() => 'compression-middleware'));
 jest.mock('cors', () => jest.fn(() => 'cors-middleware'));
+
+const route = (target: any, path: string, handler: jest.Mock, propertyKey: string): RouteDefinition =>
+    new RouteDefinition(target, propertyKey, HttpMethod.Get, path, ['v1', 'v2'], handler);
 
 describe('ExpressHttpAdapter', () => {
     const app = (express as unknown as jest.Mock)();
@@ -61,9 +74,9 @@ describe('ExpressHttpAdapter', () => {
         jest.clearAllMocks();
     });
 
-    describe('constructor', () => {
-        it('should register all enabled middlewares', () => {
-            new ExpressHttpAdapter({
+    describe('initialize', () => {
+        it('should create http server and register all enabled middlewares', async () => {
+            const adapter = new ExpressHttpAdapter({
                 ...baseConfig,
                 bodyParser: true,
                 bodyParserOptions: { limit: '10mb' },
@@ -79,6 +92,9 @@ describe('ExpressHttpAdapter', () => {
                 compressionOptions: { threshold: 1024 }
             });
 
+            await adapter.initialize();
+
+            expect(createServer).toHaveBeenCalledWith(app);
             expect(express.json).toHaveBeenCalledWith({ limit: '10mb' });
             expect(express.urlencoded).toHaveBeenCalledWith({ extended: false });
             expect(session).toHaveBeenCalledWith({ secret: 'secret' });
@@ -89,8 +105,8 @@ describe('ExpressHttpAdapter', () => {
             expect(app.use).toHaveBeenCalledTimes(6);
         });
 
-        it('should not register disabled middlewares', () => {
-            new ExpressHttpAdapter({
+        it('should not register disabled middlewares', async () => {
+            const adapter = new ExpressHttpAdapter({
                 ...baseConfig,
                 bodyParser: false,
                 urlEncoded: false,
@@ -100,16 +116,31 @@ describe('ExpressHttpAdapter', () => {
                 cors: false
             });
 
+            await adapter.initialize();
+
+            expect(createServer).toHaveBeenCalledWith(app);
             expect(app.use).not.toHaveBeenCalled();
         });
 
-        it('should register cookies without options', () => {
-            new ExpressHttpAdapter({
+        it('should register cookies without options', async () => {
+            const adapter = new ExpressHttpAdapter({
                 ...baseConfig,
                 cookies: true
             });
 
+            await adapter.initialize();
+
             expect(app.use).toHaveBeenCalled();
+            expect(cookieParser).toHaveBeenCalledWith(undefined, undefined);
+        });
+    });
+
+    describe('getHttpServer', () => {
+        it('should return the underlying http server', async () => {
+            const adapter = new ExpressHttpAdapter(baseConfig);
+            await adapter.initialize();
+
+            expect(adapter.getHttpServer()).toBe(mockServer);
         });
     });
 
@@ -119,16 +150,7 @@ describe('ExpressHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            adapter.registerRoutes([
-                {
-                    target: class TestController {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/users',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'getUsers'
-                }
-            ]);
+            adapter.registerRoutes([route(class TestController {}, '/users', handler, 'getUsers')]);
 
             expect(app.get).toHaveBeenCalledWith('/users', expect.any(Function));
         });
@@ -138,16 +160,7 @@ describe('ExpressHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            adapter.registerRoutes([
-                {
-                    target: class TestController {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'test'
-                }
-            ]);
+            adapter.registerRoutes([route(class TestController {}, '/', handler, 'test')]);
 
             const callback = app.get.mock.calls[0][1];
 
@@ -172,16 +185,7 @@ describe('ExpressHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            adapter.registerRoutes([
-                {
-                    target: class TestController {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'test'
-                }
-            ]);
+            adapter.registerRoutes([route(class TestController {}, '/', handler, 'test')]);
 
             const callback = app.get.mock.calls[0][1];
 
@@ -201,16 +205,7 @@ describe('ExpressHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            const routes = [
-                {
-                    target: class TestController {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/users',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'getUsers'
-                }
-            ];
+            const routes = [route(class TestController {}, '/users', handler, 'getUsers')];
 
             adapter.registerRoutes(routes);
 
@@ -219,37 +214,38 @@ describe('ExpressHttpAdapter', () => {
     });
 
     describe('start', () => {
-        it('should listen on configured port', () => {
-            const server = {};
-
-            app.listen.mockReturnValue(server);
-
+        it('should listen on configured port when initialized', async () => {
             const adapter = new ExpressHttpAdapter(baseConfig);
+            await adapter.initialize();
 
             adapter.start();
 
-            expect(app.listen).toHaveBeenCalledWith(8080);
+            expect(mockServer.listen).toHaveBeenCalledWith(8080);
+        });
+
+        it('should do nothing when httpServer is not initialized', () => {
+            const adapter = new ExpressHttpAdapter(baseConfig);
+
+            expect(() => adapter.start()).not.toThrow();
+            expect(mockServer.listen).not.toHaveBeenCalled();
         });
     });
 
     describe('stop', () => {
-        it('should close the server', () => {
-            const close = jest.fn();
-
-            app.listen.mockReturnValue({ close });
-
+        it('should close the server when initialized', async () => {
             const adapter = new ExpressHttpAdapter(baseConfig);
+            await adapter.initialize();
 
-            adapter.start();
             adapter.stop();
 
-            expect(close).toHaveBeenCalled();
+            expect(mockServer.close).toHaveBeenCalled();
         });
 
-        it('should do nothing when server has not been started', () => {
+        it('should do nothing when server has not been initialized', () => {
             const adapter = new ExpressHttpAdapter(baseConfig);
 
             expect(() => adapter.stop()).not.toThrow();
+            expect(mockServer.close).not.toHaveBeenCalled();
         });
     });
 });

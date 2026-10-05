@@ -69,6 +69,8 @@ export const defaultStatusCode = (method: string): HttpStatusCode => {
             return HttpStatusCode.Ok;
         case 'DELETE':
             return HttpStatusCode.NoContent;
+        case 'PATCH':
+            return HttpStatusCode.Ok;
         default:
             return HttpStatusCode.Ok;
     }

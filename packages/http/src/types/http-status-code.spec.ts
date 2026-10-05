@@ -19,12 +19,15 @@ describe('defaultStatusCode', () => {
         expect(defaultStatusCode('PUT')).toBe(HttpStatusCode.Ok);
     });
 
+    it('should return Ok for PATCH', () => {
+        expect(defaultStatusCode('PATCH')).toBe(HttpStatusCode.Ok);
+    });
+
     it('should return NoContent for DELETE', () => {
         expect(defaultStatusCode('DELETE')).toBe(HttpStatusCode.NoContent);
     });
 
     it('should return Ok for unknown methods', () => {
-        expect(defaultStatusCode('PATCH')).toBe(HttpStatusCode.Ok);
         expect(defaultStatusCode('OPTIONS')).toBe(HttpStatusCode.Ok);
         expect(defaultStatusCode('HEAD')).toBe(HttpStatusCode.Ok);
     });

@@ -1,4 +1,4 @@
-import { HttpPlugin, HttpAdapterClass } from '@axisparkjs/http';
+import { HttpPlugin } from '@axisparkjs/http';
 import { ExpressHttpAdapter } from '../adapter/express-http-adapter';
 import { HttpPluginOptionsFactory } from './http-plugin-options-factory';
 
@@ -49,7 +49,6 @@ describe('HttpPluginOptionsFactory', () => {
             const options = HttpPluginOptionsFactory.create({
                 port: 8080,
                 basePath: '/',
-                adapter: class TestAdapter {} as unknown as HttpAdapterClass,
                 bodyParser: false,
                 bodyParserOptions,
                 urlEncoded: false,
@@ -77,7 +76,7 @@ describe('HttpPluginOptionsFactory', () => {
                 plugin: HttpPlugin,
                 port: 8080,
                 basePath: '/',
-                adapter: expect.any(Function),
+                adapter: ExpressHttpAdapter,
                 bodyParser: false,
                 bodyParserOptions,
                 urlEncoded: false,

@@ -6,7 +6,7 @@ import cors from '@fastify/cors';
 import formbody from '@fastify/formbody';
 import fastifyStatic from '@fastify/static';
 
-import { HttpMethod } from '@axisparkjs/http';
+import { HttpMethod, RouteDefinition } from '@axisparkjs/http';
 
 import { FastifyHttpAdapter } from './fastify-http-adapter';
 import { FastifyHttpRequest } from '../types/fastify-http-request';
@@ -15,20 +15,29 @@ import { FastifyHttpSession } from '../types/fastify-http-session';
 import { FastifyHttpPluginOptions } from '../plugin';
 
 jest.mock('fastify', () => {
+    const server = {
+        listen: jest.fn(),
+        close: jest.fn()
+    };
     const app = {
         register: jest.fn().mockResolvedValue(undefined),
         route: jest.fn(),
         listen: jest.fn().mockResolvedValue(undefined),
-        close: jest.fn().mockResolvedValue(undefined)
+        close: jest.fn().mockResolvedValue(undefined),
+        server
     };
 
     return Object.assign(
         jest.fn(() => app),
         {
-            __app: app
+            __app: app,
+            __server: server
         }
     );
 });
+
+const route = (target: any, path: string, handler: jest.Mock, propertyKey: string): RouteDefinition =>
+    new RouteDefinition(target, propertyKey, HttpMethod.Get, path, ['v1', 'v2'], handler);
 
 jest.mock('@fastify/static', () => jest.fn());
 jest.mock('@fastify/cookie', () => jest.fn());
@@ -159,16 +168,7 @@ describe('FastifyHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            adapter.registerRoutes([
-                {
-                    target: class {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/users',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'getUsers'
-                }
-            ]);
+            adapter.registerRoutes([route(class {}, '/users', handler, 'getUsers')]);
 
             expect(app.route).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -184,16 +184,7 @@ describe('FastifyHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            adapter.registerRoutes([
-                {
-                    target: class {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'test'
-                }
-            ]);
+            adapter.registerRoutes([route(class {}, '/', handler, 'test')]);
 
             const callback = app.route.mock.calls[0][0].handler;
 
@@ -217,16 +208,7 @@ describe('FastifyHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            adapter.registerRoutes([
-                {
-                    target: class {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'test'
-                }
-            ]);
+            adapter.registerRoutes([route(class {}, '/', handler, 'test')]);
 
             const callback = app.route.mock.calls[0][0].handler;
 
@@ -251,20 +233,20 @@ describe('FastifyHttpAdapter', () => {
 
             const handler = jest.fn();
 
-            const routes = [
-                {
-                    target: class {},
-                    httpMethod: HttpMethod.Get,
-                    path: '/users',
-                    handler,
-                    versions: ['v1', 'v2'],
-                    propertyKey: 'getUsers'
-                }
-            ];
+            const routes = [route(class {}, '/users', handler, 'getUsers')];
 
             adapter.registerRoutes(routes);
 
             expect(adapter.getRegisteredRoutes()).toEqual(routes);
+        });
+    });
+
+    describe('getHttpServer', () => {
+        it('should return the underlying http server', () => {
+            const adapter = new FastifyHttpAdapter(baseConfig, axisparkConfig as any);
+            const server = (fastify as any).__server;
+
+            expect(adapter.getHttpServer()).toBe(server);
         });
     });
 

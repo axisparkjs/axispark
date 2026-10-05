@@ -1,5 +1,5 @@
 import { AxiSparkContext, Plugin } from '@axisparkjs/core';
-import { Injectable } from '@axisparkjs/di';
+import { Injectable, Injector } from '@axisparkjs/di';
 import { SCHEDULE_LOGGER } from '../di/tokens';
 import { Logger } from '@axisparkjs/logger';
 import { SchedulerService } from '../scheduler';
@@ -11,11 +11,12 @@ import { JobGenerator } from '../jobs/job-generator';
 @Injectable()
 export class SchedulePlugin extends Plugin {
     private context: AxiSparkContext;
+    private scheduler: SchedulerService;
 
     constructor(
         private logger: Logger,
         private readonly jobGenerator: JobGenerator,
-        private readonly scheduler: SchedulerService
+        private readonly injector: Injector
     ) {
         super();
     }
@@ -35,10 +36,11 @@ export class SchedulePlugin extends Plugin {
     }
 
     private async initializeScheduler(): Promise<void> {
-        const jobs = await this.jobGenerator.generate(this.context);
+        const jobs = await this.jobGenerator.generate();
         jobs.forEach((job) => {
             this.logger.debug(`Registered job ${job.name} of type ${job.type} ${job.initiallyDisabled ? '(initially disabled)' : ''}`);
         });
+        this.scheduler = await this.injector.get(SchedulerService);
         this.scheduler.registerJobs(jobs);
     }
 

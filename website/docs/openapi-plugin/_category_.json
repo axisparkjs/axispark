@@ -1,0 +1,8 @@
+{
+    "label": "OpenApi Plugin",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "description": "The OpenAPI plugin is a powerful tool that allows developers to easily integrate OpenAPI specifications into their applications. It provides a set of features and utilities that simplify the process of working with OpenAPI, making it easier to create, manage, and consume APIs."
+    }
+}

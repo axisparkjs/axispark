@@ -2,6 +2,7 @@ export * from './class-type';
 export * from './destroyable';
 export * from './factory';
 export * from './generator';
+export * from './http-server';
 export * from './initializable';
 export * from './lifecycle';
 export * from './executable';

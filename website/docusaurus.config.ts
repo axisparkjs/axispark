@@ -97,7 +97,12 @@ const config: Config = {
                 includeCurrentVersion: true
             }
         ]
-    ]
+    ],
+
+    themes: ['@docusaurus/theme-mermaid'],
+    markdown: {
+        mermaid: true
+    }
 };
 
 export default config;

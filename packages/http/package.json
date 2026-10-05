@@ -1,6 +1,6 @@
 {
     "name": "@axisparkjs/http",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "AxiSpark.js - The Ultimate Node.js Framework - @axisparkjs/http",
     "author": "Pablo Gálvez Ortuño",
     "license": "Apache-2.0",
@@ -10,6 +10,8 @@
         "lib",
         "package.json",
         "PACKAGE.md",
+        "README.md",
+        "LICENSE",
         "tsconfig.build.json"
     ],
     "scripts": {
@@ -23,10 +25,10 @@
         "node": ">= 20"
     },
     "dependencies": {
-        "@axisparkjs/common": "1.0.0",
-        "@axisparkjs/core": "1.0.0",
-        "@axisparkjs/di": "1.0.0",
-        "@axisparkjs/engine": "1.0.0",
-        "@axisparkjs/logger": "1.0.0"
+        "@axisparkjs/common": "1.1.0",
+        "@axisparkjs/core": "1.1.0",
+        "@axisparkjs/di": "1.1.0",
+        "@axisparkjs/engine": "1.1.0",
+        "@axisparkjs/logger": "1.1.0"
     }
 }

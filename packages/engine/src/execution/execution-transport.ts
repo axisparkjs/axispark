@@ -4,5 +4,6 @@
 export enum ExecutionTransport {
     All = 'all',
     Http = 'http',
+    WebSocket = 'websocket',
     Other = 'other'
 }

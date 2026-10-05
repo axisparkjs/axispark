@@ -3,11 +3,13 @@ import { JobDefinition } from '../jobs/job-definition';
 
 describe('SchedulerRunner', () => {
     let runner: SchedulerRunner;
+    let logger: { error: jest.Mock };
 
     beforeEach(() => {
         jest.useFakeTimers();
 
-        runner = new SchedulerRunner();
+        logger = { error: jest.fn() };
+        runner = new SchedulerRunner(logger as any);
     });
 
     afterEach(() => {
@@ -110,6 +112,8 @@ describe('SchedulerRunner', () => {
             runner.start(job);
 
             await jest.advanceTimersByTimeAsync(1000);
+
+            expect(logger.error).toHaveBeenCalledWith('Error executing job job', error);
         });
 
         it('should reschedule enabled jobs', async () => {
