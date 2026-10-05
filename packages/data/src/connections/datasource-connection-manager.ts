@@ -16,6 +16,7 @@ export class DataSourceConnectionManager {
         @Inject(DATA_LOGGER) private readonly logger: Logger
     ) {}
 
+    /** Creates and initializes every configured TypeORM data source. */
     async createConnections(): Promise<void> {
         for (const connectionConfig of this.dataPluginOptions.dataSources) {
             if (this.connections.has(connectionConfig.name)) {
@@ -29,14 +30,17 @@ export class DataSourceConnectionManager {
         }
     }
 
+    /** Returns a configured data source by its case-sensitive configuration name. */
     getConnection(name: string): DataSource | undefined {
         return this.connections.get(name);
     }
 
+    /** Returns a copy of the current name-to-data-source map. */
     getAllConnections(): Map<string, DataSource> {
         return new Map(this.connections);
     }
 
+    /** Closes and removes all initialized data sources. */
     async destroyConnections(): Promise<void> {
         for (const [name, connection] of this.connections.entries()) {
             await connection.destroy();

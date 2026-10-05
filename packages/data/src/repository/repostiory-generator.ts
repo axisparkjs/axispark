@@ -8,9 +8,7 @@ import { DataSource, ObjectLiteral, Repository } from 'typeorm';
 import { ClassType } from '@axisparkjs/common';
 import { BaseRepository } from './base-repository';
 
-/**
- * A generator for creating route definitions based on controller and route metadata.
- */
+/** Builds generated repository implementations for all classes decorated with `@Repository`. */
 @Injectable()
 export class RepositoryGenerator implements Generator<RepositoryDefinition[]> {
     private readonly dataSources: Map<string, DataSource>;
@@ -22,10 +20,7 @@ export class RepositoryGenerator implements Generator<RepositoryDefinition[]> {
         this.dataSources = this.dataSourceConnectionManager.getAllConnections();
     }
 
-    /**
-     * Generates route definitions based on controller and route metadata.
-     * @returns An array of route definitions.
-     */
+    /** Returns repository definitions backed by the matching TypeORM data sources. */
     async generate(): Promise<RepositoryDefinition[]> {
         const repositories: RepositoryDefinition[] = [];
         const repositoriesClasses = ClassRegistry.getWithMetadata(MetadataKeys.REPOSITORY);

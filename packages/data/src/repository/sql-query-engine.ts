@@ -3,10 +3,19 @@ import { Brackets, ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm
 import { BaseRepository } from './base-repository';
 import { ParsedMethod, ParsedPredicate, QueryMethodParser } from './query-method-parser';
 
+/** Executes derived repository methods by building TypeORM SQL `SelectQueryBuilder` queries. */
 @Injectable()
 export class SQLQueryEngine {
     constructor(private readonly queryMethodParser: QueryMethodParser) {}
 
+    /**
+     * Parses and executes a derived method against a relational TypeORM repository.
+     *
+     * @param _object Repository proxy target supplied by the executable interface.
+     * @param property Derived method name, for example `findByStatus`.
+     * @param classArgs Repository and owning data source constructor arguments.
+     * @param methodArgs Predicate values, optionally followed by a `PageRequest`.
+     */
     public async execute<T extends ObjectLiteral>(_object: BaseRepository<T>, property: string, classArgs: unknown[], methodArgs: unknown[]): Promise<unknown> {
         const [entityRepository] = classArgs as [Repository<T>, ...unknown[]];
         if (!entityRepository || typeof entityRepository.createQueryBuilder !== 'function') {

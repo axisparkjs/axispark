@@ -7,7 +7,11 @@ import { SQLQueryEngine } from './sql-query-engine';
 
 export { PageRequest } from './query-method-parser';
 
-/** Routes derived repository methods to the engine for the active TypeORM driver. */
+/**
+ * Dispatches derived repository methods to the database-specific query engine.
+ * Currently recognizes the SQL drivers listed in the DataPlugin guide and
+ * routes MongoDB to {@link MongoQueryEngine}.
+ */
 @Injectable()
 export class QueryEngine implements Executable {
     private readonly sqlDBMS = new Set([
@@ -31,6 +35,7 @@ export class QueryEngine implements Executable {
         private readonly mongoQueryEngine: MongoQueryEngine
     ) {}
 
+    /** Executes a derived repository method with the repository and its owning data source. */
     public execute<T extends ObjectLiteral>(object: BaseRepository<T>, property: string, classArgs: unknown[], methodArgs: unknown[]): Promise<unknown> {
         const [, dataSource] = classArgs as [unknown, DataSource];
         if (this.sqlDBMS.has(dataSource.options.type)) return this.sqlQueryEngine.execute(object, property, classArgs, methodArgs);

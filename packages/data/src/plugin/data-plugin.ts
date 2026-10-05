@@ -24,6 +24,12 @@ export class DataPlugin extends Plugin {
         super();
     }
 
+    /**
+     * Initializes data sources and registers each decorated repository with the application container.
+     *
+     * @param context Application context whose container receives the data sources and repositories.
+     * @param options Data plugin configuration with one or more named TypeORM sources.
+     */
     async onRegister(context: AxiSparkContext, options?: DataPluginOptions): Promise<void> {
         if (!options) throw new PluginNotConfiguredError(DataPlugin.name);
         this.context = context;
@@ -67,10 +73,12 @@ export class DataPlugin extends Plugin {
         await this.logger.info(`Repositories registered: ${repositoryDefinitions.map((r) => r.target.name).join(', ')}`);
     }
 
+    /** Logs that the Data plugin has started. */
     async onStart(): Promise<void> {
         await this.logger.info(`Plugin started`);
     }
 
+    /** Closes every TypeORM data source created by this plugin. */
     async onStop(): Promise<void> {
         await this.dataSourceConnectionManager.destroyConnections();
         await this.logger.info(`Plugin stopped`);

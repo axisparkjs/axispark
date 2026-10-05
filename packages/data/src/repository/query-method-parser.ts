@@ -1,7 +1,9 @@
 import { Injectable } from '@axisparkjs/di';
 import { ObjectLiteral, Repository } from 'typeorm';
 
+/** Operation selected by a supported derived method prefix. */
 export type QueryOperation = 'findMany' | 'findOne' | 'count' | 'exists';
+/** Recognized suffix for a derived predicate. */
 export type PredicateOperatorName =
     | 'Equal'
     | 'IsNull'
@@ -15,15 +17,22 @@ export type PredicateOperatorName =
     | 'Like';
 
 export interface ParsedPredicate {
+    /** TypeORM metadata path of the entity property. */
     propertyPath: string;
+    /** Comparison operation represented by this predicate. */
     operator: PredicateOperatorName;
+    /** Number of method arguments consumed by this predicate. */
     arity: number;
 }
 
+/** Normalized structure shared by SQL and Mongo query engines. */
 export interface ParsedMethod {
+    /** Result operation inferred from the method prefix. */
     operation: QueryOperation;
     // OR groups contain AND-connected predicates: (a AND b) OR (c AND d).
+    /** AND-connected predicate groups, combined with OR between groups. */
     predicateGroups: ParsedPredicate[][];
+    /** Ordered entity properties requested by the optional `OrderBy` clause. */
     order: { propertyPath: string; direction: 'ASC' | 'DESC' }[];
 }
 
@@ -40,7 +49,9 @@ const OPERATORS: { suffix: PredicateOperatorName; arity: number }[] = [
 ];
 
 @Injectable()
+/** Parses repository method names and page arguments into a database-neutral query description. */
 export class QueryMethodParser {
+    /** Parses a supported derived method name against the entity's TypeORM metadata. */
     parse<T extends ObjectLiteral>(repository: Repository<T>, methodName: string): ParsedMethod {
         const methodMatch = /^(findOneBy|findBy|countBy|existsBy)(.+)$/.exec(methodName);
         if (!methodMatch) throw new Error(`Unsupported derived repository method '${methodName}'.`);
@@ -63,6 +74,7 @@ export class QueryMethodParser {
         };
     }
 
+    /** Removes and validates a final page request argument, when present. */
     extractPageRequest(operation: QueryOperation, methodArgs: unknown[]): { methodArgs: unknown[]; pageRequest?: PageRequest } {
         const candidate = methodArgs[methodArgs.length - 1];
         if (!candidate || typeof candidate !== 'object' || !('page' in candidate) || !('size' in candidate)) return { methodArgs };
@@ -76,6 +88,7 @@ export class QueryMethodParser {
         return { methodArgs: methodArgs.slice(0, -1), pageRequest: { page, size } };
     }
 
+    /** Converts a metadata property path such as `profile.education` to `ProfileEducation`. */
     toPropertyTag(propertyPath: string): string {
         return propertyPath
             .split('.')

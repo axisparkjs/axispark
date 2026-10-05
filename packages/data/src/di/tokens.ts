@@ -6,7 +6,15 @@ export const DATA_OPTIONS = new InjectionToken('DATA_OPTIONS');
 /** Injection token for the Data logger. */
 export const DATA_LOGGER = new InjectionToken('DATA_LOGGER');
 
-/** Inject decorator for a specific Data repository. */
+/**
+ * Injects a generated repository by its decorated repository class.
+ *
+ * @example `constructor(@InjectRepository(UserRepository) users: UserRepository) {}`
+ */
 export const InjectRepository = (repository: ClassType) => Inject(new InjectionToken(`DATA_REPOSITORY_${repository.name.toLocaleUpperCase()}`));
-/** Inject decorator for a specific Data Source. */
+/**
+ * Injects a TypeORM data source by its configured name (case-insensitive for token lookup).
+ *
+ * @example `constructor(@InjectDataSource('PRIMARY') dataSource: DataSource) {}`
+ */
 export const InjectDataSource = (name: string) => Inject(new InjectionToken(`DATA_SOURCE_${name.toLocaleUpperCase()}`));
