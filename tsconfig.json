@@ -40,6 +40,8 @@
             "@axisparkjs/http-express/*": ["./packages/http-express/src/*"],
             "@axisparkjs/http-fastify": ["./packages/http-fastify/src"],
             "@axisparkjs/http-fastify/*": ["./packages/http-fastify/src/*"],
+            "@axisparkjs/security": ["./packages/security/src"],
+            "@axisparkjs/security/*": ["./packages/security/src/*"],
             "@axisparkjs/kafka": ["./packages/kafka/src"],
             "@axisparkjs/kafka/*": ["./packages/kafka/src/*"],
             "@axisparkjs/logger": ["./packages/logger/src"],

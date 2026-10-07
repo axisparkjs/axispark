@@ -38,6 +38,8 @@ const config = {
         '^@axisparkjs/http-express/(.*)$': '<rootDir>../../packages/http-express/src/$1',
         '^@axisparkjs/http-fastify$': '<rootDir>../../packages/http-fastify/src',
         '^@axisparkjs/http-fastify/(.*)$': '<rootDir>../../packages/http-fastify/src/$1',
+        '^@axisparkjs/security$': '<rootDir>../../packages/security/src',
+        '^@axisparkjs/security/(.*)$': '<rootDir>../../packages/security/src/$1',
         '^@axisparkjs/logger$': '<rootDir>../../packages/logger/src',
         '^@axisparkjs/logger/(.*)$': '<rootDir>../../packages/logger/src/$1',
         '^@axisparkjs/openapi$': '<rootDir>../../packages/openapi/src',
